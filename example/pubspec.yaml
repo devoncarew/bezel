@@ -1,0 +1,19 @@
+name: bezel_example
+description: Example Flutter desktop app demonstrating the bezel package.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.3.0
+  flutter: '>=3.19.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  bezel:
+    path: ..
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
