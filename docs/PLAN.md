@@ -103,7 +103,7 @@ Unit tests in `test/devices/device_database_test.dart` covering `forPlatform`,
 `findById` (found and not-found), that `defaultProfile` is in `all`, and that every profile
 in `all` has a non-null `cutout` (i.e. no profile accidentally omits the field).
 
-### Step 1.4 — PreviewController
+### Step 1.4 — PreviewController [done]
 
 Create `lib/src/preview_controller.dart`.
 
