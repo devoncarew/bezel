@@ -122,7 +122,7 @@ Create `lib/src/preview_controller.dart`.
 Unit tests in `test/preview_controller_test.dart` verifying notification firing on each
 mutation and correct derived values for both orientations.
 
-### Step 1.5 — PreviewFlutterView
+### Step 1.5 — PreviewFlutterView [done]
 
 Create `lib/src/binding/preview_flutter_view.dart`.
 
