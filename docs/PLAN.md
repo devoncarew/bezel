@@ -48,25 +48,9 @@ Created `lib/src/binding/preview_binding.dart` — a `WidgetsFlutterBinding` sub
 
 Created `lib/src/frame/device_frame_painter.dart` — a `CustomPainter` that renders a dark rounded-rect device body with style-specific bezels and decorations (speaker slit + home button for `classic`), then applies `canvas.clipPath` to subtract the cutout shape from the screen area so the child widget's pixels are physically absent in the camera housing region. Exposes `DeviceFramePainter.screenRectForSize(Size, DeviceProfile, DeviceOrientation)` for use by the layout widget in step 2.2.
 
-### Step 2.2 — DeviceFrameWidget
+### Step 2.2 — DeviceFrameWidget [done]
 
-Create `lib/src/frame/device_frame_widget.dart`.
-
-`class DeviceFrameWidget extends StatelessWidget` that:
-- Takes `DeviceProfile`, `DeviceOrientation`, and `Widget child`
-- Uses a `LayoutBuilder` to get the available size
-- Computes the screen rect via `DeviceFramePainter.screenRectForSize`
-- Uses a `Stack` with a `CustomPaint` (the frame) and a `Positioned` child constrained
-  to the screen rect
-- Clips the child to the screen rect using `ClipRect`
-
-Note: the cutout clip is applied by `DeviceFramePainter` directly to the canvas (via
-`canvas.clipPath`), so the `ClipRect` here only clips to the outer screen rect boundary.
-The two clips compose correctly — no additional cutout handling is needed in this widget.
-
-The widget does **not** do any metric spoofing — it is purely cosmetic framing.
-
-Widget test: verify the child is constrained to a rect with the correct aspect ratio.
+Created `lib/src/frame/device_frame_widget.dart` — a `StatelessWidget` that uses `LayoutBuilder` to fill available space, computes the screen rect via `DeviceFramePainter.screenRectForSize`, and positions the child in a `Stack` with a `CustomPaint` painter and a `Positioned`+`ClipRect` child. The canvas clip from the painter is inherited by the child (cutout exclusion), and the `ClipRect` bounds the outer screen rect. Purely cosmetic — no metric spoofing.
 
 ### Step 2.3 — PreviewOverlay
 
