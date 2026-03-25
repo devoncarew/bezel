@@ -163,7 +163,7 @@ the preview view just wraps the real one, it doesn't replace it.
 
 No unit tests needed at this layer — integration is tested via the binding step.
 
-### Step 1.7 — PreviewBinding
+### Step 1.7 — PreviewBinding [done]
 
 Create `lib/src/binding/preview_binding.dart`.
 

@@ -11,7 +11,8 @@
 /// ```
 library;
 
-// TODO: export src
+import 'src/preview_controller.dart';
+import 'src/preview_real.dart' if (dart.library.html) 'src/preview_stub.dart';
 
 /// Entry point for the bezel package.
 ///
@@ -22,14 +23,24 @@ abstract final class Bezel {
   /// Activates the bezel preview in debug mode.
   ///
   /// Safe to call in release/profile builds — the assert ensures the
-  /// implementation is unreachable and tree-shaken out.
+  /// implementation is unreachable and tree-shaken out entirely.
   static void ensureInitialized() {
     assert(() {
-      _debugEnsureInitialized();
+      debugEnsureInitialized();
       return true;
     }());
   }
-}
 
-// Stub implementation until Step 1.7 wires up the real binding.
-void _debugEnsureInitialized() {}
+  /// The active [PreviewController] for the current session.
+  ///
+  /// Returns `null` in release/profile builds or before [ensureInitialized]
+  /// has been called.
+  static PreviewController? get controller {
+    PreviewController? result;
+    assert(() {
+      result = debugController;
+      return true;
+    }());
+    return result;
+  }
+}
