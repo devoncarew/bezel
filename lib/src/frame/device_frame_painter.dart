@@ -11,12 +11,12 @@ const _kModernBezel = 8.0;
 const _kClassicTopBezel = 18.0;
 const _kClassicBottomBezel = 42.0;
 
-// Colours.
+// Colors.
 const _kBodyColor = Color(0xFF1C1C1E);
 const _kScreenColor = Color(0xFF000000);
 const _kDecorationColor = Color(0xFF3A3A3C);
 
-/// Paints a simplified but recognisable device frame onto a [CustomPaint]
+/// Paints a simplified but recognizable device frame onto a [CustomPaint]
 /// canvas.
 ///
 /// The painter fills the entire painter bounds. The inner screen area —
