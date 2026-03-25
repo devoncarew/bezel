@@ -6,7 +6,7 @@ import 'package:bezel/src/devices/device_profile.dart';
 import 'package:bezel/src/preview_controller.dart';
 
 void main() {
-  // Initialise the test binding so we have a real FlutterView to use as _real.
+  // Initialize the test binding so we have a real FlutterView to use as _real.
   final binding = TestWidgetsFlutterBinding.ensureInitialized();
 
   late PreviewController controller;
