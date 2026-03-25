@@ -202,7 +202,7 @@ Verify manually that the `example` app launches on desktop with no errors.
 
 ## Phase 2 — Visual Layer
 
-### Step 2.1 — DeviceFramePainter (portrait, simplified shapes)
+### Step 2.1 — DeviceFramePainter (portrait, simplified shapes) [done]
 
 Create `lib/src/frame/frame_style.dart` (re-export of the enum, already defined in
 `device_profile.dart` — move it here and re-export from `device_profile.dart` if cleaner).

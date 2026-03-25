@@ -33,9 +33,8 @@ final class NotchCutout extends ScreenCutout {
   const NotchCutout({required this.size, this.topOffset = 0});
 
   @override
-  ScreenCutout rotatedForLandscape(Size portraitScreenSize) => _SideCutout(
+  ScreenCutout rotatedForLandscape(Size portraitScreenSize) => SideCutout(
     size: Size(size.height, size.width),
-    edge: _CutoutEdge.left,
     centerOffset: portraitScreenSize.height / 2,
     edgeOffset: topOffset,
   );
@@ -52,9 +51,8 @@ final class DynamicIslandCutout extends ScreenCutout {
   const DynamicIslandCutout({required this.size, required this.topOffset});
 
   @override
-  ScreenCutout rotatedForLandscape(Size portraitScreenSize) => _SideCutout(
+  ScreenCutout rotatedForLandscape(Size portraitScreenSize) => SideCutout(
     size: Size(size.height, size.width),
-    edge: _CutoutEdge.left,
     centerOffset: portraitScreenSize.height / 2,
     edgeOffset: topOffset,
   );
@@ -84,33 +82,34 @@ final class PunchHoleCutout extends ScreenCutout {
     // When null, the hole is centered on the portrait width, which becomes the
     // landscape height's center after rotation.
     final cx = centerX ?? portraitScreenSize.width / 2;
-    return _SideCutout(
+    return SideCutout(
       size: Size(diameter, diameter),
-      edge: _CutoutEdge.left,
       centerOffset: cx,
       edgeOffset: topOffset,
     );
   }
 }
 
-/// A cutout on the left or right edge, produced by landscape rotation.
-final class _SideCutout extends ScreenCutout {
+/// A cutout on the left edge, produced by landscape rotation of a portrait
+/// cutout via [ScreenCutout.rotatedForLandscape].
+///
+/// Not typically instantiated directly — use [ScreenCutout.rotatedForLandscape]
+/// to obtain one.
+final class SideCutout extends ScreenCutout {
+  /// Width and height of the cutout bounding box, in logical pixels.
   final Size size;
-  final _CutoutEdge edge;
 
-  /// Distance from the center of the adjacent edge (e.g. vertical midpoint for
-  /// a left-edge cutout).
+  /// Distance from the vertical midpoint of the left edge to the center of
+  /// the cutout, in logical pixels.
   final double centerOffset;
 
-  /// Distance from the near edge of the device.
+  /// Distance from the left edge of the screen area to the near side of the
+  /// cutout, in logical pixels.
   final double edgeOffset;
 
-  const _SideCutout({
+  const SideCutout({
     required this.size,
-    required this.edge,
     required this.centerOffset,
     this.edgeOffset = 0,
   });
 }
-
-enum _CutoutEdge { left }
