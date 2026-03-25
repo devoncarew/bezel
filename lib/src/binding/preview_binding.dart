@@ -1,6 +1,7 @@
-import 'package:flutter/widgets.dart' show WidgetsFlutterBinding;
+import 'package:flutter/widgets.dart' show Widget, WidgetsFlutterBinding;
 
 import '../preview_controller.dart';
+import '../ui/preview_overlay.dart';
 import 'preview_platform_dispatcher.dart';
 
 /// A custom binding that installs [PreviewPlatformDispatcher], causing the
@@ -32,6 +33,15 @@ class PreviewBinding extends WidgetsFlutterBinding {
       'PreviewBinding.ensureInitialized() must be called before accessing controller.',
     );
     return _instance!._controller;
+  }
+
+  /// Wraps the app's root widget with [PreviewOverlay] so the device frame
+  /// and preview UI are injected automatically when [runApp] is called.
+  @override
+  void attachRootWidget(Widget rootWidget) {
+    super.attachRootWidget(
+      PreviewOverlay(controller: _controller, child: rootWidget),
+    );
   }
 
   /// Initialises the preview binding.

@@ -52,27 +52,9 @@ Created `lib/src/frame/device_frame_painter.dart` — a `CustomPainter` that ren
 
 Created `lib/src/frame/device_frame_widget.dart` — a `StatelessWidget` that uses `LayoutBuilder` to fill available space, computes the screen rect via `DeviceFramePainter.screenRectForSize`, and positions the child in a `Stack` with a `CustomPaint` painter and a `Positioned`+`ClipRect` child. The canvas clip from the painter is inherited by the child (cutout exclusion), and the `ClipRect` bounds the outer screen rect. Purely cosmetic — no metric spoofing.
 
-### Step 2.3 — PreviewOverlay
+### Step 2.3 — PreviewOverlay [done]
 
-Create `lib/src/ui/preview_overlay.dart`.
-
-`class PreviewOverlay extends StatelessWidget` that wraps the app in the preview UI:
-- Takes `Widget child` and `PreviewController controller`
-- Uses `ListenableBuilder` to react to controller changes
-- Computes a scale factor: if the emulated logical size fits within 90% of the window,
-  scale is 1.0; otherwise scale is `min(availableWidth / emulatedWidth, availableHeight /
-  emulatedHeight) * 0.9`
-- Centers `DeviceFrameWidget` (scaled via `Transform.scale`) within the available space
-- The toolbar is overlaid via a `Stack` (implemented as a placeholder `SizedBox` for now —
-  toolbar comes in Step 2.5)
-
-At this point the app should display inside a device frame. Wire it up in the `example`
-app by having `PreviewBinding` install the overlay automatically via a
-`WidgetsBinding.addPostFrameCallback` that wraps the root widget.
-
-Consider the mechanism carefully: rather than wrapping `runApp`'s widget, install the
-overlay as a sibling via `OverlayEntry` on the root `Navigator`, or — simpler — have
-`PreviewBinding` override `attachRootWidget` to inject the overlay at the root.
+Created `lib/src/ui/preview_overlay.dart` — a `StatelessWidget` that wraps the app in the preview UI using `ListenableBuilder` (controller changes) and `LayoutBuilder` (window resize), scaling the `DeviceFrameWidget` via `Transform.scale` so it fits within 90% of available space, with a dark `ColoredBox` background and a `Stack` placeholder for the toolbar. Wired into `PreviewBinding.attachRootWidget` to inject the overlay automatically at the root when `runApp` is called.
 
 ### Step 2.4 — Window auto-sizing and reactive DPR
 
