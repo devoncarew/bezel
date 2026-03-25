@@ -16,3 +16,6 @@ pubspec.lock
 
 # Test artifacts
 coverage/
+
+# claude
+.claude/settings.local.json

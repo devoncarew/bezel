@@ -1,0 +1,19 @@
+name: bezel
+description: >-
+  A Flutter debug-mode tool for previewing your app against popular mobile
+  device profiles while running on desktop.
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.0
+  flutter: '>=3.38.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  window_manager: ^0.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
