@@ -164,8 +164,9 @@ Before adding any new dependency, check if the stdlib or Flutter SDK can cover i
 
 ## Build and Run
 
-This package is used as a dev dependency or direct source dependency in a Flutter app.
-There is no standalone runnable target. To test changes, use the `example/` app:
+This package is used as a dev dependency or direct source dependency in a
+Flutter app. There is no standalone runnable target. To test changes, use the
+`example/` app:
 
 ```
 cd example
@@ -180,6 +181,10 @@ flutter test
 To check analysis:
 ```
 flutter analyze
+```
+
+To check formatting:
+```
 dart format --set-exit-if-changed .
 ```
 
