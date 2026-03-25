@@ -213,9 +213,8 @@ final class NotchCutout extends ScreenCutout {
   @override
   ScreenCutout rotatedForLandscape(Size portraitScreenSize) =>
       // Migrates to the left edge; width and height swap.
-      _SideCutout(
+      SideCutout(
         size: Size(size.height, size.width),
-        edge: _CutoutEdge.left,
         centerOffset: portraitScreenSize.height / 2,
       );
 }
@@ -229,9 +228,8 @@ final class DynamicIslandCutout extends ScreenCutout {
 
   @override
   ScreenCutout rotatedForLandscape(Size portraitScreenSize) =>
-      _SideCutout(
+      SideCutout(
         size: Size(size.height, size.width),
-        edge: _CutoutEdge.left,
         centerOffset: portraitScreenSize.height / 2,
       );
 }
@@ -253,31 +251,27 @@ final class PunchHoleCutout extends ScreenCutout {
   @override
   ScreenCutout rotatedForLandscape(Size portraitScreenSize) {
     final cx = centerX ?? portraitScreenSize.width / 2;
-    return _SideCutout(
+    return SideCutout(
       size: Size(diameter, diameter),
-      edge: _CutoutEdge.left,
       centerOffset: cx,
       edgeOffset: topOffset,
     );
   }
 }
 
-/// Internal: a cutout on the left or right edge, produced by landscape rotation.
-final class _SideCutout extends ScreenCutout {
+/// A cutout on the left edge, produced by landscape rotation.
+/// Not typically instantiated directly — use rotatedForLandscape().
+final class SideCutout extends ScreenCutout {
   final Size size;
-  final _CutoutEdge edge;
   final double centerOffset;
   final double edgeOffset;
 
-  const _SideCutout({
+  const SideCutout({
     required this.size,
-    required this.edge,
     required this.centerOffset,
     this.edgeOffset = 0,
   });
 }
-
-enum _CutoutEdge { left, right }
 ```
 
 The `DeviceFramePainter` uses the cutout geometry in two ways:

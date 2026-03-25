@@ -12,191 +12,33 @@ A step is **done** when: the described files exist, `flutter analyze` is clean,
 
 ### Step 1.1 — Package scaffold [done]
 
-Create the package directory structure and `pubspec.yaml`.
-
-- `pubspec.yaml` with name `bezel`, sdk constraint `^3.3.0`, dependency on
-  `window_manager: ^0.4.0`, and `flutter_test` as a dev dependency
-- `lib/bezel.dart` — empty barrel file with a single `// TODO: export src`
-  comment
-- `lib/src/` directory with a `.gitkeep` placeholder
-- `analysis_options.yaml` — enable `flutter` lints, add `avoid_print`,
-  `prefer_const_constructors`, `prefer_final_fields`
-- `example/` — a minimal Flutter desktop app (`example/lib/main.dart`) that imports
-  `bezel` and calls `Bezel.ensureInitialized()` before `runApp`.
-  The app body can be a simple `MaterialApp` with a `Scaffold` and a centered `Text`.
-- `example/pubspec.yaml` with a path dependency on `..`
+Created `pubspec.yaml` (`sdk: ^3.10.0`, `window_manager: ^0.5.1`), `analysis_options.yaml` with Flutter lints, the `lib/src/` directory skeleton, and a stub `lib/bezel.dart` barrel file. Added an `example/` Flutter desktop app that calls `Bezel.ensureInitialized()` before `runApp`.
 
 ### Step 1.2 — DeviceProfile model and ScreenCutout [done]
 
-Create `lib/src/devices/screen_cutout.dart`.
-
-Implement the `ScreenCutout` sealed class hierarchy exactly as specified in DESIGN.md:
-- `sealed class ScreenCutout` with abstract `rotatedForLandscape(Size portraitScreenSize)`
-- `final class NoCutout extends ScreenCutout`
-- `final class NotchCutout extends ScreenCutout` — `size`, `topOffset`
-- `final class DynamicIslandCutout extends ScreenCutout` — `size`, `topOffset`
-- `final class PunchHoleCutout extends ScreenCutout` — `diameter`, `topOffset`,
-  optional `centerX` (null means horizontally centered)
-- `final class _SideCutout extends ScreenCutout` (private) — produced by landscape
-  rotation of the above types; fields: `size`, `edge` (`_CutoutEdge` enum), `centerOffset`,
-  `edgeOffset`
-
-The `rotatedForLandscape` implementations on each type should produce a `_SideCutout`
-representing the cutout migrated to the left edge of the screen. The default implementation
-on `ScreenCutout` returns `this` (correct for `NoCutout` and `_SideCutout`).
-
-All constructors should be `const`. All fields `final`.
-
-Create `lib/src/devices/device_profile.dart`.
-
-- `enum DevicePlatform { iOS, android }`
-- `enum DeviceFrameStyle { notch, dynamicIsland, punchHole, classic }`
-- `enum DeviceOrientation { portrait, landscape }`
-- `class DeviceProfile` with fields: `id`, `name`, `platform`, `logicalSize` (portrait),
-  `devicePixelRatio`, `safeAreaPortrait`, `safeAreaLandscape`, `frameStyle`, `cutout`
-  — all `final`, constructor `const`
-- A `logicalSizeForOrientation(DeviceOrientation)` method that returns the `Size` with
-  width and height swapped for landscape
-- A `safeAreaForOrientation(DeviceOrientation)` method
-- A `cutoutForOrientation(DeviceOrientation)` method — returns `cutout` for portrait,
-  `cutout.rotatedForLandscape(logicalSize)` for landscape
-
-Unit tests in `test/devices/device_profile_test.dart`:
-- Orientation size swap
-- Safe area selection for each orientation
-- `cutoutForOrientation` returns `NoCutout` unchanged, and correctly rotates a
-  `PunchHoleCutout` and `DynamicIslandCutout` for landscape
-- `rotatedForLandscape` on a `PunchHoleCutout` with no `centerX` computes the landscape
-  `centerOffset` as `portraitScreenSize.width / 2`
+Created `lib/src/devices/screen_cutout.dart` with a sealed `ScreenCutout` hierarchy (`NoCutout`, `NotchCutout`, `DynamicIslandCutout`, `PunchHoleCutout`, `SideCutout`) where each type implements `rotatedForLandscape` to produce a left-edge `SideCutout`. Created `lib/src/devices/device_profile.dart` with `DeviceProfile` (const, all-final fields) and the `DevicePlatform`, `DeviceFrameStyle`, and `DeviceOrientation` enums, plus orientation-aware helpers for size, safe area, and cutout.
 
 ### Step 1.3 — Device database [done]
 
-Create `lib/src/devices/device_database.dart`.
-
-Populate a `const List<DeviceProfile> kDeviceProfiles` with the following devices. Look up
-current accurate values for logical size, DPR, safe areas, and cutout geometry for each.
-Cutout dimensions should be in logical pixels, sourced from manufacturer specs.
-
-- iPhone SE (3rd gen) — `frameStyle: classic`, `cutout: NoCutout()`
-- iPhone 15 — `frameStyle: dynamicIsland`,
-  `cutout: DynamicIslandCutout(size: Size(37, 12), topOffset: 14)`
-- iPhone 15 Pro — `frameStyle: dynamicIsland`, same cutout as iPhone 15
-- iPhone 15 Pro Max — `frameStyle: dynamicIsland`, same cutout scaled for larger screen
-- iPad (10th gen) — `frameStyle: classic`, `cutout: NoCutout()`
-- iPad mini (6th gen) — `frameStyle: classic`, `cutout: NoCutout()`
-- Samsung Galaxy S24 — `frameStyle: punchHole`,
-  `cutout: PunchHoleCutout(diameter: 10, topOffset: 12)` (centered)
-- Google Pixel 8 — `frameStyle: punchHole`,
-  `cutout: PunchHoleCutout(diameter: 11, topOffset: 13)` (centered)
-- Google Pixel 8 Pro — `frameStyle: punchHole`, same cutout as Pixel 8
-
-Verify the logical-pixel values above against current specs before committing; treat them
-as approximate starting points, not authoritative values.
-
-Add a `DeviceDatabase` class with:
-- `static List<DeviceProfile> all` — returns `kDeviceProfiles`
-- `static List<DeviceProfile> forPlatform(DevicePlatform)` — filtered list
-- `static DeviceProfile? findById(String id)`
-- `static DeviceProfile get defaultProfile` — returns iPhone 15
-
-Unit tests in `test/devices/device_database_test.dart` covering `forPlatform`,
-`findById` (found and not-found), that `defaultProfile` is in `all`, and that every profile
-in `all` has a non-null `cutout` (i.e. no profile accidentally omits the field).
+Created `lib/src/devices/device_database.dart` with 10 device profiles (iPhone SE 3rd gen, iPhone 15/15 Pro/15 Pro Max, iPad 10th gen, iPad mini 6th gen, Samsung Galaxy S24, Pixel 7a/8/8 Pro) with accurate logical-pixel sizes, DPRs, safe areas, and cutout geometry sourced from manufacturer specs. Added a `DeviceDatabase` class with `all`, `forPlatform`, `findById`, and `defaultProfile` (iPhone 15).
 
 ### Step 1.4 — PreviewController [done]
 
-Create `lib/src/preview_controller.dart`.
-
-`class PreviewController extends ChangeNotifier` with:
-- `DeviceProfile activeProfile` — starts as `DeviceDatabase.defaultProfile`
-- `DeviceOrientation orientation` — starts as `portrait`
-- `bool toolbarVisible` — starts as `true`
-- `void setProfile(DeviceProfile profile)` — sets profile, notifies
-- `void toggleOrientation()` — flips orientation, notifies
-- `void toggleToolbar()` — flips visibility, notifies
-- `Size get emulatedLogicalSize` — delegates to
-  `activeProfile.logicalSizeForOrientation(orientation)`
-- `EdgeInsets get emulatedSafeArea` — delegates to
-  `activeProfile.safeAreaForOrientation(orientation)`
-
-Unit tests in `test/preview_controller_test.dart` verifying notification firing on each
-mutation and correct derived values for both orientations.
+Created `lib/src/preview_controller.dart` — a `ChangeNotifier` that tracks `activeProfile`, `orientation`, and `toolbarVisible`, fires notifications on each mutation, and exposes `emulatedLogicalSize` and `emulatedSafeArea` as derived values.
 
 ### Step 1.5 — PreviewFlutterView [done]
 
-Create `lib/src/binding/preview_flutter_view.dart`.
+Created `lib/src/binding/preview_flutter_view.dart` — a `ui.FlutterView` implementation that overrides `devicePixelRatio`, `physicalSize`, `padding`, `viewPadding`, and `viewInsets` with values derived from the active `DeviceProfile`, delegating all other members to the real view. Includes a private `_EdgeInsetsViewPadding` helper to adapt `EdgeInsets` to the `ui.ViewPadding` interface.
 
-`class PreviewFlutterView implements ui.FlutterView` that:
-- Takes a `ui.FlutterView _real` and a `PreviewController _controller` in its constructor
-- Overrides `devicePixelRatio` → `_controller.activeProfile.devicePixelRatio`
-- Overrides `physicalSize` →
-  `_controller.emulatedLogicalSize * _controller.activeProfile.devicePixelRatio`
-- Overrides `padding` → derive a `ui.ViewPadding` from `_controller.emulatedSafeArea`
-  (implement a private helper `_EdgeInsetsViewPadding implements ui.ViewPadding`)
-- Overrides `viewPadding` → same as `padding`
-- Overrides `viewInsets` → `ui.ViewPadding.zero`
-- Delegates every other member to `_real`
-
-Note: `ui.ViewPadding` is an abstract interface. Create `_EdgeInsetsViewPadding` as a
-private implementation class that wraps an `EdgeInsets`.
-
-Unit tests in `test/binding/preview_flutter_view_test.dart`:
-- Verify `physicalSize` equals `logicalSize * dpr` for a known profile
-- Verify `devicePixelRatio` returns the profile's value
-- Verify `padding.top` returns the profile's safe area top
+> **Note:** The current implementation computes `physicalSize = emulatedLogicalSize × profile.devicePixelRatio` — a deliberate simplification. DESIGN.md specifies a more accurate reactive model: `physicalSize` should stay as the real window's physical size and `devicePixelRatio` should be derived from it dynamically via an `onMetricsChanged` listener. Step 2.4 corrects this.
 
 ### Step 1.6 — PreviewPlatformDispatcher [done]
 
-Create `lib/src/binding/preview_platform_dispatcher.dart`.
-
-`class PreviewPlatformDispatcher implements ui.PlatformDispatcher` that:
-- Takes `ui.PlatformDispatcher _real` and `PreviewController _controller`
-- Maintains a `late PreviewFlutterView _previewView` initialized lazily from
-  `_real.views.first`
-- Overrides `views` to return `[_previewView]`
-- Overrides `implicitView` to return `_previewView`
-- Delegates all other members to `_real`
-
-Important: `ui.PlatformDispatcher` has many members (callbacks, onXxx handlers, etc.).
-Every one must be delegated. Use the real dispatcher's implementation for all callbacks —
-the preview view just wraps the real one, it doesn't replace it.
-
-No unit tests needed at this layer — integration is tested via the binding step.
+Created `lib/src/binding/preview_platform_dispatcher.dart` — a full `ui.PlatformDispatcher` implementation (~40 delegated members) that overrides `views` and `implicitView` to return a `PreviewFlutterView` wrapping the real view, while delegating all callbacks and other members to the real dispatcher.
 
 ### Step 1.7 — PreviewBinding [done]
 
-Create `lib/src/binding/preview_binding.dart`.
-
-`class PreviewBinding extends WidgetsFlutterBinding` that:
-- Overrides `createPlatformDispatcher()` to return a `PreviewPlatformDispatcher` wrapping
-  `super.createPlatformDispatcher()` and the shared `PreviewController`
-- Exposes a static `PreviewController get controller`
-- Provides `static PreviewBinding ensureInitialized()` following the standard Flutter
-  binding initialization pattern
-
-Create `lib/src/bezel.dart` with the real implementation:
-
-```dart
-void debugEnsureInitialized() => PreviewBinding.ensureInitialized();
-```
-
-Create `lib/src/bezel.dart` with a no-op stub:
-
-```dart
-void debugEnsureInitialized() {}
-```
-
-Update `lib/bezel.dart` to export a `Bezel` class with:
-```dart
-static void ensureInitialized() {
-  assert(() { debugEnsureInitialized(); return true; }());
-}
-static PreviewController? get controller => ...
-```
-
-Using a conditional export for the impl vs stub based on `dart.library.html`.
-
-Verify manually that the `example` app launches on desktop with no errors.
+Created `lib/src/binding/preview_binding.dart` — a `WidgetsFlutterBinding` subclass that overrides `platformDispatcher` to install `PreviewPlatformDispatcher` and exposes a static `ensureInitialized()` / `controller` API. Updated `lib/bezel.dart` to expose a `Bezel` class with `ensureInitialized()` and `controller` guarded by `assert`, using a conditional import to swap in a no-op web stub so all preview code is tree-shaken in release builds.
 
 ---
 
@@ -204,45 +46,7 @@ Verify manually that the `example` app launches on desktop with no errors.
 
 ### Step 2.1 — DeviceFramePainter (portrait, simplified shapes) [done]
 
-Create `lib/src/frame/frame_style.dart` (re-export of the enum, already defined in
-`device_profile.dart` — move it here and re-export from `device_profile.dart` if cleaner).
-
-Create `lib/src/frame/device_frame_painter.dart`.
-
-`class DeviceFramePainter extends CustomPainter` that accepts a `DeviceProfile` and
-`DeviceOrientation` and paints a simplified but recognizable device frame:
-
-- **All styles**: a rounded-rect outer body in a neutral dark color, a lighter inner screen
-  rect (the "hole" the app renders into), thin bezels
-- **`classic`**: home button indicator at the bottom (small rounded rect), top speaker slit
-- **`dynamicIsland`**: pill-shaped cutout centered at the top of the screen area
-- **`punchHole`**: small circle cutout top-center of the screen area
-- **`notch`**: classic notch shape at the top
-
-**Cutout rendering** — for each non-`NoCutout` profile, the painter must:
-1. Call `profile.cutoutForOrientation(orientation)` to get the correctly rotated
-   `ScreenCutout` value
-2. Build a `Path` for the cutout shape (rounded rect for Dynamic Island / notch, circle
-   for punch-hole, using the cutout's logical-pixel geometry offset by `screenRect.topLeft`)
-3. Use `canvas.clipPath` to subtract the cutout from the drawable screen area before
-   painting the app content region — this ensures the app's background and any content
-   bleeding under the status bar is genuinely occluded by the cutout, not just overlaid
-4. Paint the cutout outline in the frame's bezel color on top, giving it the appearance
-   of a physical camera housing
-
-The clip path approach (step 3) is important: it means the widget child rendered inside the
-screen area will have its pixels physically absent in the cutout region, which is how a
-real device behaves and is what reveals layout issues that a simple overlay would hide.
-
-The painter should expose a static `Rect screenRectForSize(Size painterSize, DeviceProfile,
-DeviceOrientation)` method that returns the exact `Rect` within which the app content should
-render. This is used by the layout widget to position the app.
-
-Widget test in `test/frame/device_frame_painter_test.dart`: render each frame style in a
-`CustomPaint` widget and verify that `screenRectForSize` returns a rect contained within
-the painter bounds and has correct aspect ratio for the profile. Also verify that profiles
-with `NoCutout` do not apply a clip path (inspect the canvas calls or simply ensure no
-exception is thrown for all four frame styles).
+Created `lib/src/frame/device_frame_painter.dart` — a `CustomPainter` that renders a dark rounded-rect device body with style-specific bezels and decorations (speaker slit + home button for `classic`), then applies `canvas.clipPath` to subtract the cutout shape from the screen area so the child widget's pixels are physically absent in the camera housing region. Exposes `DeviceFramePainter.screenRectForSize(Size, DeviceProfile, DeviceOrientation)` for use by the layout widget in step 2.2.
 
 ### Step 2.2 — DeviceFrameWidget
 
@@ -286,9 +90,19 @@ Consider the mechanism carefully: rather than wrapping `runApp`'s widget, instal
 overlay as a sibling via `OverlayEntry` on the root `Navigator`, or — simpler — have
 `PreviewBinding` override `attachRootWidget` to inject the overlay at the root.
 
-### Step 2.4 — Window auto-sizing
+### Step 2.4 — Window auto-sizing and reactive DPR
 
-Create `lib/src/window/window_sizing_service.dart`.
+**Update `PreviewFlutterView`** to implement the reactive DPR model from DESIGN.md:
+
+- Remove the `physicalSize` override — delegate to `_real.physicalSize` so the reported
+  physical size matches the actual render surface.
+- Subscribe to `_real.onMetricsChanged` and notify `PreviewController` listeners so the
+  framework re-lays out when the window is resized.
+- Compute `devicePixelRatio` reactively: `_real.physicalSize.width / emulatedLogicalWidth`.
+  This keeps DPR in sync with whatever the window size actually is at any moment, including
+  both programmatic resizes and manual user drags.
+
+**Create `lib/src/window/window_sizing_service.dart`.**
 
 `class WindowSizingService` that:
 - Has a `void applyProfile(DeviceProfile profile, DeviceOrientation orientation)` method
@@ -297,14 +111,14 @@ Create `lib/src/window/window_sizing_service.dart`.
 - Queries the available screen size via `window_manager`'s `getScreenList()` /
   `getCurrentScreen()`
 - If the target size fits within 90% of the screen, calls
-  `windowManager.setSize(targetSize)`
+  `windowManager.setSize(targetSize)` (takes logical pixels)
 - If not, clamps to 90% of screen (the overlay scale factor handles the rest)
 - Sets minimum window size to prevent nonsensical shrinking
 
 Wire `WindowSizingService` into `PreviewController`: when `setProfile` or
 `toggleOrientation` is called, call `windowSizingService.applyProfile(...)`.
 
-Initialize `window_manager` properly in `PreviewBinding.ensureInitialized()` with
+Initialize `window_manager` in `PreviewBinding.ensureInitialized()` with
 `windowManager.ensureInitialized()`.
 
 ### Step 2.5 — Preview toolbar
@@ -318,6 +132,10 @@ Renders a floating pill-shaped container with:
 - Orientation toggle `IconButton` (portrait/landscape icon)
 - Reassemble `IconButton` (refresh icon) — calls
   `WidgetsBinding.instance.reassembleApplication()`
+- Pass-through toggle `IconButton` — hides the device frame and shows the raw app at its
+  natural window size, letting developers momentarily inspect the unframed layout; toggling
+  again re-activates the preview. State lives in `PreviewController` (add a `passthroughMode`
+  bool, similar to `toolbarVisible`).
 - Uses `Material` + `InkWell` for press feedback
 - Styled with a semi-transparent dark background, white icons/text, pill border radius
 
