@@ -69,7 +69,7 @@ Unit tests in `test/devices/device_profile_test.dart`:
 - `rotatedForLandscape` on a `PunchHoleCutout` with no `centerX` computes the landscape
   `centerOffset` as `portraitScreenSize.width / 2`
 
-### Step 1.3 — Device database
+### Step 1.3 — Device database [done]
 
 Create `lib/src/devices/device_database.dart`.
 
