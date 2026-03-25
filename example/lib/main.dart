@@ -1,8 +1,12 @@
 import 'package:bezel/bezel.dart';
+// ignore: implementation_imports
+import 'package:bezel/src/devices/device_database.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   Bezel.ensureInitialized();
+
+  Bezel.controller?.setProfile(DeviceDatabase.findById('pixel_7a')!);
 
   runApp(const BezelExampleApp());
 }

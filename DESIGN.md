@@ -49,8 +49,9 @@ A custom `WidgetsFlutterBinding` subclass (`PreviewBinding`) overrides `platform
 with a `PreviewPlatformDispatcher`. This dispatcher wraps the real one and, when a
 `DeviceProfile` is active, substitutes a `PreviewFlutterView` that reports:
 
-- `physicalSize` — derived from the profile's logical size × its `devicePixelRatio`
-- `devicePixelRatio` — the profile's DPR
+- `physicalSize` — the real window's physical pixel dimensions (not spoofed)
+- `devicePixelRatio` — derived from the window's physical size and the emulated logical size
+  (see DPR section below)
 - `padding` / `viewPadding` / `viewInsets` — the profile's safe area insets
 - Everything else delegated to the real view
 
@@ -58,34 +59,88 @@ This means `_MediaQueryFromView` (Flutter's internal widget that populates `Medi
 the view) automatically derives correct `MediaQueryData` without any widget injection. Code
 that bypasses MediaQuery and reads `View.of(context)` directly also sees consistent values.
 
-### DPR Scale Compensation
+### Device Pixel Ratio and Window Sizing
 
-There is an unavoidable mismatch: the host display has a physical DPR (typically 1.0–2.0 on
-desktop) while the emulated device may have DPR 3.0+. We cannot make the GPU rasterize at a
-higher DPR than the physical display, but we can give honest logical pixel sizes.
+`physicalSize`, `logicalSize`, and `devicePixelRatio` are not three independent values —
+they are bound by the identity:
 
-Strategy:
-1. The `PreviewFlutterView` reports the emulated `devicePixelRatio`.
-2. The physical rendering surface is the host window. We size the window so that the
-   *logical* dimensions of the emulated device fit comfortably.
-3. A `Transform.scale` is applied to the device frame widget to compensate for any
-   letterboxing when the emulated logical size exceeds the available window space.
-4. Developers should read the preview as representative of *layout* fidelity. Fine-grained
-   pixel rendering (e.g. 1px borders that look hairline on a Retina display) will look
-   slightly different from reality — this is documented and accepted.
+```
+physicalSize = logicalSize × devicePixelRatio
+```
+
+`physicalSize` is fixed by the actual OS window; it is the real render surface and cannot
+be freely spoofed without causing rendering artifacts. This means **DPR is a derived value,
+not a design choice**: given a window of known physical dimensions and a target emulated
+logical size, DPR follows automatically.
+
+```dart
+// After the window resize settles:
+final hostDpr = realView.devicePixelRatio;          // e.g. 2.0 on Retina
+final windowLogicalWidth = windowSize.width;         // logical px passed to setSize()
+final physicalWidth = windowLogicalWidth * hostDpr;  // actual physical pixels
+final reportedDpr = physicalWidth / emulatedLogicalWidth;
+```
+
+Note that `window_manager`'s `setSize()` takes **logical pixels** (OS window coordinates),
+not physical pixels, so the host DPR must be factored in when computing the reported DPR.
+
+`PreviewFlutterView` listens to `realView.onMetricsChanged` and recomputes `devicePixelRatio`
+on every event, keeping it in sync with whatever the window actually is at any moment — both
+after programmatic resizes and after manual user resizes.
+
+**What DPR affects in practice:**
+
+The goal of emulating logical pixel dimensions is what matters most for catching layout
+issues. DPR has minimal impact on layout:
+
+- Widget sizing, constraints, flex/scroll layout, `MediaQuery.size` — all logical,
+  completely DPR-independent.
+- Image asset resolution selection — at a typical desktop DPR of 2.0 the preview loads
+  2× assets even when the real device would load 3×. The visual difference is negligible
+  and is not a layout concern.
+- `MediaQuery.devicePixelRatio` — apps that branch on this value (uncommon) will see the
+  derived value rather than the device's nominal DPR. This is an accepted limitation.
+- Custom `Canvas` painting in physical pixels — hairline strokes and pixel-snapped geometry
+  will reflect the host display's DPR. Not a layout issue.
 
 ### Window Sizing
 
-When the user selects a device or toggles orientation:
+When the user selects a device or toggles orientation, the window is resized to give the
+app a logical canvas that matches the emulated device's logical dimensions:
 
-1. Compute the desired window size: emulated logical size + frame chrome + toolbar height,
-   scaled by a target fill factor (default 90% of available screen).
-2. If the desired size fits, resize the window to match.
+1. Compute the target window size: emulated logical size + frame chrome padding + toolbar
+   height.
+2. If the target fits within 90% of the available screen, call
+   `windowManager.setSize(targetSize)` (logical pixels).
 3. If it doesn't fit (e.g. large tablet on a small laptop), clamp to 90% of the screen and
-   apply `Transform.scale` to fit the device frame within the window.
+   apply `Transform.scale` to fit the device frame within the window. The app still receives
+   the emulated logical dimensions; only the visual frame is scaled down.
 4. Per-device window sizes chosen by the user are remembered for the session.
 
-Window resizing uses the `window_manager` package (`setSize`, `setMinimumSize`).
+**Reactive data flow — the same path for both programmatic and manual resizes:**
+
+```
+[device selected or orientation toggled]
+        ↓
+compute target window size (emulated logical size + chrome)
+        ↓
+windowManager.setSize(targetLogicalSize)
+        ↓                                     ← also fires on manual resize
+[onMetricsChanged on real FlutterView]
+        ↓
+PreviewFlutterView recomputes:
+  physicalSize  = realView.physicalSize       (actual render surface, unchanged)
+  devicePixelRatio = physicalSize.width / emulatedLogicalWidth
+        ↓
+Flutter re-lays out app at emulatedLogicalSize with updated DPR
+```
+
+**Manual resize behavior:** when the user drags the window to a different size, the emulated
+logical dimensions remain fixed and the device frame letterboxes within the available space.
+The app layout stays stable; only the DPR floats up or down with the window size. Enlarging
+the window gives a higher effective DPR (more "zoom" for inspecting details); shrinking it
+gives a lower one. The preview does **not** reflow the app into the new window dimensions —
+that would break the "I'm emulating this specific device" premise.
 
 ### Device Profile Database
 
@@ -107,7 +162,8 @@ class DeviceProfile {
   final String name;
   final DevicePlatform platform;     // iOS or android
   final Size logicalSize;            // portrait logical pixels
-  final double devicePixelRatio;
+  final double devicePixelRatio;     // nominal device DPR (informational; not reported
+                                     // directly — see DPR section above)
   final EdgeInsets safeAreaPortrait;
   final EdgeInsets safeAreaLandscape;
   final DeviceFrameStyle frameStyle; // notch / dynamicIsland / punchHole / classic
@@ -247,6 +303,7 @@ elements.
 
 **Preview Toolbar** — a small floating pill widget anchored to the top-center of the window.
 Contains:
+
 - Device name + chevron → opens device picker popover
 - Orientation toggle icon button
 - Reassemble (hot reload) icon button
@@ -326,7 +383,7 @@ lib/
 ## Dependencies
 
 | Package | Purpose |
-|---|---|
+| --- | --- |
 | `window_manager` | Programmatic window resize / positioning |
 | `flutter_test` (dev) | Reference for TestFlutterView / TestPlatformDispatcher patterns |
 
@@ -346,3 +403,5 @@ The device frame painting is hand-rolled `CustomPainter`, not an image asset dep
 - Cutout dimensions (size, position) are approximate logical-pixel values sourced from
   manufacturer specifications; they may be off by a few points but are sufficient for
   catching layout surprises before on-device testing
+- `MediaQuery.devicePixelRatio` reflects the derived window DPR, not the device's nominal
+  DPR; apps that branch on this value may behave differently than on a real device
