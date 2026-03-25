@@ -17,5 +17,4 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: dart format --output=none --set-exit-if-changed .
-      # TODO: Re-enable when we have tests.
-      # - run: flutter test
+      - run: flutter test

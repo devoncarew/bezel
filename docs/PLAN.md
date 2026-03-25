@@ -10,7 +10,7 @@ A step is **done** when: the described files exist, `flutter analyze` is clean,
 
 ## Phase 1 — Foundation
 
-### Step 1.1 — Package scaffold
+### Step 1.1 — Package scaffold [done]
 
 Create the package directory structure and `pubspec.yaml`.
 
@@ -26,7 +26,7 @@ Create the package directory structure and `pubspec.yaml`.
   The app body can be a simple `MaterialApp` with a `Scaffold` and a centered `Text`.
 - `example/pubspec.yaml` with a path dependency on `..`
 
-### Step 1.2 — DeviceProfile model and ScreenCutout
+### Step 1.2 — DeviceProfile model and ScreenCutout [done]
 
 Create `lib/src/devices/screen_cutout.dart`.
 
