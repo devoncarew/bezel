@@ -118,7 +118,7 @@ class _MacosPreviewMenuState extends State<MacosPreviewMenu> {
                 onSelected: widget.controller.toggleOrientation,
               ),
               PlatformMenuItem(
-                label: 'Reassemble',
+                label: 'Reload',
                 shortcut: const SingleActivator(
                   LogicalKeyboardKey.keyR,
                   meta: true,
