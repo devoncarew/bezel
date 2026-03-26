@@ -58,6 +58,35 @@ void main() {
   });
 
   group('MacosPreviewMenu — macOS', () {
+    testWidgets('spurious controller notifications do not rebuild menus', (
+      tester,
+    ) async {
+      // Regression: rebuilding PlatformMenuBar on every controller notify
+      // (e.g. notifyMetricsChanged) calls setMenus while a menu is open,
+      // causing macOS to dismiss it. Only profile changes should rebuild.
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      try {
+        await _pump(tester, controller);
+
+        final menusBefore = tester
+            .widget<PlatformMenuBar>(find.byType(PlatformMenuBar))
+            .menus;
+
+        // A metrics-changed notify that does NOT change the active profile.
+        controller.notifyMetricsChanged();
+        await tester.pump();
+
+        final menusAfter = tester
+            .widget<PlatformMenuBar>(find.byType(PlatformMenuBar))
+            .menus;
+
+        // Same list object — no rebuild occurred.
+        expect(identical(menusBefore, menusAfter), isTrue);
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+      }
+    });
+
     testWidgets('wraps child in PlatformMenuBar on macOS', (tester) async {
       debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
       try {
