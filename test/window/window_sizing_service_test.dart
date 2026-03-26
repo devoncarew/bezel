@@ -21,38 +21,40 @@ class _SpySizingService implements WindowSizingService {
 
 void main() {
   group('WindowManagerSizingService.computeTargetSize', () {
-    test('adds frame padding and toolbar height to portrait emulated size', () {
-      final profile = DeviceDatabase.defaultProfile; // iPhone 15: 393×852
-      final size = WindowManagerSizingService.computeTargetSize(
-        profile,
-        DeviceOrientation.portrait,
-      );
-      expect(size.width, profile.logicalSize.width + 80 * 2);
-      expect(size.height, profile.logicalSize.height + 80 + 60);
-    });
+    test(
+      'portrait target width equals emulated width, height adds toolbar area',
+      () {
+        final profile = DeviceDatabase.defaultProfile; // iPhone 15: 393×852
+        final size = WindowManagerSizingService.computeTargetSize(
+          profile,
+          DeviceOrientation.portrait,
+        );
+        expect(size.width, profile.logicalSize.width);
+        expect(
+          size.height,
+          profile.logicalSize.height + 40,
+        ); // _kToolbarAreaHeight
+      },
+    );
 
-    test('uses landscape dimensions in landscape orientation', () {
+    test('landscape target uses swapped emulated dimensions', () {
       final profile = DeviceDatabase.defaultProfile;
-      final portrait = WindowManagerSizingService.computeTargetSize(
-        profile,
-        DeviceOrientation.portrait,
-      );
       final landscape = WindowManagerSizingService.computeTargetSize(
         profile,
         DeviceOrientation.landscape,
       );
-      // Width and height are swapped for landscape.
-      expect(landscape.width, portrait.height - 80 - 60 + 80 * 2);
-      expect(landscape.height, portrait.width - 80 * 2 + 80 + 60);
+      // Landscape swaps the emulated width/height.
+      expect(landscape.width, profile.logicalSize.height);
+      expect(landscape.height, profile.logicalSize.width + 40);
     });
 
-    test('target is wider than emulated device', () {
+    test('target height exceeds emulated height by toolbar area', () {
       final profile = DeviceDatabase.defaultProfile;
       final size = WindowManagerSizingService.computeTargetSize(
         profile,
         DeviceOrientation.portrait,
       );
-      expect(size.width, greaterThan(profile.logicalSize.width));
+      expect(size.width, equals(profile.logicalSize.width));
       expect(size.height, greaterThan(profile.logicalSize.height));
     });
   });

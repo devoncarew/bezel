@@ -180,7 +180,7 @@ shape and current button set.
 
 Update device picker positioning if needed. Update tests.
 
-### Step 4.4 — Update window sizing
+### Step 4.4 — Update window sizing [done]
 
 In `WindowManagerSizingService`:
 - Remove `_kFramePadding` (no bezels).

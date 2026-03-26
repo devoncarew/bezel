@@ -1,17 +1,14 @@
 import 'dart:ui' as ui;
 
-import 'package:flutter/widgets.dart' show WidgetsBinding;
+import 'package:flutter/widgets.dart' show Offset, WidgetsBinding;
 import 'package:window_manager/window_manager.dart';
 
 import '../devices/device_profile.dart';
 import 'window_sizing_service.dart';
 
-/// Extra horizontal padding added around the emulated logical size to
-/// accommodate the device frame chrome on each side.
-const double _kFramePadding = 80.0;
-
-/// Extra vertical padding at the top for the floating toolbar (step 2.5).
-const double _kToolbarHeight = 60.0;
+/// Height reserved at the bottom of the window for the floating toolbar,
+/// including its bottom margin.
+const double _kToolbarAreaHeight = 40.0;
 
 /// Minimum window dimensions — prevents the window from shrinking to a
 /// non-interactive size when a very small device profile is selected.
@@ -45,10 +42,24 @@ class WindowManagerSizingService implements WindowSizingService {
 
     await windowManager.setMinimumSize(_kMinWindowSize);
     await windowManager.setSize(clamped);
+
+    // Reposition the window if it would extend off the right or bottom edge
+    // of the screen after the resize.
+    final pos = await windowManager.getPosition();
+    final maxLeft = screen.width - clamped.width;
+    final maxTop = screen.height - clamped.height;
+    if (pos.dx > maxLeft || pos.dy > maxTop) {
+      await windowManager.setPosition(
+        Offset(pos.dx.clamp(0.0, maxLeft), pos.dy.clamp(0.0, maxTop)),
+      );
+    }
   }
 
   /// Computes the ideal window size for [profile] at [orientation] before
   /// screen-size clamping is applied.
+  ///
+  /// Window width matches the emulated logical width exactly (no bezel padding).
+  /// Window height adds [_kToolbarAreaHeight] for the bottom toolbar.
   ///
   /// Exposed for unit testing without a real window.
   static ui.Size computeTargetSize(
@@ -56,10 +67,7 @@ class WindowManagerSizingService implements WindowSizingService {
     DeviceOrientation orientation,
   ) {
     final emulated = profile.logicalSizeForOrientation(orientation);
-    return ui.Size(
-      emulated.width + _kFramePadding * 2,
-      emulated.height + _kFramePadding + _kToolbarHeight,
-    );
+    return ui.Size(emulated.width, emulated.height + _kToolbarAreaHeight);
   }
 
   /// Returns the logical size of the display the app is currently on.
