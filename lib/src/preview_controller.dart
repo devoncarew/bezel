@@ -15,7 +15,16 @@ class PreviewController extends ChangeNotifier {
   PreviewController({WindowSizingService? windowSizingService})
     : _windowSizingService = windowSizingService;
 
-  final WindowSizingService? _windowSizingService;
+  WindowSizingService? _windowSizingService;
+
+  /// Installs the [WindowSizingService] after construction.
+  ///
+  /// Called by [PreviewBinding] once `window_manager` is ready. Must only be
+  /// called once.
+  set windowSizingService(WindowSizingService service) {
+    assert(_windowSizingService == null, 'windowSizingService already set');
+    _windowSizingService = service;
+  }
 
   DeviceProfile _activeProfile = DeviceDatabase.defaultProfile;
   DeviceOrientation _orientation = DeviceOrientation.portrait;

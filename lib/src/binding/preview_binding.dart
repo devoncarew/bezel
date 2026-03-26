@@ -13,19 +13,21 @@ import 'preview_platform_dispatcher.dart';
 /// profile builds the call is inside an `assert`, so the binding — and all
 /// preview code — is tree-shaken out entirely.
 class PreviewBinding extends WidgetsFlutterBinding {
+  // _controller must be a field declaration (not assigned in the constructor
+  // body) so that it is available when super() calls initInstances(), which
+  // accesses platformDispatcher → _previewDispatcher → _controller.
+  final PreviewController _controller = PreviewController();
+
   PreviewBinding._() {
-    // Kick off window_manager initialisation immediately. The Future is passed
-    // to WindowManagerSizingService, which awaits it before any resize call,
-    // so it is safe to construct the service before the future resolves.
-    final ready = windowManager.ensureInitialized();
-    _controller = PreviewController(
-      windowSizingService: WindowManagerSizingService(ready),
+    // Constructor body runs after super()/initInstances(), so _controller is
+    // already in use. Wire up the sizing service here — the service awaits its
+    // own ready-future before making any window_manager calls.
+    _controller.windowSizingService = WindowManagerSizingService(
+      windowManager.ensureInitialized(),
     );
   }
 
   static PreviewBinding? _instance;
-
-  late final PreviewController _controller;
 
   // Mirrors the pattern used by TestWidgetsFlutterBinding.
   @override
