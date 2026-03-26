@@ -11,21 +11,6 @@ enum DevicePlatform {
   android,
 }
 
-/// The visual style of the device frame, driven by the camera cutout design.
-enum DeviceFrameStyle {
-  /// Wide notch at the top — older iPhones (X–14).
-  notch,
-
-  /// Dynamic Island pill — iPhone 15 and later.
-  dynamicIsland,
-
-  /// Small circular punch-hole — Pixel, Galaxy S series.
-  punchHole,
-
-  /// Full bezels with no cutout — iPhone SE, iPads.
-  classic,
-}
-
 /// Screen orientation.
 enum DeviceOrientation {
   /// Taller than wide.
@@ -62,8 +47,12 @@ class DeviceProfile {
   /// Safe area insets in landscape orientation.
   final EdgeInsets safeAreaLandscape;
 
-  /// Visual frame style used by [DeviceFramePainter].
-  final DeviceFrameStyle frameStyle;
+  /// Screen corner radius in logical pixels.
+  ///
+  /// Used to clip the device screen to its true rounded-corner shape so the
+  /// preview background shows through where a real display's glass would end.
+  /// A value of 0 means square corners (e.g. iPhone SE, iPads).
+  final double screenCornerRadius;
 
   /// Camera cutout geometry in portrait orientation.
   final ScreenCutout cutout;
@@ -76,7 +65,7 @@ class DeviceProfile {
     required this.devicePixelRatio,
     required this.safeAreaPortrait,
     required this.safeAreaLandscape,
-    required this.frameStyle,
+    required this.screenCornerRadius,
     required this.cutout,
   });
 

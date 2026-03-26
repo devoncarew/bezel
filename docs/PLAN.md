@@ -151,21 +151,12 @@ shortcuts table, supported devices table, and known limitations section sourced 
 Feedback-driven improvements to the controls, rendering fidelity, and window sizing after
 initial MVP usage.
 
-### Step 4.1 — Add `screenCornerRadius` to DeviceProfile, remove `DeviceFrameStyle`
+### Step 4.1 — Add `screenCornerRadius` to DeviceProfile, remove `DeviceFrameStyle` [done]
 
-Add a `screenCornerRadius` field (double, logical pixels) to `DeviceProfile`. Remove the
-`DeviceFrameStyle` enum and `frameStyle` field — cutout type is already captured by the
-`ScreenCutout` sealed hierarchy, making `frameStyle` redundant once bezels are removed.
-
-Update all profiles in `DeviceDatabase` with per-device corner radius values (approximate):
-- Modern iPhones (15 series): ~47pt
-- iPhone SE: 0
-- iPads: 0
-- Pixels: ~20–28dp (varies by model)
-- Samsung Galaxy S24: ~26dp
-
-Annotate uncertain values with source comments. Update all code that references
-`DeviceFrameStyle` or `frameStyle` (painter, widget, tests).
+Added `screenCornerRadius` (double, logical pixels) to `DeviceProfile` and removed
+`DeviceFrameStyle` enum and `frameStyle` field; updated all 10 device profiles with
+per-device corner radius values (annotated with data sources), and updated the painter to
+infer classic vs modern layout from the `ScreenCutout` type.
 
 ### Step 4.2 — Remove device frame body/bezels, clip at corners and cutouts
 

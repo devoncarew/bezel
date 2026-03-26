@@ -8,10 +8,7 @@ void main() {
   // A reusable portrait size for rotation math checks.
   const portraitSize = Size(390, 844);
 
-  DeviceProfile makeProfile({
-    required ScreenCutout cutout,
-    DeviceFrameStyle frameStyle = DeviceFrameStyle.classic,
-  }) {
+  DeviceProfile makeProfile({required ScreenCutout cutout}) {
     return DeviceProfile(
       id: 'test',
       name: 'Test Device',
@@ -20,7 +17,7 @@ void main() {
       devicePixelRatio: 3.0,
       safeAreaPortrait: const EdgeInsets.only(top: 59, bottom: 34),
       safeAreaLandscape: const EdgeInsets.only(left: 59, right: 59, bottom: 21),
-      frameStyle: frameStyle,
+      screenCornerRadius: 0,
       cutout: cutout,
     );
   }
@@ -143,7 +140,6 @@ void main() {
     test('portrait returns the original DynamicIslandCutout', () {
       final profile = makeProfile(
         cutout: const DynamicIslandCutout(size: Size(37, 12), topOffset: 14),
-        frameStyle: DeviceFrameStyle.dynamicIsland,
       );
       expect(
         profile.cutoutForOrientation(DeviceOrientation.portrait),
@@ -154,7 +150,6 @@ void main() {
     test('landscape produces a different (rotated) cutout type', () {
       final profile = makeProfile(
         cutout: const DynamicIslandCutout(size: Size(37, 12), topOffset: 14),
-        frameStyle: DeviceFrameStyle.dynamicIsland,
       );
       final landscape = profile.cutoutForOrientation(
         DeviceOrientation.landscape,

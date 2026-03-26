@@ -19,7 +19,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     devicePixelRatio: 2.0,
     safeAreaPortrait: EdgeInsets.only(top: 20),
     safeAreaLandscape: EdgeInsets.zero,
-    frameStyle: DeviceFrameStyle.classic,
+    screenCornerRadius: 0, // flat-cornered display behind large bezels
     cutout: NoCutout(),
   ),
 
@@ -31,7 +31,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     devicePixelRatio: 3.0,
     safeAreaPortrait: EdgeInsets.only(top: 59, bottom: 34),
     safeAreaLandscape: EdgeInsets.only(left: 59, right: 59, bottom: 21),
-    frameStyle: DeviceFrameStyle.dynamicIsland,
+    screenCornerRadius: 47, // community measurement; to be refined in step 4.6
     cutout: DynamicIslandCutout(size: Size(37, 12), topOffset: 14),
   ),
 
@@ -43,7 +43,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     devicePixelRatio: 3.0,
     safeAreaPortrait: EdgeInsets.only(top: 59, bottom: 34),
     safeAreaLandscape: EdgeInsets.only(left: 59, right: 59, bottom: 21),
-    frameStyle: DeviceFrameStyle.dynamicIsland,
+    screenCornerRadius: 47, // community measurement; to be refined in step 4.6
     cutout: DynamicIslandCutout(size: Size(37, 12), topOffset: 14),
   ),
 
@@ -55,7 +55,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     devicePixelRatio: 3.0,
     safeAreaPortrait: EdgeInsets.only(top: 59, bottom: 34),
     safeAreaLandscape: EdgeInsets.only(left: 59, right: 59, bottom: 21),
-    frameStyle: DeviceFrameStyle.dynamicIsland,
+    screenCornerRadius: 47, // community measurement; to be refined in step 4.6
     cutout: DynamicIslandCutout(size: Size(37, 12), topOffset: 14),
   ),
 
@@ -67,7 +67,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     devicePixelRatio: 2.0,
     safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 20),
     safeAreaLandscape: EdgeInsets.only(top: 20, bottom: 20),
-    frameStyle: DeviceFrameStyle.classic,
+    screenCornerRadius: 0, // flat-cornered display behind large bezels
     cutout: NoCutout(),
   ),
 
@@ -79,7 +79,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     devicePixelRatio: 2.0,
     safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 20),
     safeAreaLandscape: EdgeInsets.only(top: 20, bottom: 20),
-    frameStyle: DeviceFrameStyle.classic,
+    screenCornerRadius: 0, // flat-cornered display behind large bezels
     cutout: NoCutout(),
   ),
 
@@ -92,7 +92,8 @@ const List<DeviceProfile> kDeviceProfiles = [
     devicePixelRatio: 2.625,
     safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
     safeAreaLandscape: EdgeInsets.only(bottom: 24),
-    frameStyle: DeviceFrameStyle.punchHole,
+    screenCornerRadius:
+        26, // community approximation; Samsung config is proprietary
     cutout: PunchHoleCutout(diameter: 10, topOffset: 12),
   ),
 
@@ -104,7 +105,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     devicePixelRatio: 2.625,
     safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
     safeAreaLandscape: EdgeInsets.only(bottom: 24),
-    frameStyle: DeviceFrameStyle.punchHole,
+    screenCornerRadius: 22, // approximate; to be refined from AOSP in step 4.6
     cutout: PunchHoleCutout(diameter: 11, topOffset: 13),
   ),
 
@@ -116,7 +117,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     devicePixelRatio: 2.625,
     safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
     safeAreaLandscape: EdgeInsets.only(bottom: 24),
-    frameStyle: DeviceFrameStyle.punchHole,
+    screenCornerRadius: 25, // approximate; to be refined from AOSP in step 4.6
     cutout: PunchHoleCutout(diameter: 11, topOffset: 13),
   ),
 
@@ -128,7 +129,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     devicePixelRatio: 3.0,
     safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
     safeAreaLandscape: EdgeInsets.only(bottom: 24),
-    frameStyle: DeviceFrameStyle.punchHole,
+    screenCornerRadius: 25, // approximate; to be refined from AOSP in step 4.6
     cutout: PunchHoleCutout(diameter: 11, topOffset: 13),
   ),
 ];

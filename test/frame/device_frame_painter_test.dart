@@ -7,9 +7,8 @@ import 'package:bezel/src/devices/screen_cutout.dart';
 import 'package:bezel/src/frame/device_frame_painter.dart';
 
 void main() {
-  // A helper that builds a DeviceProfile for a given frame style and cutout.
+  // A helper that builds a DeviceProfile for a given cutout.
   DeviceProfile makeProfile({
-    required DeviceFrameStyle frameStyle,
     ScreenCutout cutout = const NoCutout(),
     Size logicalSize = const Size(390, 844),
   }) {
@@ -21,7 +20,7 @@ void main() {
       devicePixelRatio: 3.0,
       safeAreaPortrait: const EdgeInsets.only(top: 59, bottom: 34),
       safeAreaLandscape: const EdgeInsets.only(left: 59, right: 59, bottom: 21),
-      frameStyle: frameStyle,
+      screenCornerRadius: 0,
       cutout: cutout,
     );
   }
@@ -29,8 +28,7 @@ void main() {
   group('DeviceFramePainter.screenRectForSize', () {
     test('screen rect is contained within painter bounds', () {
       const painterSize = Size(390, 844);
-      for (final style in DeviceFrameStyle.values) {
-        final profile = makeProfile(frameStyle: style);
+      for (final profile in DeviceDatabase.all) {
         final rect = DeviceFramePainter.screenRectForSize(
           painterSize,
           profile,
@@ -43,9 +41,9 @@ void main() {
       }
     });
 
-    test('classic portrait has larger top and bottom bezels than sides', () {
+    test('NoCutout portrait has larger top and bottom bezels than sides', () {
       const painterSize = Size(390, 844);
-      final profile = makeProfile(frameStyle: DeviceFrameStyle.classic);
+      final profile = makeProfile(cutout: const NoCutout());
       final rect = DeviceFramePainter.screenRectForSize(
         painterSize,
         profile,
@@ -60,10 +58,10 @@ void main() {
     });
 
     test(
-      'classic landscape has larger left and right bezels than top/bottom',
+      'NoCutout landscape has larger left and right bezels than top/bottom',
       () {
         const painterSize = Size(844, 390);
-        final profile = makeProfile(frameStyle: DeviceFrameStyle.classic);
+        final profile = makeProfile(cutout: const NoCutout());
         final rect = DeviceFramePainter.screenRectForSize(
           painterSize,
           profile,
@@ -78,34 +76,35 @@ void main() {
       },
     );
 
-    test('modern styles have uniform small bezels in portrait', () {
+    test('modern cutout profiles have uniform small bezels in portrait', () {
       const painterSize = Size(390, 844);
-      for (final style in [
-        DeviceFrameStyle.dynamicIsland,
-        DeviceFrameStyle.punchHole,
-        DeviceFrameStyle.notch,
-      ]) {
-        final profile = makeProfile(frameStyle: style);
+      final modernCutouts = <ScreenCutout>[
+        const DynamicIslandCutout(size: Size(37, 12), topOffset: 14),
+        const PunchHoleCutout(diameter: 11, topOffset: 13),
+        const NotchCutout(size: Size(150, 30)),
+      ];
+      for (final cutout in modernCutouts) {
+        final profile = makeProfile(cutout: cutout);
         final rect = DeviceFramePainter.screenRectForSize(
           painterSize,
           profile,
           DeviceOrientation.portrait,
         );
-        // All four bezels should be equal for modern styles.
+        // All four bezels should be equal for modern cutout profiles.
         expect(
           rect.left,
           equals(painterSize.width - rect.right),
-          reason: 'style=$style left/right bezels differ',
+          reason: '${cutout.runtimeType} left/right bezels differ',
         );
         expect(
           rect.top,
           equals(painterSize.height - rect.bottom),
-          reason: 'style=$style top/bottom bezels differ',
+          reason: '${cutout.runtimeType} top/bottom bezels differ',
         );
         expect(
           rect.left,
           equals(rect.top),
-          reason: 'style=$style side/top bezels differ',
+          reason: '${cutout.runtimeType} side/top bezels differ',
         );
       }
     });
@@ -135,11 +134,9 @@ void main() {
   });
 
   group('DeviceFramePainter rendering', () {
-    // Verify that painting all four frame styles does not throw, and that the
-    // CustomPaint widget builds without error.
-    for (final style in DeviceFrameStyle.values) {
-      testWidgets('renders $style without throwing', (tester) async {
-        final profile = makeProfile(frameStyle: style);
+    // Verify that every real database profile renders without throwing.
+    for (final profile in DeviceDatabase.all) {
+      testWidgets('renders ${profile.id} without throwing', (tester) async {
         await tester.pumpWidget(
           MaterialApp(
             home: SizedBox(
@@ -159,10 +156,7 @@ void main() {
     }
 
     testWidgets('NoCutout profile renders without exception', (tester) async {
-      final profile = makeProfile(
-        frameStyle: DeviceFrameStyle.classic,
-        cutout: const NoCutout(),
-      );
+      final profile = makeProfile(cutout: const NoCutout());
       await tester.pumpWidget(
         MaterialApp(
           home: SizedBox(

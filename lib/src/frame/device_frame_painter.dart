@@ -50,7 +50,7 @@ class DeviceFramePainter extends CustomPainter {
     DeviceOrientation orientation,
   ) {
     return _bezelsFor(
-      profile.frameStyle,
+      profile,
       orientation,
     ).deflateRect(Offset.zero & painterSize);
   }
@@ -82,15 +82,10 @@ class DeviceFramePainter extends CustomPainter {
   // ---------------------------------------------------------------------------
 
   void _drawDecorations(Canvas canvas, Size size, Rect screenRect) {
-    switch (profile.frameStyle) {
-      case DeviceFrameStyle.classic:
-        _drawClassicDecorations(canvas, size, screenRect);
-      case DeviceFrameStyle.notch:
-      case DeviceFrameStyle.dynamicIsland:
-      case DeviceFrameStyle.punchHole:
-        // No additional bezel decorations for modern frames — the cutout
-        // clip below handles the camera housing appearance.
-        break;
+    // Classic layout: devices with no cutout (iPhone SE, iPads) have thick
+    // bezels and decorative speaker / home-button indicators.
+    if (profile.cutout is NoCutout) {
+      _drawClassicDecorations(canvas, size, screenRect);
     }
   }
 
@@ -234,26 +229,26 @@ class DeviceFramePainter extends CustomPainter {
   // ---------------------------------------------------------------------------
 
   static EdgeInsets _bezelsFor(
-    DeviceFrameStyle style,
+    DeviceProfile profile,
     DeviceOrientation orientation,
   ) {
-    return switch (style) {
-      DeviceFrameStyle.classic =>
-        orientation == DeviceOrientation.portrait
-            ? const EdgeInsets.only(
-                top: _kClassicTopBezel,
-                bottom: _kClassicBottomBezel,
-                left: _kSideBezel,
-                right: _kSideBezel,
-              )
-            : const EdgeInsets.only(
-                top: _kSideBezel,
-                bottom: _kSideBezel,
-                left: _kClassicTopBezel,
-                right: _kClassicBottomBezel,
-              ),
-      _ => const EdgeInsets.all(_kModernBezel),
-    };
+    // Classic layout: devices with no cutout use asymmetric thick bezels.
+    if (profile.cutout is NoCutout) {
+      return orientation == DeviceOrientation.portrait
+          ? const EdgeInsets.only(
+              top: _kClassicTopBezel,
+              bottom: _kClassicBottomBezel,
+              left: _kSideBezel,
+              right: _kSideBezel,
+            )
+          : const EdgeInsets.only(
+              top: _kSideBezel,
+              bottom: _kSideBezel,
+              left: _kClassicTopBezel,
+              right: _kClassicBottomBezel,
+            );
+    }
+    return const EdgeInsets.all(_kModernBezel);
   }
 
   @override
