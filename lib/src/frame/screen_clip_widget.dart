@@ -5,10 +5,11 @@ import 'screen_clip_painter.dart';
 
 /// Clips [child] to the device screen shape — rounded corners and cutout.
 ///
-/// Uses [LayoutBuilder] to fill the available space and positions [child] to
-/// fill the full bounds. The canvas clip (rounded corners minus cutout) is
-/// applied by [ScreenClipPainter], so child pixels are physically absent inside
-/// both the corner regions and the camera housing area.
+/// [ScreenClipPainter] draws a black background fill clipped to the rounded
+/// screen rect (visible behind app content and inside the cutout region).
+/// A [ClipPath] widget applies the same geometry — rounded corners minus
+/// cutout — to the child widget tree, so app pixels are physically absent
+/// inside the corner regions and the camera housing area.
 ///
 /// This widget does **not** perform any metric spoofing — it is purely
 /// cosmetic. Metric spoofing happens in the binding layer.
@@ -33,7 +34,27 @@ class ScreenClipWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: ScreenClipPainter(profile: profile, orientation: orientation),
-      child: child,
+      child: ClipPath(
+        clipper: _ScreenClipper(profile: profile, orientation: orientation),
+        child: child,
+      ),
     );
   }
+}
+
+/// [CustomClipper] that clips to the device screen shape: a rounded rect with
+/// the camera cutout region subtracted.
+class _ScreenClipper extends CustomClipper<Path> {
+  _ScreenClipper({required this.profile, required this.orientation});
+
+  final DeviceProfile profile;
+  final DeviceOrientation orientation;
+
+  @override
+  Path getClip(Size size) =>
+      ScreenClipPainter.buildClipPath(size, profile, orientation);
+
+  @override
+  bool shouldReclip(_ScreenClipper old) =>
+      old.profile != profile || old.orientation != orientation;
 }

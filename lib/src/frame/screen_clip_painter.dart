@@ -37,33 +37,43 @@ class ScreenClipPainter extends CustomPainter {
     return Offset.zero & painterSize;
   }
 
+  /// Returns the clip path for [size], [profile], and [orientation].
+  ///
+  /// The path is the intersection of the rounded screen rect and the inverse
+  /// of the cutout region — i.e. the area where app content should be visible.
+  /// Used by [ScreenClipWidget] to clip the child widget tree.
+  static Path buildClipPath(
+    Size size,
+    DeviceProfile profile,
+    DeviceOrientation orientation,
+  ) {
+    final screenRect = Offset.zero & size;
+    final radius = Radius.circular(profile.screenCornerRadius);
+    final screenRRect = RRect.fromRectAndRadius(screenRect, radius);
+    final screenPath = Path()..addRRect(screenRRect);
+
+    final cutout = profile.cutoutForOrientation(orientation);
+    if (cutout is NoCutout) return screenPath;
+
+    final cutoutPath = _buildCutoutPath(cutout, screenRect);
+    return Path.combine(PathOperation.difference, screenPath, cutoutPath);
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
     final screenRect = Offset.zero & size;
     final radius = Radius.circular(profile.screenCornerRadius);
     final screenRRect = RRect.fromRectAndRadius(screenRect, radius);
 
-    // 1. Clip to rounded screen corners.
+    // Clip to rounded screen corners, then fill with black. This black fill
+    // is visible in the cutout region (and as a backing colour) because the
+    // child's ClipPath — applied by ScreenClipWidget — subtracts the cutout
+    // area from the child, letting this fill show through.
     canvas.clipRRect(screenRRect);
-
-    // 2. Fill with black — this becomes the background behind app content and
-    //    also the fill colour visible in the cutout region after step 3.
     canvas.drawRect(screenRect, Paint()..color = _kScreenColor);
-
-    // 3. For non-NoCutout devices, further restrict the clip so that app
-    //    content cannot paint inside the camera housing area. The black fill
-    //    from step 2 remains visible there.
-    final cutout = profile.cutoutForOrientation(orientation);
-    if (cutout is! NoCutout) {
-      final screenPath = Path()..addRRect(screenRRect);
-      final cutoutPath = _buildCutoutPath(cutout, screenRect);
-      canvas.clipPath(
-        Path.combine(PathOperation.difference, screenPath, cutoutPath),
-      );
-    }
   }
 
-  Path _buildCutoutPath(ScreenCutout cutout, Rect screenRect) {
+  static Path _buildCutoutPath(ScreenCutout cutout, Rect screenRect) {
     return switch (cutout) {
       NoCutout() => Path(),
       NotchCutout(:final size, :final topOffset) =>
