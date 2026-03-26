@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart' show Widget, WidgetsFlutterBinding;
+import 'package:window_manager/window_manager.dart';
 
 import '../preview_controller.dart';
 import '../ui/preview_overlay.dart';
+import '../window/window_manager_sizing_service.dart';
 import 'preview_platform_dispatcher.dart';
 
 /// A custom binding that installs [PreviewPlatformDispatcher], causing the
@@ -11,11 +13,19 @@ import 'preview_platform_dispatcher.dart';
 /// profile builds the call is inside an `assert`, so the binding — and all
 /// preview code — is tree-shaken out entirely.
 class PreviewBinding extends WidgetsFlutterBinding {
-  PreviewBinding._();
+  PreviewBinding._() {
+    // Kick off window_manager initialisation immediately. The Future is passed
+    // to WindowManagerSizingService, which awaits it before any resize call,
+    // so it is safe to construct the service before the future resolves.
+    final ready = windowManager.ensureInitialized();
+    _controller = PreviewController(
+      windowSizingService: WindowManagerSizingService(ready),
+    );
+  }
 
   static PreviewBinding? _instance;
 
-  final PreviewController _controller = PreviewController();
+  late final PreviewController _controller;
 
   // Mirrors the pattern used by TestWidgetsFlutterBinding.
   @override

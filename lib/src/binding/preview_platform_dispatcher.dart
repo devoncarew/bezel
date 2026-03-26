@@ -73,9 +73,19 @@ class PreviewPlatformDispatcher implements ui.PlatformDispatcher {
 
   @override
   ui.VoidCallback? get onMetricsChanged => _real.onMetricsChanged;
+
+  /// Wraps the framework's [onMetricsChanged] callback to also notify
+  /// [PreviewController] listeners, so [ListenableBuilder] widgets rebuild
+  /// when the window is resized (not just when controller state changes).
   @override
-  set onMetricsChanged(ui.VoidCallback? value) =>
-      _real.onMetricsChanged = value;
+  set onMetricsChanged(ui.VoidCallback? value) {
+    _real.onMetricsChanged = value == null
+        ? null
+        : () {
+            _controller.notifyMetricsChanged();
+            value();
+          };
+  }
 
   @override
   ui.ViewFocusChangeCallback? get onViewFocusChange => _real.onViewFocusChange;

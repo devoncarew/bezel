@@ -3,6 +3,7 @@ import 'package:flutter/painting.dart' show EdgeInsets, Size;
 
 import 'devices/device_database.dart';
 import 'devices/device_profile.dart';
+import 'window/window_sizing_service.dart';
 
 /// The single source of truth for the active device preview state.
 ///
@@ -11,6 +12,11 @@ import 'devices/device_profile.dart';
 /// [AnimatedBuilder]; the binding layer reacts to changes by re-reporting
 /// spoofed metrics to the framework.
 class PreviewController extends ChangeNotifier {
+  PreviewController({WindowSizingService? windowSizingService})
+    : _windowSizingService = windowSizingService;
+
+  final WindowSizingService? _windowSizingService;
+
   DeviceProfile _activeProfile = DeviceDatabase.defaultProfile;
   DeviceOrientation _orientation = DeviceOrientation.portrait;
   bool _toolbarVisible = true;
@@ -37,6 +43,7 @@ class PreviewController extends ChangeNotifier {
     if (_activeProfile == profile) return;
     _activeProfile = profile;
     notifyListeners();
+    _windowSizingService?.applyProfile(profile, _orientation);
   }
 
   /// Toggles between portrait and landscape and notifies listeners.
@@ -46,7 +53,14 @@ class PreviewController extends ChangeNotifier {
       DeviceOrientation.landscape => DeviceOrientation.portrait,
     };
     notifyListeners();
+    _windowSizingService?.applyProfile(_activeProfile, _orientation);
   }
+
+  /// Called by the binding layer when window metrics change (e.g. window
+  /// resize). Notifies listeners so that [ListenableBuilder] widgets rebuild
+  /// in response to window-size changes, in addition to controller-state
+  /// changes.
+  void notifyMetricsChanged() => notifyListeners();
 
   /// Toggles toolbar visibility and notifies listeners.
   void toggleToolbar() {
