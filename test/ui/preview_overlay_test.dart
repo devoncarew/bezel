@@ -63,7 +63,7 @@ void main() {
 
       final next = DeviceDatabase.all.firstWhere((p) => p.id != before.id);
       controller.setProfile(next);
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       final after = tester
           .widget<DeviceFrameWidget>(find.byType(DeviceFrameWidget))
@@ -90,7 +90,7 @@ void main() {
       expect(before, DeviceOrientation.portrait);
 
       controller.toggleOrientation();
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       final after = tester
           .widget<DeviceFrameWidget>(find.byType(DeviceFrameWidget))
@@ -199,6 +199,91 @@ void main() {
       );
 
       expect(find.byType(DevicePicker), findsOneWidget);
+    });
+  });
+
+  group('PreviewOverlay animations', () {
+    late PreviewController controller;
+
+    setUp(() => controller = PreviewController());
+    tearDown(() => controller.dispose());
+
+    Widget wrap(PreviewController c) => Directionality(
+      textDirection: TextDirection.ltr,
+      child: PreviewOverlay(controller: c, child: const SizedBox.expand()),
+    );
+
+    testWidgets('AnimatedContainer and AnimatedSwitcher are present', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrap(controller));
+      expect(find.byType(AnimatedContainer), findsOneWidget);
+      expect(find.byType(AnimatedSwitcher), findsOneWidget);
+    });
+
+    testWidgets('AnimatedContainer uses 250 ms duration', (tester) async {
+      await tester.pumpWidget(wrap(controller));
+      final container = tester.widget<AnimatedContainer>(
+        find.byType(AnimatedContainer),
+      );
+      expect(container.duration, const Duration(milliseconds: 250));
+    });
+
+    testWidgets('DeviceFrameWidget key encodes profile id and orientation', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrap(controller));
+      final frame = tester.widget<DeviceFrameWidget>(
+        find.byType(DeviceFrameWidget),
+      );
+      final key = frame.key as ValueKey<String>;
+      expect(key.value, contains(controller.activeProfile.id));
+      expect(key.value, contains(controller.orientation.name));
+    });
+
+    testWidgets('profile change gives DeviceFrameWidget a new key', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrap(controller));
+      final keyBefore =
+          (tester.widget<DeviceFrameWidget>(find.byType(DeviceFrameWidget)).key
+                  as ValueKey<String>)
+              .value;
+
+      final next = DeviceDatabase.all.firstWhere(
+        (p) => p != controller.activeProfile,
+      );
+      controller.setProfile(next);
+      await tester.pump(); // one frame: both old + new widget exist
+
+      final frames = tester.widgetList<DeviceFrameWidget>(
+        find.byType(DeviceFrameWidget),
+      );
+      expect(
+        frames.any((w) => (w.key as ValueKey<String>).value != keyBefore),
+        isTrue,
+      );
+    });
+
+    testWidgets('orientation toggle gives DeviceFrameWidget a new key', (
+      tester,
+    ) async {
+      await tester.pumpWidget(wrap(controller));
+      final keyBefore =
+          (tester.widget<DeviceFrameWidget>(find.byType(DeviceFrameWidget)).key
+                  as ValueKey<String>)
+              .value;
+
+      controller.toggleOrientation();
+      await tester.pump();
+
+      final frames = tester.widgetList<DeviceFrameWidget>(
+        find.byType(DeviceFrameWidget),
+      );
+      expect(
+        frames.any((w) => (w.key as ValueKey<String>).value != keyBefore),
+        isTrue,
+      );
     });
   });
 

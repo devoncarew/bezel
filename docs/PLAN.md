@@ -131,15 +131,19 @@ The "Preview" menu contains:
 `MacosPreviewMenu` is integrated into `PreviewOverlay` wrapping the entire
 `ListenableBuilder` so the native menu bar is always present when the overlay is active.
 
-### Step 3.3 — Smooth device transition animation
+### Step 3.3 — Smooth device transition animation [done]
 
-Update `PreviewOverlay` to animate between device profiles:
+Updated `PreviewOverlay` to animate between device profiles:
 
-- Wrap `DeviceFrameWidget` in an `AnimatedContainer` for size changes
-- Use `AnimatedSwitcher` with a fade + scale transition when the profile changes
-- Duration: 250ms, curve: `Curves.easeInOut`
-
-This is purely cosmetic — no logic changes.
+- Replaced `SizedBox` + `Transform.scale` with `AnimatedContainer` whose `width` and
+  `height` are `emulatedSize × scale`, so the outer bounding box interpolates smoothly
+  when the device or orientation changes. This also eliminates the separate
+  `Transform.scale` wrapper.
+- Wrapped `DeviceFrameWidget` in an `AnimatedSwitcher` (250 ms, `Curves.easeInOut`) with a
+  custom `transitionBuilder` that combines `FadeTransition` + `ScaleTransition`
+  (0.92 → 1.0) for a subtle grow-in / shrink-out cross-fade.
+- `DeviceFrameWidget` is keyed on `'${profile.id}_${orientation.name}'` so both profile
+  and orientation changes trigger the switcher.
 
 ### Step 3.4 — VM service hot-reload integration (optional / experimental)
 

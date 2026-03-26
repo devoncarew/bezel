@@ -16,6 +16,11 @@ import 'preview_toolbar.dart';
 /// to read clearly without the background feeling overly bright.
 const _kBackgroundColor = Color(0xFF4A4A52);
 
+/// Duration used for both the [AnimatedContainer] size transition and the
+/// [AnimatedSwitcher] fade+scale transition when the device profile or
+/// orientation changes.
+const _kTransitionDuration = Duration(milliseconds: 250);
+
 /// Wraps the app in a device-frame preview UI.
 ///
 /// Uses [LayoutBuilder] + [ListenableBuilder] to react to both window-size
@@ -67,16 +72,41 @@ class PreviewOverlay extends StatelessWidget {
                       child: Stack(
                         children: [
                           // Device frame, centered and scaled to fit.
-                          // ClipRect prevents overflow debug banners when the
-                          // emulated device is larger than the available window.
+                          // AnimatedContainer smoothly interpolates the outer
+                          // dimensions when the device or orientation changes.
+                          // AnimatedSwitcher cross-fades + scales the frame
+                          // widget itself. ClipRect prevents overflow debug
+                          // banners when the emulated device is larger than
+                          // the available window.
                           ClipRect(
                             child: Center(
-                              child: SizedBox(
-                                width: emulated.width,
-                                height: emulated.height,
-                                child: Transform.scale(
-                                  scale: scale,
+                              child: AnimatedContainer(
+                                duration: _kTransitionDuration,
+                                curve: Curves.easeInOut,
+                                width: emulated.width * scale,
+                                height: emulated.height * scale,
+                                child: AnimatedSwitcher(
+                                  duration: _kTransitionDuration,
+                                  switchInCurve: Curves.easeInOut,
+                                  switchOutCurve: Curves.easeInOut,
+                                  transitionBuilder: (child, animation) =>
+                                      FadeTransition(
+                                        opacity: animation,
+                                        child: ScaleTransition(
+                                          scale: animation.drive(
+                                            Tween<double>(
+                                              begin: 0.92,
+                                              end: 1.0,
+                                            ),
+                                          ),
+                                          child: child,
+                                        ),
+                                      ),
                                   child: DeviceFrameWidget(
+                                    key: ValueKey(
+                                      '${controller.activeProfile.id}_'
+                                      '${controller.orientation.name}',
+                                    ),
                                     profile: controller.activeProfile,
                                     orientation: controller.orientation,
                                     child: child,
