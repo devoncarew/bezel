@@ -88,16 +88,19 @@ because the toolbar sits above the user's widget tree and has no `Overlay` ances
 changes. `passthroughMode` in `PreviewOverlay` bypasses the frame entirely, rendering the
 raw child widget instead.
 
-### Step 2.6 — Device picker popover
+### Step 2.6 — Device picker popover [done]
 
-Create `lib/src/ui/device_picker.dart`.
+Created `lib/src/ui/device_picker.dart` — a `StatelessWidget` rendered directly in the
+overlay `Stack` (via `Positioned.fill`) rather than through `showDialog`, because the toolbar
+sits above the user's `MaterialApp` and has no `Navigator`/`Overlay` ancestor. Devices are
+grouped under "iOS" and "Android" section headers using a `SingleChildScrollView` + `Column`
+(eager rendering) rather than `ListView` (lazy rendering). The active profile is checkmarked.
+Tapping an item calls `controller.setProfile` and `controller.toggleDevicePicker`. Tapping
+outside the card dismisses via `HitTestBehavior.opaque` on the outer `GestureDetector`.
 
-`class DevicePicker` — a static method `show(BuildContext context, PreviewController
-controller)` that shows a `showDialog`-based popover (or `showMenu`) listing all devices
-from `DeviceDatabase.all`, grouped under "iOS" and "Android" section headers.
-
-Each item shows the device name. The active device is checkmarked. Tapping an item calls
-`controller.setProfile(profile)` and closes the picker.
+Added `devicePickerVisible` + `toggleDevicePicker()` to `PreviewController`. Wired the
+device name button in `PreviewToolbar` to call `toggleDevicePicker`. Updated `PreviewOverlay`
+to show `DevicePicker` as a `Positioned.fill` child when `devicePickerVisible` is true.
 
 ---
 

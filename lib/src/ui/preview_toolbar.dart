@@ -65,9 +65,7 @@ class _DeviceNameButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: _kPillRadius,
-      onTap: () {
-        // Step 2.6 will replace this with the real device picker.
-      },
+      onTap: controller.toggleDevicePicker,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
         child: ConstrainedBox(

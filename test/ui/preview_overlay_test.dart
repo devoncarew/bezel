@@ -5,6 +5,7 @@ import 'package:bezel/src/devices/device_database.dart';
 import 'package:bezel/src/devices/device_profile.dart';
 import 'package:bezel/src/frame/device_frame_widget.dart';
 import 'package:bezel/src/preview_controller.dart';
+import 'package:bezel/src/ui/device_picker.dart';
 import 'package:bezel/src/ui/preview_overlay.dart';
 import 'package:bezel/src/ui/preview_toolbar.dart';
 
@@ -166,6 +167,38 @@ void main() {
 
       // In passthrough mode the overlay renders just the raw child — no toolbar.
       expect(find.byType(PreviewToolbar), findsNothing);
+    });
+
+    testWidgets('DevicePicker absent by default', (tester) async {
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: PreviewOverlay(
+            controller: controller,
+            child: const SizedBox.expand(),
+          ),
+        ),
+      );
+
+      expect(find.byType(DevicePicker), findsNothing);
+    });
+
+    testWidgets('DevicePicker shown when devicePickerVisible is true', (
+      tester,
+    ) async {
+      controller.toggleDevicePicker();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: PreviewOverlay(
+            controller: controller,
+            child: const SizedBox.expand(),
+          ),
+        ),
+      );
+
+      expect(find.byType(DevicePicker), findsOneWidget);
     });
   });
 

@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 
 import '../frame/device_frame_widget.dart';
 import '../preview_controller.dart';
+import 'device_picker.dart';
 import 'preview_toolbar.dart';
 
 /// Background colour shown behind the device frame.
@@ -86,6 +87,12 @@ class PreviewOverlay extends StatelessWidget {
                             alignment: Alignment.topCenter,
                             child: PreviewToolbar(controller: controller),
                           ),
+                        ),
+
+                      // Device picker — covers the full overlay when open.
+                      if (controller.devicePickerVisible)
+                        Positioned.fill(
+                          child: DevicePicker(controller: controller),
                         ),
                     ],
                   ),

@@ -30,6 +30,7 @@ class PreviewController extends ChangeNotifier {
   DeviceOrientation _orientation = DeviceOrientation.portrait;
   bool _toolbarVisible = true;
   bool _passthroughMode = false;
+  bool _devicePickerVisible = false;
 
   /// The currently active device profile.
   DeviceProfile get activeProfile => _activeProfile;
@@ -45,6 +46,9 @@ class PreviewController extends ChangeNotifier {
   /// When true, the device frame is hidden and the app is shown at its natural
   /// window size. Toggling back to false re-activates the preview.
   bool get passthroughMode => _passthroughMode;
+
+  /// Whether the device picker is currently open.
+  bool get devicePickerVisible => _devicePickerVisible;
 
   /// The emulated logical screen size for the current profile and orientation.
   Size get emulatedLogicalSize =>
@@ -87,6 +91,12 @@ class PreviewController extends ChangeNotifier {
   /// Toggles passthrough mode and notifies listeners.
   void togglePassthrough() {
     _passthroughMode = !_passthroughMode;
+    notifyListeners();
+  }
+
+  /// Toggles the device picker visibility and notifies listeners.
+  void toggleDevicePicker() {
+    _devicePickerVisible = !_devicePickerVisible;
     notifyListeners();
   }
 }
