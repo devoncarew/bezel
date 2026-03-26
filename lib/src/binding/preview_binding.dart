@@ -35,11 +35,16 @@ class PreviewBinding extends WidgetsFlutterBinding {
     return _instance!._controller;
   }
 
-  /// Wraps the app's root widget with [PreviewOverlay] so the device frame
-  /// and preview UI are injected automatically when [runApp] is called.
+  /// Injects [PreviewOverlay] inside the [View] widget so that [LayoutBuilder]
+  /// receives real layout constraints from the render tree.
+  ///
+  /// [attachRootWidget] is called with `View(child: app)` already assembled,
+  /// so overriding it would place [PreviewOverlay] *above* the [View] — outside
+  /// the render context. Overriding [wrapWithDefaultView] instead inserts the
+  /// overlay as the direct child of [View], where it is laid out normally.
   @override
-  void attachRootWidget(Widget rootWidget) {
-    super.attachRootWidget(
+  Widget wrapWithDefaultView(Widget rootWidget) {
+    return super.wrapWithDefaultView(
       PreviewOverlay(controller: _controller, child: rootWidget),
     );
   }
