@@ -123,6 +123,30 @@ void main() {
     });
   });
 
+  group('toggleDevicePicker', () {
+    test('devicePickerVisible starts false', () {
+      expect(controller.devicePickerVisible, isFalse);
+    });
+
+    test('opens the picker', () {
+      controller.toggleDevicePicker();
+      expect(controller.devicePickerVisible, isTrue);
+    });
+
+    test('closes the picker on second call', () {
+      controller.toggleDevicePicker();
+      controller.toggleDevicePicker();
+      expect(controller.devicePickerVisible, isFalse);
+    });
+
+    test('notifies listeners', () {
+      var notified = false;
+      controller.addListener(() => notified = true);
+      controller.toggleDevicePicker();
+      expect(notified, isTrue);
+    });
+  });
+
   group('emulatedLogicalSize', () {
     test('matches portrait logical size in portrait orientation', () {
       expect(
