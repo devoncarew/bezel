@@ -54,38 +54,13 @@ Created `lib/src/frame/device_frame_widget.dart` — a `StatelessWidget` that us
 
 ### Step 2.3 — PreviewOverlay [done]
 
-Created `lib/src/ui/preview_overlay.dart` — a `StatelessWidget` that wraps the app in the preview UI using `ListenableBuilder` (controller changes) and `LayoutBuilder` (window resize), scaling the `DeviceFrameWidget` via `Transform.scale` so it fits within 90% of available space, with a dark `ColoredBox` background and a `Stack` placeholder for the toolbar. Wired into `PreviewBinding.attachRootWidget` to inject the overlay automatically at the root when `runApp` is called.
+Created `lib/src/ui/preview_overlay.dart` — a `StatelessWidget` that wraps the app in the preview UI using `ListenableBuilder` (controller changes) and `LayoutBuilder` (window resize), scaling the `DeviceFrameWidget` via `Transform.scale` so it fits within 90% of available space, with a dark `ColoredBox` background and a `Stack` placeholder for the toolbar. Overrides `PreviewBinding.wrapWithDefaultView` (not `attachRootWidget`) to inject the overlay inside the `View` widget where layout constraints are available.
 
-### Step 2.4 — Window auto-sizing and reactive DPR
+### Step 2.4 — Window auto-sizing and reactive DPR [done]
 
-**Update `PreviewFlutterView`** to implement the reactive DPR model from DESIGN.md:
+Updated `PreviewFlutterView`: `physicalSize` delegates to `_real` so the render surface matches the actual window; `devicePixelRatio` is computed reactively as `_real.physicalSize.width / emulatedLogicalWidth` so layout tracks the real window size at all times. `PreviewPlatformDispatcher.onMetricsChanged` is intercepted to also call `PreviewController.notifyMetricsChanged()`, so `ListenableBuilder` widgets rebuild on window resize.
 
-- Remove the `physicalSize` override — delegate to `_real.physicalSize` so the reported
-  physical size matches the actual render surface.
-- Subscribe to `_real.onMetricsChanged` and notify `PreviewController` listeners so the
-  framework re-lays out when the window is resized.
-- Compute `devicePixelRatio` reactively: `_real.physicalSize.width / emulatedLogicalWidth`.
-  This keeps DPR in sync with whatever the window size actually is at any moment, including
-  both programmatic resizes and manual user drags.
-
-**Create `lib/src/window/window_sizing_service.dart`.**
-
-`class WindowSizingService` that:
-- Has a `void applyProfile(DeviceProfile profile, DeviceOrientation orientation)` method
-- Computes target window size = emulated logical size + constant frame chrome padding
-  (e.g. 80px each side for the frame, 60px top for toolbar)
-- Queries the available screen size via `window_manager`'s `getScreenList()` /
-  `getCurrentScreen()`
-- If the target size fits within 90% of the screen, calls
-  `windowManager.setSize(targetSize)` (takes logical pixels)
-- If not, clamps to 90% of screen (the overlay scale factor handles the rest)
-- Sets minimum window size to prevent nonsensical shrinking
-
-Wire `WindowSizingService` into `PreviewController`: when `setProfile` or
-`toggleOrientation` is called, call `windowSizingService.applyProfile(...)`.
-
-Initialize `window_manager` in `PreviewBinding.ensureInitialized()` with
-`windowManager.ensureInitialized()`.
+Created `lib/src/window/window_sizing_service.dart` — an `abstract interface` with a single `applyProfile` method — and `lib/src/window/window_manager_sizing_service.dart` — the production implementation that computes `emulatedSize + 80px frame padding + 60px toolbar`, clamps to 90% of the current display's logical size, then calls `windowManager.setMinimumSize` and `windowManager.setSize`. `PreviewController` accepts an optional `WindowSizingService` and calls it fire-and-forget on `setProfile` and `toggleOrientation`. `PreviewBinding` initialises `window_manager` in its constructor and wires up `WindowManagerSizingService`.
 
 ### Step 2.5 — Preview toolbar
 
