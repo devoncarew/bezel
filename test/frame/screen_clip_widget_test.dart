@@ -3,53 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:bezel/src/devices/device_database.dart';
 import 'package:bezel/src/devices/device_profile.dart';
-import 'package:bezel/src/frame/device_frame_painter.dart';
-import 'package:bezel/src/frame/device_frame_widget.dart';
+import 'package:bezel/src/frame/screen_clip_widget.dart';
 
 void main() {
-  group('DeviceFrameWidget', () {
-    testWidgets('child size matches screenRectForSize', (tester) async {
+  group('ScreenClipWidget', () {
+    testWidgets('child fills the full widget bounds', (tester) async {
       final profile = DeviceDatabase.findById('iphone_15')!;
 
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
-          child: DeviceFrameWidget(
-            profile: profile,
-            orientation: DeviceOrientation.portrait,
-            child: const ColoredBox(
-              color: Color(0xFF0000FF),
-              child: SizedBox.expand(),
-            ),
-          ),
-        ),
-      );
-
-      // Use the actual rendered frame size so the test is independent of the
-      // test viewport dimensions.
-      final frameBox = tester.renderObject<RenderBox>(
-        find.byType(DeviceFrameWidget),
-      );
-      final expectedScreen = DeviceFramePainter.screenRectForSize(
-        frameBox.size,
-        profile,
-        DeviceOrientation.portrait,
-      );
-
-      final childBox = tester.renderObject<RenderBox>(find.byType(ColoredBox));
-      expect(childBox.size.width, closeTo(expectedScreen.width, 0.5));
-      expect(childBox.size.height, closeTo(expectedScreen.height, 0.5));
-    });
-
-    testWidgets('child is smaller than the full frame (bezels are present)', (
-      tester,
-    ) async {
-      final profile = DeviceDatabase.findById('iphone_15')!;
-
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: DeviceFrameWidget(
+          child: ScreenClipWidget(
             profile: profile,
             orientation: DeviceOrientation.portrait,
             child: const ColoredBox(
@@ -61,12 +25,11 @@ void main() {
       );
 
       final frameBox = tester.renderObject<RenderBox>(
-        find.byType(DeviceFrameWidget),
+        find.byType(ScreenClipWidget),
       );
       final childBox = tester.renderObject<RenderBox>(find.byType(ColoredBox));
-
-      expect(childBox.size.width, lessThan(frameBox.size.width));
-      expect(childBox.size.height, lessThan(frameBox.size.height));
+      expect(childBox.size.width, closeTo(frameBox.size.width, 0.5));
+      expect(childBox.size.height, closeTo(frameBox.size.height, 0.5));
     });
 
     testWidgets('landscape child is wider than tall', (tester) async {
@@ -75,7 +38,7 @@ void main() {
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
-          child: DeviceFrameWidget(
+          child: ScreenClipWidget(
             profile: profile,
             orientation: DeviceOrientation.landscape,
             child: const ColoredBox(
@@ -102,7 +65,7 @@ void main() {
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
-          child: DeviceFrameWidget(
+          child: ScreenClipWidget(
             profile: profile,
             orientation: DeviceOrientation.portrait,
             child: const ColoredBox(
@@ -125,7 +88,7 @@ void main() {
           await tester.pumpWidget(
             Directionality(
               textDirection: TextDirection.ltr,
-              child: DeviceFrameWidget(
+              child: ScreenClipWidget(
                 profile: profile,
                 orientation: orientation,
                 child: const SizedBox.expand(),

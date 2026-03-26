@@ -158,7 +158,7 @@ Added `screenCornerRadius` (double, logical pixels) to `DeviceProfile` and remov
 per-device corner radius values (annotated with data sources), and updated the painter to
 infer classic vs modern layout from the `ScreenCutout` type.
 
-### Step 4.2 — Remove device frame body/bezels, clip at corners and cutouts
+### Step 4.2 — Remove device frame body/bezels, clip at corners and cutouts [done]
 
 Refactor `DeviceFramePainter`:
 - Remove the device body rect (dark rounded rect), bezel padding (`_bezelsFor`), and

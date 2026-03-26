@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:bezel/src/devices/device_database.dart';
 import 'package:bezel/src/devices/device_profile.dart';
-import 'package:bezel/src/frame/device_frame_widget.dart';
+import 'package:bezel/src/frame/screen_clip_widget.dart';
 import 'package:bezel/src/preview_controller.dart';
 import 'package:bezel/src/ui/device_picker.dart';
 import 'package:bezel/src/ui/preview_overlay.dart';
@@ -16,7 +16,7 @@ void main() {
     setUp(() => controller = PreviewController());
     tearDown(() => controller.dispose());
 
-    testWidgets('renders DeviceFrameWidget', (tester) async {
+    testWidgets('renders ScreenClipWidget', (tester) async {
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
@@ -27,7 +27,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(DeviceFrameWidget), findsOneWidget);
+      expect(find.byType(ScreenClipWidget), findsOneWidget);
     });
 
     testWidgets('renders the child inside the frame', (tester) async {
@@ -58,7 +58,7 @@ void main() {
       );
 
       final before = tester
-          .widget<DeviceFrameWidget>(find.byType(DeviceFrameWidget))
+          .widget<ScreenClipWidget>(find.byType(ScreenClipWidget))
           .profile;
 
       final next = DeviceDatabase.all.firstWhere((p) => p.id != before.id);
@@ -66,7 +66,7 @@ void main() {
       await tester.pump();
 
       final after = tester
-          .widget<DeviceFrameWidget>(find.byType(DeviceFrameWidget))
+          .widget<ScreenClipWidget>(find.byType(ScreenClipWidget))
           .profile;
 
       expect(after, equals(next));
@@ -85,7 +85,7 @@ void main() {
       );
 
       final before = tester
-          .widget<DeviceFrameWidget>(find.byType(DeviceFrameWidget))
+          .widget<ScreenClipWidget>(find.byType(ScreenClipWidget))
           .orientation;
       expect(before, DeviceOrientation.portrait);
 
@@ -93,7 +93,7 @@ void main() {
       await tester.pump();
 
       final after = tester
-          .widget<DeviceFrameWidget>(find.byType(DeviceFrameWidget))
+          .widget<ScreenClipWidget>(find.byType(ScreenClipWidget))
           .orientation;
       expect(after, DeviceOrientation.landscape);
     });
@@ -147,7 +147,7 @@ void main() {
       );
 
       expect(find.byKey(key), findsOneWidget);
-      expect(find.byType(DeviceFrameWidget), findsNothing);
+      expect(find.byType(ScreenClipWidget), findsNothing);
     });
 
     testWidgets('passthrough mode shows the orientation icon as active', (
