@@ -106,17 +106,14 @@ to show `DevicePicker` as a `Positioned.fill` child when `devicePickerVisible` i
 
 ## Phase 3 — Polish and Power Features
 
-### Step 3.1 — Keyboard shortcuts
+### Step 3.1 — Keyboard shortcuts [done]
 
-Create `lib/src/ui/preview_shortcuts.dart`.
-
-Wrap the `PreviewOverlay` content in a `Shortcuts` + `Actions` widget pair:
-- `Ctrl+\` / `Cmd+\` → `controller.toggleToolbar()`
-- `Ctrl+R` / `Cmd+R` → `WidgetsBinding.instance.reassembleApplication()`
-- `Ctrl+L` / `Cmd+L` → `controller.toggleOrientation()`
-
-Use `SingleActivator` with `meta` on macOS and `control` on other platforms, detected via
-`defaultTargetPlatform`.
+Created `lib/src/ui/preview_shortcuts.dart` — a `PreviewShortcuts` widget that wraps its
+child in a `Shortcuts` + `Actions` pair. Defines three `Intent` subclasses
+(`ToggleToolbarIntent`, `ToggleOrientationIntent`, `ReassembleIntent`) bound to
+`SingleActivator` with `meta` on macOS and `control` elsewhere (detected via
+`defaultTargetPlatform`). Wired into `PreviewOverlay` wrapping the `ColoredBox`/`Stack`
+content so it covers all keyboard focus within the overlay.
 
 ### Step 3.2 — macOS menu bar integration
 
