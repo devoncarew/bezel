@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/painting.dart' show EdgeInsets;
@@ -20,19 +21,32 @@ class PreviewFlutterView implements ui.FlutterView {
   // ── Spoofed members ───────────────────────────────────────────────────────
 
   /// Returns a DPR that maps the real physical width onto the emulated logical
-  /// width, keeping the render surface in sync with the actual window.
-  ///
-  /// Using the real [physicalSize] (not a spoofed one) as the numerator means
-  /// the framework lays out the root widget at the actual window dimensions.
-  /// [PreviewOverlay] then scales and centers the device frame to fit.
+  /// width. This scales with window size so that zooming the window in or out
+  /// only changes the effective DPR rather than the reported logical dimensions.
   @override
-  double get devicePixelRatio =>
-      _real.physicalSize.width / _controller.emulatedLogicalSize.width;
+  double get devicePixelRatio {
+    final widthRatio =
+        _real.physicalSize.width / _controller.emulatedLogicalSize.width;
+    final heightRatio =
+        _real.physicalSize.height / _controller.emulatedLogicalSize.height;
+    return math.min(widthRatio, heightRatio);
+  }
 
-  // physicalSize delegates to _real so the render surface matches the actual
-  // window. DPR above compensates so the framework lays out at emulated size.
+  /// Reports the emulated device's physical dimensions at the current effective
+  /// DPR, decoupling the app's logical layout from the actual window size.
+  ///
+  /// Both axes use the same DPR (derived from the width), so the app always
+  /// sees exactly [PreviewController.emulatedLogicalSize] regardless of how
+  /// the window is resized. Resizing changes the DPR only — content does not
+  /// reflow.
   @override
-  ui.Size get physicalSize => _real.physicalSize;
+  ui.Size get physicalSize {
+    final dpr = devicePixelRatio;
+    return ui.Size(
+      _controller.emulatedLogicalSize.width * dpr,
+      _controller.emulatedLogicalSize.height * dpr,
+    );
+  }
 
   @override
   ui.ViewPadding get padding =>

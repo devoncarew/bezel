@@ -21,21 +21,15 @@ class _SpySizingService implements WindowSizingService {
 
 void main() {
   group('WindowManagerSizingService.computeTargetSize', () {
-    test(
-      'portrait target width equals emulated width, height adds toolbar area',
-      () {
-        final profile = DeviceDatabase.defaultProfile; // iPhone 15: 393×852
-        final size = WindowManagerSizingService.computeTargetSize(
-          profile,
-          DeviceOrientation.portrait,
-        );
-        expect(size.width, profile.logicalSize.width);
-        expect(
-          size.height,
-          profile.logicalSize.height + 40,
-        ); // _kToolbarAreaHeight
-      },
-    );
+    test('portrait target matches emulated logical size exactly', () {
+      final profile = DeviceDatabase.defaultProfile; // iPhone 15: 393×852
+      final size = WindowManagerSizingService.computeTargetSize(
+        profile,
+        DeviceOrientation.portrait,
+      );
+      expect(size.width, profile.logicalSize.width);
+      expect(size.height, profile.logicalSize.height);
+    });
 
     test('landscape target uses swapped emulated dimensions', () {
       final profile = DeviceDatabase.defaultProfile;
@@ -45,17 +39,7 @@ void main() {
       );
       // Landscape swaps the emulated width/height.
       expect(landscape.width, profile.logicalSize.height);
-      expect(landscape.height, profile.logicalSize.width + 40);
-    });
-
-    test('target height exceeds emulated height by toolbar area', () {
-      final profile = DeviceDatabase.defaultProfile;
-      final size = WindowManagerSizingService.computeTargetSize(
-        profile,
-        DeviceOrientation.portrait,
-      );
-      expect(size.width, equals(profile.logicalSize.width));
-      expect(size.height, greaterThan(profile.logicalSize.height));
+      expect(landscape.height, profile.logicalSize.width);
     });
   });
 

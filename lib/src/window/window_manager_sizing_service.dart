@@ -6,10 +6,6 @@ import 'package:window_manager/window_manager.dart';
 import '../devices/device_profile.dart';
 import 'window_sizing_service.dart';
 
-/// Height reserved at the bottom of the window for the floating toolbar,
-/// including its bottom margin.
-const double _kToolbarAreaHeight = 40.0;
-
 /// Minimum window dimensions — prevents the window from shrinking to a
 /// non-interactive size when a very small device profile is selected.
 const ui.Size _kMinWindowSize = ui.Size(300.0, 400.0);
@@ -59,7 +55,7 @@ class WindowManagerSizingService implements WindowSizingService {
   /// screen-size clamping is applied.
   ///
   /// Window width matches the emulated logical width exactly (no bezel padding).
-  /// Window height adds [_kToolbarAreaHeight] for the bottom toolbar.
+  /// Window dimensions match the emulated logical size exactly.
   ///
   /// Exposed for unit testing without a real window.
   static ui.Size computeTargetSize(
@@ -67,7 +63,7 @@ class WindowManagerSizingService implements WindowSizingService {
     DeviceOrientation orientation,
   ) {
     final emulated = profile.logicalSizeForOrientation(orientation);
-    return ui.Size(emulated.width, emulated.height + _kToolbarAreaHeight);
+    return ui.Size(emulated.width, emulated.height);
   }
 
   /// Returns the logical size of the display the app is currently on.

@@ -3,13 +3,11 @@ import 'package:bezel/bezel.dart';
 import 'package:bezel/src/devices/device_database.dart';
 import 'package:flutter/material.dart';
 
-// TODO: Have the settings persist.
+// TODO: Have the currently selected device persist.
 
 // TODO: Use neomorphism?
 
-// TODO: When switching devices, resize the window based on the current DBR
-
-// TODO: tell the app that we're on android or iOS (mock the platform)
+// TODO: Tell the app that we're on android or iOS (mock the platform)
 
 void main() {
   Bezel.ensureInitialized();

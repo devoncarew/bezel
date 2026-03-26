@@ -16,19 +16,18 @@ import 'preview_toolbar.dart';
 /// to read clearly without the background feeling overly bright.
 const _kBackgroundColor = Color(0xFF4A4A52);
 
-/// Height reserved at the bottom of the window for the floating toolbar.
-///
-/// Must stay in sync with `_kToolbarAreaHeight` in
-/// `window_manager_sizing_service.dart`.
-const double _kToolbarAreaHeight = 40.0;
-
 /// Wraps the app in a device-frame preview UI.
 ///
 /// Uses [LayoutBuilder] + [ListenableBuilder] to react to both window-size
 /// changes and [PreviewController] state changes. Scales the [ScreenClipWidget]
-/// to fill the content area (available space minus the toolbar strip at the
-/// bottom), letterboxing with the background colour on whichever axis has
-/// leftover space.
+/// to fill the available area, letterboxing with the background colour on
+/// whichever axis has leftover space.
+///
+/// The floating toolbar overlaps the bottom edge of the device content.
+/// Because [PreviewFlutterView] reports a [physicalSize] derived purely from
+/// the emulated logical dimensions, the available area normally equals the
+/// emulated size and [computeScale] returns 1.0. If the user manually resizes
+/// the window, [computeScale] letterboxes the content to fit.
 ///
 /// Installed automatically by [PreviewBinding.wrapWithDefaultView]. Should not
 /// need to be used directly.
@@ -60,16 +59,7 @@ class PreviewOverlay extends StatelessWidget {
             builder: (context, constraints) {
               final available = constraints.biggest;
               final emulated = controller.emulatedLogicalSize;
-              // Reserve the bottom strip for the toolbar; scale content to fill
-              // the remaining area.
-              final contentArea = Size(
-                available.width,
-                (available.height - _kToolbarAreaHeight).clamp(
-                  1.0,
-                  double.infinity,
-                ),
-              );
-              final scale = computeScale(contentArea, emulated);
+              final scale = computeScale(available, emulated);
 
               // Directionality + Theme are provided here because the overlay
               // sits above the user's MaterialApp and has no such ancestors.
@@ -83,13 +73,9 @@ class PreviewOverlay extends StatelessWidget {
                       color: _kBackgroundColor,
                       child: Stack(
                         children: [
-                          // Content area: fills window above the toolbar strip.
-                          // Device frame is centered and letterboxed within it.
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: _kToolbarAreaHeight,
+                          // Device content — centered and letterboxed within
+                          // the full available area.
+                          Positioned.fill(
                             child: Center(
                               child: SizedBox(
                                 width: emulated.width * scale,
@@ -103,7 +89,8 @@ class PreviewOverlay extends StatelessWidget {
                             ),
                           ),
 
-                          // Floating toolbar — bottom-center with a small margin.
+                          // Floating toolbar — bottom-center with a small margin,
+                          // overlapping the bottom edge of the device content.
                           if (controller.toolbarVisible)
                             Positioned(
                               bottom: 8.0,
@@ -133,15 +120,15 @@ class PreviewOverlay extends StatelessWidget {
     );
   }
 
-  /// Computes the uniform scale factor to fit [emulated] inside [contentArea].
+  /// Computes the uniform scale factor to fit [emulated] inside [available].
   ///
   /// Returns the largest scale ≤ 1.0 such that the scaled emulated size fits
-  /// within [contentArea]. Returns 1.0 when the emulated size already fits.
-  static double computeScale(Size contentArea, Size emulated) {
+  /// within [available]. Returns 1.0 when the emulated size already fits.
+  static double computeScale(Size available, Size emulated) {
     return math
         .min(
-          contentArea.width / emulated.width,
-          contentArea.height / emulated.height,
+          available.width / emulated.width,
+          available.height / emulated.height,
         )
         .clamp(0.0, 1.0);
   }
