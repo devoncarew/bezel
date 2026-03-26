@@ -170,7 +170,7 @@ Refactor `DeviceFramePainter`:
 Update `DeviceFrameWidget` — `screenRectForSize` returns full bounds, child positioning
 simplifies. Consider renaming both files since they no longer paint a "device frame".
 
-### Step 4.3 — Move toolbar to bottom, make compact
+### Step 4.3 — Move toolbar to bottom, make compact [done]
 
 In `PreviewOverlay`, move the toolbar `Positioned` from `top: 8` to `bottom: 8`. The
 toolbar sits below the emulated content area, in the background/letterbox region.

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../preview_controller.dart';
 
 /// Border radius applied to the pill-shaped toolbar container.
-const _kPillRadius = BorderRadius.all(Radius.circular(28.0));
+const _kPillRadius = BorderRadius.all(Radius.circular(20.0));
 
 /// Background colour of the toolbar pill — semi-transparent dark.
 const _kBackgroundColor = Color(0xCC1A1A1A);
@@ -11,7 +11,7 @@ const _kBackgroundColor = Color(0xCC1A1A1A);
 /// Colour applied to toolbar icons and text.
 const _kForegroundColor = Color(0xFFFFFFFF);
 
-/// Floating pill-shaped toolbar rendered at the top of the preview overlay.
+/// Compact pill-shaped toolbar rendered at the bottom of the preview overlay.
 ///
 /// Shows the active device name (tapping will open the device picker — step
 /// 2.6), an orientation toggle, a reassemble button, and a passthrough-mode
@@ -38,7 +38,7 @@ class PreviewToolbar extends StatelessWidget {
           color: _kBackgroundColor,
           borderRadius: _kPillRadius,
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -68,7 +68,7 @@ class _DeviceNameButton extends StatelessWidget {
       mouseCursor: SystemMouseCursors.click,
       onTap: controller.toggleDevicePicker,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -104,7 +104,7 @@ class _ToolbarDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 1.0,
-      height: 24.0,
+      height: 18.0,
       margin: const EdgeInsets.symmetric(horizontal: 4.0),
       color: const Color(0x55FFFFFF),
     );
@@ -123,7 +123,9 @@ class _OrientationButton extends StatelessWidget {
     return IconButton(
       icon: const Icon(Icons.screen_rotation),
       color: _kForegroundColor,
-      iconSize: 20.0,
+      iconSize: 18.0,
+      padding: const EdgeInsets.all(6.0),
+      constraints: const BoxConstraints(),
       onPressed: controller.toggleOrientation,
     );
   }
@@ -137,7 +139,9 @@ class _ReassembleButton extends StatelessWidget {
     return IconButton(
       icon: const Icon(Icons.refresh),
       color: _kForegroundColor,
-      iconSize: 20.0,
+      iconSize: 18.0,
+      padding: const EdgeInsets.all(6.0),
+      constraints: const BoxConstraints(),
       onPressed: () => WidgetsBinding.instance.reassembleApplication(),
     );
   }
@@ -159,7 +163,9 @@ class _PassthroughButton extends StatelessWidget {
       color: controller.passthroughMode
           ? _kForegroundColor.withAlpha(0x99)
           : _kForegroundColor,
-      iconSize: 20.0,
+      iconSize: 18.0,
+      padding: const EdgeInsets.all(6.0),
+      constraints: const BoxConstraints(),
       onPressed: controller.togglePassthrough,
     );
   }

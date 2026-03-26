@@ -86,14 +86,14 @@ class PreviewOverlay extends StatelessWidget {
                             ),
                           ),
 
-                          // Floating toolbar — top-center with a small top margin.
+                          // Floating toolbar — bottom-center with a small margin.
                           if (controller.toolbarVisible)
                             Positioned(
-                              top: 8.0,
+                              bottom: 8.0,
                               left: 0,
                               right: 0,
                               child: Align(
-                                alignment: Alignment.topCenter,
+                                alignment: Alignment.bottomCenter,
                                 child: PreviewToolbar(controller: controller),
                               ),
                             ),
