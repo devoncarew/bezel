@@ -62,9 +62,9 @@ Updated `PreviewFlutterView`: `physicalSize` delegates to `_real` so the render 
 
 Created `lib/src/window/window_sizing_service.dart` — an `abstract interface` with a single `applyProfile` method — and `lib/src/window/window_manager_sizing_service.dart` — the production implementation that computes `emulatedSize + 80px frame padding + 60px toolbar`, clamps to 90% of the current display's logical size, then calls `windowManager.setMinimumSize` and `windowManager.setSize`. `PreviewController` accepts an optional `WindowSizingService` and calls it fire-and-forget on `setProfile` and `toggleOrientation`. `PreviewBinding` initialises `window_manager` in its constructor and wires up `WindowManagerSizingService`.
 
-### Step 2.5 — Preview toolbar
+### Step 2.5 — Preview toolbar [done]
 
-Create `lib/src/ui/preview_toolbar.dart`.
+Created `lib/src/ui/preview_toolbar.dart`.
 
 `class PreviewToolbar extends StatelessWidget` takes a `PreviewController`.
 
@@ -75,13 +75,18 @@ Renders a floating pill-shaped container with:
   `WidgetsBinding.instance.reassembleApplication()`
 - Pass-through toggle `IconButton` — hides the device frame and shows the raw app at its
   natural window size, letting developers momentarily inspect the unframed layout; toggling
-  again re-activates the preview. State lives in `PreviewController` (add a `passthroughMode`
-  bool, similar to `toolbarVisible`).
+  again re-activates the preview. State lives in `PreviewController` (`passthroughMode`
+  bool + `togglePassthrough()`).
 - Uses `Material` + `InkWell` for press feedback
 - Styled with a semi-transparent dark background, white icons/text, pill border radius
 
-Position the toolbar at the top-center of the `PreviewOverlay`'s stack, with a small top
-margin. It should float above the device frame.
+`PreviewOverlay` replaced the TODO placeholder with a `Positioned` toolbar at the top-center
+of its `Stack`. The toolbar is wrapped in `Theme(data: ThemeData(brightness: Brightness.dark))`
+so Material widgets render correctly above the user's `MaterialApp`. Tooltips were omitted
+because the toolbar sits above the user's widget tree and has no `Overlay` ancestor.
+`PreviewToolbar` wraps its build with `ListenableBuilder` so it rebuilds when the controller
+changes. `passthroughMode` in `PreviewOverlay` bypasses the frame entirely, rendering the
+raw child widget instead.
 
 ### Step 2.6 — Device picker popover
 

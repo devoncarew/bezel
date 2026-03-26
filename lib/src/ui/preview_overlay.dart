@@ -1,9 +1,11 @@
 import 'dart:math' as math;
 
+import 'package:flutter/material.dart' show Theme, ThemeData, Brightness;
 import 'package:flutter/widgets.dart';
 
 import '../frame/device_frame_widget.dart';
 import '../preview_controller.dart';
+import 'preview_toolbar.dart';
 
 /// Background colour shown behind the device frame.
 const _kBackgroundColor = Color(0xFF121212);
@@ -14,7 +16,7 @@ const _kBackgroundColor = Color(0xFF121212);
 /// changes and [PreviewController] state changes. Centers a [DeviceFrameWidget]
 /// scaled to fit the available space, with a dark matte background.
 ///
-/// Installed automatically by [PreviewBinding.attachRootWidget]. Should not
+/// Installed automatically by [PreviewBinding.wrapWithDefaultView]. Should not
 /// need to be used directly.
 class PreviewOverlay extends StatelessWidget {
   const PreviewOverlay({
@@ -40,33 +42,54 @@ class PreviewOverlay extends StatelessWidget {
             final emulated = controller.emulatedLogicalSize;
             final scale = _computeScale(available, emulated);
 
-            return ColoredBox(
-              color: _kBackgroundColor,
-              child: Stack(
-                textDirection: TextDirection.ltr,
-                children: [
-                  // Device frame, centered and scaled to fit.
-                  // ClipRect prevents overflow debug banners when the emulated
-                  // device is larger than the available window space.
-                  ClipRect(
-                    child: Center(
-                      child: SizedBox(
-                        width: emulated.width,
-                        height: emulated.height,
-                        child: Transform.scale(
-                          scale: scale,
-                          child: DeviceFrameWidget(
-                            profile: controller.activeProfile,
-                            orientation: controller.orientation,
-                            child: child,
+            if (controller.passthroughMode) {
+              return child;
+            }
+
+            // Directionality + Theme are provided here because the overlay
+            // sits above the user's MaterialApp and has no such ancestors.
+            return Directionality(
+              textDirection: TextDirection.ltr,
+              child: Theme(
+                data: ThemeData(brightness: Brightness.dark),
+                child: ColoredBox(
+                  color: _kBackgroundColor,
+                  child: Stack(
+                    children: [
+                      // Device frame, centered and scaled to fit.
+                      // ClipRect prevents overflow debug banners when the
+                      // emulated device is larger than the available window.
+                      ClipRect(
+                        child: Center(
+                          child: SizedBox(
+                            width: emulated.width,
+                            height: emulated.height,
+                            child: Transform.scale(
+                              scale: scale,
+                              child: DeviceFrameWidget(
+                                profile: controller.activeProfile,
+                                orientation: controller.orientation,
+                                child: child,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
 
-                  // TODO(step 2.5): PreviewToolbar goes here.
-                ],
+                      // Floating toolbar — top-center with a small top margin.
+                      if (controller.toolbarVisible)
+                        Positioned(
+                          top: 8.0,
+                          left: 0,
+                          right: 0,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: PreviewToolbar(controller: controller),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             );
           },

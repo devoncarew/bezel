@@ -99,6 +99,30 @@ void main() {
     });
   });
 
+  group('togglePassthrough', () {
+    test('passthroughMode starts false', () {
+      expect(controller.passthroughMode, isFalse);
+    });
+
+    test('activates passthrough', () {
+      controller.togglePassthrough();
+      expect(controller.passthroughMode, isTrue);
+    });
+
+    test('deactivates passthrough on second call', () {
+      controller.togglePassthrough();
+      controller.togglePassthrough();
+      expect(controller.passthroughMode, isFalse);
+    });
+
+    test('notifies listeners', () {
+      var notified = false;
+      controller.addListener(() => notified = true);
+      controller.togglePassthrough();
+      expect(notified, isTrue);
+    });
+  });
+
   group('emulatedLogicalSize', () {
     test('matches portrait logical size in portrait orientation', () {
       expect(

@@ -29,6 +29,7 @@ class PreviewController extends ChangeNotifier {
   DeviceProfile _activeProfile = DeviceDatabase.defaultProfile;
   DeviceOrientation _orientation = DeviceOrientation.portrait;
   bool _toolbarVisible = true;
+  bool _passthroughMode = false;
 
   /// The currently active device profile.
   DeviceProfile get activeProfile => _activeProfile;
@@ -38,6 +39,12 @@ class PreviewController extends ChangeNotifier {
 
   /// Whether the preview toolbar is visible.
   bool get toolbarVisible => _toolbarVisible;
+
+  /// Whether passthrough mode is active.
+  ///
+  /// When true, the device frame is hidden and the app is shown at its natural
+  /// window size. Toggling back to false re-activates the preview.
+  bool get passthroughMode => _passthroughMode;
 
   /// The emulated logical screen size for the current profile and orientation.
   Size get emulatedLogicalSize =>
@@ -74,6 +81,12 @@ class PreviewController extends ChangeNotifier {
   /// Toggles toolbar visibility and notifies listeners.
   void toggleToolbar() {
     _toolbarVisible = !_toolbarVisible;
+    notifyListeners();
+  }
+
+  /// Toggles passthrough mode and notifies listeners.
+  void togglePassthrough() {
+    _passthroughMode = !_passthroughMode;
     notifyListeners();
   }
 }

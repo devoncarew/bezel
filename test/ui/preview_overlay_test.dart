@@ -6,6 +6,7 @@ import 'package:bezel/src/devices/device_profile.dart';
 import 'package:bezel/src/frame/device_frame_widget.dart';
 import 'package:bezel/src/preview_controller.dart';
 import 'package:bezel/src/ui/preview_overlay.dart';
+import 'package:bezel/src/ui/preview_toolbar.dart';
 
 void main() {
   group('PreviewOverlay', () {
@@ -94,6 +95,77 @@ void main() {
           .widget<DeviceFrameWidget>(find.byType(DeviceFrameWidget))
           .orientation;
       expect(after, DeviceOrientation.landscape);
+    });
+
+    testWidgets('shows PreviewToolbar by default', (tester) async {
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: PreviewOverlay(
+            controller: controller,
+            child: const SizedBox.expand(),
+          ),
+        ),
+      );
+
+      expect(find.byType(PreviewToolbar), findsOneWidget);
+    });
+
+    testWidgets('hides PreviewToolbar when toolbarVisible is false', (
+      tester,
+    ) async {
+      controller.toggleToolbar();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: PreviewOverlay(
+            controller: controller,
+            child: const SizedBox.expand(),
+          ),
+        ),
+      );
+
+      expect(find.byType(PreviewToolbar), findsNothing);
+    });
+
+    testWidgets('passthrough mode shows child without device frame', (
+      tester,
+    ) async {
+      const key = ValueKey('app-child');
+      controller.togglePassthrough();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: PreviewOverlay(
+            controller: controller,
+            child: const SizedBox(key: key),
+          ),
+        ),
+      );
+
+      expect(find.byKey(key), findsOneWidget);
+      expect(find.byType(DeviceFrameWidget), findsNothing);
+    });
+
+    testWidgets('passthrough mode shows the orientation icon as active', (
+      tester,
+    ) async {
+      controller.togglePassthrough();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: PreviewOverlay(
+            controller: controller,
+            child: const SizedBox.expand(),
+          ),
+        ),
+      );
+
+      // In passthrough mode the overlay renders just the raw child — no toolbar.
+      expect(find.byType(PreviewToolbar), findsNothing);
     });
   });
 
