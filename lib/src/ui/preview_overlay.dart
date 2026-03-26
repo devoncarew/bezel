@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import '../frame/device_frame_widget.dart';
 import '../preview_controller.dart';
 import 'device_picker.dart';
+import 'macos_menu.dart';
 import 'preview_shortcuts.dart';
 import 'preview_toolbar.dart';
 
@@ -38,77 +39,80 @@ class PreviewOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: controller,
-      builder: (context, _) {
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final available = constraints.biggest;
-            final emulated = controller.emulatedLogicalSize;
-            final scale = _computeScale(available, emulated);
+    return MacosPreviewMenu(
+      controller: controller,
+      child: ListenableBuilder(
+        listenable: controller,
+        builder: (context, _) {
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final available = constraints.biggest;
+              final emulated = controller.emulatedLogicalSize;
+              final scale = _computeScale(available, emulated);
 
-            if (controller.passthroughMode) {
-              return child;
-            }
+              if (controller.passthroughMode) {
+                return child;
+              }
 
-            // Directionality + Theme are provided here because the overlay
-            // sits above the user's MaterialApp and has no such ancestors.
-            return Directionality(
-              textDirection: TextDirection.ltr,
-              child: Theme(
-                data: ThemeData(brightness: Brightness.dark),
-                child: PreviewShortcuts(
-                  controller: controller,
-                  child: ColoredBox(
-                    color: _kBackgroundColor,
-                    child: Stack(
-                      children: [
-                        // Device frame, centered and scaled to fit.
-                        // ClipRect prevents overflow debug banners when the
-                        // emulated device is larger than the available window.
-                        ClipRect(
-                          child: Center(
-                            child: SizedBox(
-                              width: emulated.width,
-                              height: emulated.height,
-                              child: Transform.scale(
-                                scale: scale,
-                                child: DeviceFrameWidget(
-                                  profile: controller.activeProfile,
-                                  orientation: controller.orientation,
-                                  child: child,
+              // Directionality + Theme are provided here because the overlay
+              // sits above the user's MaterialApp and has no such ancestors.
+              return Directionality(
+                textDirection: TextDirection.ltr,
+                child: Theme(
+                  data: ThemeData(brightness: Brightness.dark),
+                  child: PreviewShortcuts(
+                    controller: controller,
+                    child: ColoredBox(
+                      color: _kBackgroundColor,
+                      child: Stack(
+                        children: [
+                          // Device frame, centered and scaled to fit.
+                          // ClipRect prevents overflow debug banners when the
+                          // emulated device is larger than the available window.
+                          ClipRect(
+                            child: Center(
+                              child: SizedBox(
+                                width: emulated.width,
+                                height: emulated.height,
+                                child: Transform.scale(
+                                  scale: scale,
+                                  child: DeviceFrameWidget(
+                                    profile: controller.activeProfile,
+                                    orientation: controller.orientation,
+                                    child: child,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
 
-                        // Floating toolbar — top-center with a small top margin.
-                        if (controller.toolbarVisible)
-                          Positioned(
-                            top: 8.0,
-                            left: 0,
-                            right: 0,
-                            child: Align(
-                              alignment: Alignment.topCenter,
-                              child: PreviewToolbar(controller: controller),
+                          // Floating toolbar — top-center with a small top margin.
+                          if (controller.toolbarVisible)
+                            Positioned(
+                              top: 8.0,
+                              left: 0,
+                              right: 0,
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: PreviewToolbar(controller: controller),
+                              ),
                             ),
-                          ),
 
-                        // Device picker — covers the full overlay when open.
-                        if (controller.devicePickerVisible)
-                          Positioned.fill(
-                            child: DevicePicker(controller: controller),
-                          ),
-                      ],
+                          // Device picker — covers the full overlay when open.
+                          if (controller.devicePickerVisible)
+                            Positioned.fill(
+                              child: DevicePicker(controller: controller),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
