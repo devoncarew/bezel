@@ -146,6 +146,108 @@ shortcuts table, supported devices table, and known limitations section sourced 
 
 ---
 
+## Phase 4 — Refinement
+
+Feedback-driven improvements to the controls, rendering fidelity, and window sizing after
+initial MVP usage.
+
+### Step 4.1 — Add `screenCornerRadius` to DeviceProfile, remove `DeviceFrameStyle`
+
+Add a `screenCornerRadius` field (double, logical pixels) to `DeviceProfile`. Remove the
+`DeviceFrameStyle` enum and `frameStyle` field — cutout type is already captured by the
+`ScreenCutout` sealed hierarchy, making `frameStyle` redundant once bezels are removed.
+
+Update all profiles in `DeviceDatabase` with per-device corner radius values (approximate):
+- Modern iPhones (15 series): ~47pt
+- iPhone SE: 0
+- iPads: 0
+- Pixels: ~20–28dp (varies by model)
+- Samsung Galaxy S24: ~26dp
+
+Annotate uncertain values with source comments. Update all code that references
+`DeviceFrameStyle` or `frameStyle` (painter, widget, tests).
+
+### Step 4.2 — Remove device frame body/bezels, clip at corners and cutouts
+
+Refactor `DeviceFramePainter`:
+- Remove the device body rect (dark rounded rect), bezel padding (`_bezelsFor`), and
+  classic decorations (speaker slit, home button).
+- Screen rect = full painter bounds (no bezel deflation).
+- Clip content at rounded screen corners using the profile's `screenCornerRadius`.
+- Clip cutout regions from the canvas and fill with black.
+
+Update `DeviceFrameWidget` — `screenRectForSize` returns full bounds, child positioning
+simplifies. Consider renaming both files since they no longer paint a "device frame".
+
+### Step 4.3 — Move toolbar to bottom, make compact
+
+In `PreviewOverlay`, move the toolbar `Positioned` from `top: 8` to `bottom: 8`. The
+toolbar sits below the emulated content area, in the background/letterbox region.
+
+In `PreviewToolbar`, reduce vertical padding to make it shorter while keeping the pill
+shape and current button set.
+
+Update device picker positioning if needed. Update tests.
+
+### Step 4.4 — Update window sizing
+
+In `WindowManagerSizingService`:
+- Remove `_kFramePadding` (no bezels).
+- Window width = emulated logical width.
+- Window height = emulated logical height + toolbar area height.
+- DPR = host DPR (natural result of window width matching emulated width).
+
+Add bounds logic:
+- If window exceeds screen dimensions, reduce to fit.
+- If window position would place part of it off the right edge or bottom of the screen,
+  reposition the window to stay fully visible.
+
+Update `computeTargetSize` and tests.
+
+### Step 4.5 — Update overlay layout for aspect-ratio scaling
+
+Update `PreviewOverlay`:
+- Content area = available space minus toolbar height at bottom.
+- Scale emulated content to fill content area, maintaining aspect ratio.
+- Letterbox with background color (#4A4A52) on the dimension that doesn't fill.
+- Toolbar floats at bottom of window.
+
+Update `computeScale` for the new layout (no frame padding, toolbar at bottom). Update
+tests.
+
+### Step 4.6 — Update device profiles with accurate geometry
+
+**Android (Pixel):** Extract cutout geometry and screen corner radii from AOSP device tree
+configs (`config_mainBuiltInDisplayCutout`, `config_mainDisplayShape`). Convert physical
+pixel coordinates to logical pixels by dividing by the device's DPR. See
+`docs/cutout-geometry-research.md` for sources and conversion examples.
+
+**Android (Samsung):** Keep community-approximated values. Annotate as approximate in
+source.
+
+**iOS:** Update with community-measured cutout dimensions and corner radii (useyourloaf.com,
+iosresolution.com). Dynamic Island dimensions from community measurements (~126×37pt pill).
+
+Add source comments in `device_database.dart` for each profile's data provenance.
+
+### Step 4.7 (stretch) — Investigate platform emulation
+
+Research overriding `defaultTargetPlatform` to match the emulated device's platform
+(iOS device → `TargetPlatform.iOS`, Android → `TargetPlatform.android`). This would make
+Material adaptive widgets, scroll physics, and page transitions match the emulated device
+rather than the host OS.
+
+Investigate implications:
+- Material vs Cupertino adaptive widgets
+- Scroll physics (bouncing vs glow overscroll)
+- Page transitions and back swipe behavior
+- Any binding-level complications
+
+If viable, implement in `PreviewBinding` with clear documentation. If issues are found,
+document findings and recommend whether to proceed.
+
+---
+
 ## Phase ordering summary
 
 | Phase | What you get |
@@ -153,3 +255,4 @@ shortcuts table, supported devices table, and known limitations section sourced 
 | After Phase 1 | App runs inside a spoofed device environment; metrics are correct; no visual frame |
 | After Phase 2 | Full visual — device frame, floating toolbar, device picker, auto window sizing |
 | After Phase 3 | Keyboard shortcuts, macOS menu bar, animations, optional hot reload |
+| After Phase 4 | No device chrome, accurate screen clipping, toolbar at bottom, smarter window sizing |
