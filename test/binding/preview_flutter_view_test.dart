@@ -25,19 +25,15 @@ void main() {
     controller.dispose();
   });
 
-  test(
-    'devicePixelRatio is min of width-ratio and height-ratio',
-    () {
-      final realPhysical =
-          binding.platformDispatcher.implicitView!.physicalSize;
-      final emulatedLogical = controller.emulatedLogicalSize;
-      final expected = math.min(
-        realPhysical.width / emulatedLogical.width,
-        realPhysical.height / emulatedLogical.height,
-      );
-      expect(view.devicePixelRatio, closeTo(expected, 0.001));
-    },
-  );
+  test('devicePixelRatio is min of width-ratio and height-ratio', () {
+    final realPhysical = binding.platformDispatcher.implicitView!.physicalSize;
+    final emulatedLogical = controller.emulatedLogicalSize;
+    final expected = math.min(
+      realPhysical.width / emulatedLogical.width,
+      realPhysical.height / emulatedLogical.height,
+    );
+    expect(view.devicePixelRatio, closeTo(expected, 0.001));
+  });
 
   test('physicalSize reflects emulated dimensions at current DPR', () {
     final dpr = view.devicePixelRatio;
@@ -46,12 +42,15 @@ void main() {
     expect(view.physicalSize.height, closeTo(emulated.height * dpr, 0.001));
   });
 
-  test('physicalSize / devicePixelRatio always equals emulated logical size', () {
-    final emulated = controller.emulatedLogicalSize;
-    final logical = view.physicalSize / view.devicePixelRatio;
-    expect(logical.width, closeTo(emulated.width, 0.001));
-    expect(logical.height, closeTo(emulated.height, 0.001));
-  });
+  test(
+    'physicalSize / devicePixelRatio always equals emulated logical size',
+    () {
+      final emulated = controller.emulatedLogicalSize;
+      final logical = view.physicalSize / view.devicePixelRatio;
+      expect(logical.width, closeTo(emulated.width, 0.001));
+      expect(logical.height, closeTo(emulated.height, 0.001));
+    },
+  );
 
   test('devicePixelRatio updates when orientation toggles', () {
     final realPhysical = binding.platformDispatcher.implicitView!.physicalSize;
