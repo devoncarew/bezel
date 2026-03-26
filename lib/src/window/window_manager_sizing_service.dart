@@ -28,7 +28,12 @@ class WindowManagerSizingService implements WindowSizingService {
   ) async {
     await _ready;
 
-    final target = computeTargetSize(profile, orientation);
+    final titleBarHeight = await windowManager.getTitleBarHeight();
+    final emulated = computeTargetSize(profile, orientation);
+    // The window size includes the title bar; Flutter's content area is
+    // window height minus the title bar. Add it back so the content area
+    // exactly matches the emulated device height.
+    final target = ui.Size(emulated.width, emulated.height + titleBarHeight);
     final screen = _screenLogicalSize();
 
     final clamped = ui.Size(
