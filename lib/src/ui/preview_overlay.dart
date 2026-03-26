@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart' show Theme, ThemeData, Brightness;
 import 'package:flutter/widgets.dart';
 
-import '../frame/device_frame_widget.dart';
+import '../frame/screen_clip_widget.dart';
 import '../preview_controller.dart';
 import 'device_picker.dart';
 import 'macos_menu.dart';
@@ -19,7 +19,7 @@ const _kBackgroundColor = Color(0xFF4A4A52);
 /// Wraps the app in a device-frame preview UI.
 ///
 /// Uses [LayoutBuilder] + [ListenableBuilder] to react to both window-size
-/// changes and [PreviewController] state changes. Centers a [DeviceFrameWidget]
+/// changes and [PreviewController] state changes. Centers a [ScreenClipWidget]
 /// scaled to fit the available space, with a dark matte background.
 ///
 /// Installed automatically by [PreviewBinding.wrapWithDefaultView]. Should not
@@ -76,7 +76,7 @@ class PreviewOverlay extends StatelessWidget {
                                 height: emulated.height,
                                 child: Transform.scale(
                                   scale: scale,
-                                  child: DeviceFrameWidget(
+                                  child: ScreenClipWidget(
                                     profile: controller.activeProfile,
                                     orientation: controller.orientation,
                                     child: child,

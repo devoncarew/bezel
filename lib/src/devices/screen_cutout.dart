@@ -3,8 +3,8 @@ import 'dart:ui' show Size;
 /// Models the physical camera cutout geometry for a device screen.
 ///
 /// Cutout coordinates are expressed in logical pixels from the top-left corner
-/// of the screen area. Used by [DeviceFramePainter] to clip and decorate the
-/// camera housing region.
+/// of the screen area. Used by [ScreenClipPainter] to clip the camera housing
+/// region from the canvas.
 sealed class ScreenCutout {
   const ScreenCutout();
 
