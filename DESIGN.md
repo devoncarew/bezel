@@ -28,9 +28,9 @@ font hinting fidelity are out of scope.
 possible. Spoofing happens below the framework via a custom binding, not by injecting wrapper
 widgets that can subtly affect layout.
 
-**2. Minimal chrome.** The UI surface is a small floating toolbar plus a device frame. No
-drawers, no settings panels, no plugin slots. Everything non-essential is behind a keyboard
-shortcut or omitted entirely.
+**2. Minimal chrome.** The UI surface is a small floating toolbar at the bottom of the
+window. No device case rendering, no drawers, no settings panels, no plugin slots. Everything
+non-essential is behind a keyboard shortcut or omitted entirely.
 
 **3. Sensible defaults, no configuration required.** Drop in two lines — a binding initializer
 and a `runApp` wrapper call — and get a working preview. Device selection, window sizing, and
@@ -108,21 +108,20 @@ issues. DPR has minimal impact on layout:
 When the user selects a device or toggles orientation, the window is resized to give the
 app a logical canvas that matches the emulated device's logical dimensions:
 
-1. Compute the target window size: emulated logical size + frame chrome padding + toolbar
-   height.
-2. If the target fits within 90% of the available screen, call
-   `windowManager.setSize(targetSize)` (logical pixels).
-3. If it doesn't fit (e.g. large tablet on a small laptop), clamp to 90% of the screen and
-   apply `Transform.scale` to fit the device frame within the window. The app still receives
-   the emulated logical dimensions; only the visual frame is scaled down.
-4. Per-device window sizes chosen by the user are remembered for the session.
+1. Compute the target window size: emulated logical width × (emulated logical height +
+   toolbar area height). No frame padding — the emulated content fills the window directly.
+2. If the target exceeds the available screen dimensions, reduce to fit.
+3. If the computed window position would place part of it off the right edge or bottom of
+   the screen, reposition the window to stay fully visible.
+4. The effective DPR equals the host DPR (e.g. 2.0 on Retina) since the window width
+   matches the emulated logical width.
 
 **Reactive data flow — the same path for both programmatic and manual resizes:**
 
 ```
 [device selected or orientation toggled]
         ↓
-compute target window size (emulated logical size + chrome)
+compute target window size (emulated logical size + toolbar height)
         ↓
 windowManager.setSize(targetLogicalSize)
         ↓                                     ← also fires on manual resize
@@ -136,11 +135,11 @@ Flutter re-lays out app at emulatedLogicalSize with updated DPR
 ```
 
 **Manual resize behavior:** when the user drags the window to a different size, the emulated
-logical dimensions remain fixed and the device frame letterboxes within the available space.
-The app layout stays stable; only the DPR floats up or down with the window size. Enlarging
-the window gives a higher effective DPR (more "zoom" for inspecting details); shrinking it
-gives a lower one. The preview does **not** reflow the app into the new window dimensions —
-that would break the "I'm emulating this specific device" premise.
+logical dimensions remain fixed. The emulated content scales uniformly to fill as much of
+the available space as possible while maintaining the correct aspect ratio. Letterboxing
+(the background color) appears on the dimension that doesn't fill. The toolbar remains at
+the bottom of the window. The preview does **not** reflow the app into the new window
+dimensions — that would break the "I'm emulating this specific device" premise.
 
 ### Device Profile Database
 
@@ -160,14 +159,14 @@ Each profile contains:
 class DeviceProfile {
   final String id;
   final String name;
-  final DevicePlatform platform;     // iOS or android
-  final Size logicalSize;            // portrait logical pixels
-  final double devicePixelRatio;     // nominal device DPR (informational; not reported
-                                     // directly — see DPR section above)
+  final DevicePlatform platform;        // iOS or android
+  final Size logicalSize;               // portrait logical pixels
+  final double devicePixelRatio;        // nominal device DPR (informational; not reported
+                                        // directly — see DPR section above)
   final EdgeInsets safeAreaPortrait;
   final EdgeInsets safeAreaLandscape;
-  final DeviceFrameStyle frameStyle; // notch / dynamicIsland / punchHole / classic
-  final ScreenCutout cutout;         // geometry of the camera cutout, if any
+  final double screenCornerRadius;      // device screen corner radius in logical pixels
+  final ScreenCutout cutout;            // geometry of the camera cutout, if any
 }
 ```
 
@@ -274,29 +273,34 @@ final class SideCutout extends ScreenCutout {
 }
 ```
 
-The `DeviceFramePainter` uses the cutout geometry in two ways:
+The screen clip painter uses the cutout geometry in two ways:
 
 1. **Clip path** — the cutout shape is subtracted from the screen rect using
    `canvas.clipPath`, so the app's own content is physically obscured by the cutout area
    rather than just overlaid. This ensures background colors and images interact with the
    cutout shape honestly.
-2. **Frame decoration** — the cutout outline is painted in the frame's bezel color over
-   the clip, giving it the appearance of a physical camera housing.
+2. **Black fill** — the cutout region is filled with black, giving it the appearance of a
+   physical camera housing or sensor bar.
 
-Cutout dimensions are approximate logical-pixel values sourced from manufacturer
-specifications and may be off by a few points. This is consistent with the "pretty good,
-few surprises" fidelity goal and is documented as an accepted limitation.
+The screen is also clipped at rounded corners using the profile's `screenCornerRadius`,
+so the background color shows through where a real device's screen would end. This makes
+content near screen edges render honestly without needing a decorative device frame.
+
+Cutout dimensions are approximate logical-pixel values. For Android (Pixel) devices,
+values are sourced from AOSP device tree configuration (`config_mainBuiltInDisplayCutout`),
+converted from physical pixels to logical pixels via the device's DPR. For iOS and other
+devices, values are community-measured approximations. Data sources are annotated per
+profile in `device_database.dart`.
 
 ### UI Components
 
-**Device Frame Widget** — a purely decorative `CustomPainter` that draws a phone/tablet
-outline appropriate to the profile's `frameStyle`. It clips its child to the screen area,
-subtracts the cutout shape from the clip path so the app content is honestly occluded by
-the camera housing, and renders the status bar region as an inert graphic. No interactive
-elements.
+**Screen Clip Widget** — clips the app content to the device's screen shape: rounded
+corners (using `screenCornerRadius`) and cutout regions. Cutouts are filled with black.
+No decorative device body or bezels are rendered — the emulated content fills the available
+area directly, with the preview background color visible through clipped corners.
 
-**Preview Toolbar** — a small floating pill widget anchored to the top-center of the window.
-Contains:
+**Preview Toolbar** — a compact floating pill widget anchored to the bottom-center of the
+window, below the emulated content area. Contains:
 
 - Device name + chevron → opens device picker popover
 - Orientation toggle icon button
@@ -359,16 +363,15 @@ lib/
       screen_cutout.dart         # ScreenCutout sealed class hierarchy
       device_database.dart
     frame/
-      device_frame_painter.dart
-      frame_style.dart
+      device_frame_painter.dart  # clips at screen corners and cutouts, fills cutouts black
+      device_frame_widget.dart   # positions child within clipped screen area
     ui/
       preview_toolbar.dart
       device_picker.dart
-      preview_overlay.dart       # orchestrates toolbar + frame
+      preview_overlay.dart       # orchestrates toolbar + screen clip
     window/
-      window_manager.dart        # thin wrapper around package:window_manager
-    hotreload/
-      reassemble_service.dart
+      window_sizing_service.dart
+      window_manager_sizing_service.dart
     preview_controller.dart      # ChangeNotifier: active profile, orientation, visibility
 ```
 
@@ -382,7 +385,7 @@ lib/
 | `flutter_test` (dev) | Reference for TestFlutterView / TestPlatformDispatcher patterns |
 
 Intentionally minimal. No state management packages — `ChangeNotifier` is sufficient.
-The device frame painting is hand-rolled `CustomPainter`, not an image asset dependency.
+The screen clipping is hand-rolled `CustomPainter`, not an image asset dependency.
 
 ---
 
@@ -393,9 +396,11 @@ The device frame painting is hand-rolled `CustomPainter`, not an image asset dep
   but their native rendering surfaces are unaffected
 - Safe area insets are static per profile; dynamic changes (e.g. keyboard appearance) are
   not emulated
-- Status bar content is decorative only
-- Cutout dimensions (size, position) are approximate logical-pixel values sourced from
-  manufacturer specifications; they may be off by a few points but are sufficient for
-  catching layout surprises before on-device testing
+- Cutout dimensions and screen corner radii are approximate values — authoritative AOSP
+  data for Pixels, community-measured for iOS and Samsung; may be off by a few points but
+  sufficient for catching layout surprises before on-device testing
 - `MediaQuery.devicePixelRatio` reflects the derived window DPR, not the device's nominal
   DPR; apps that branch on this value may behave differently than on a real device
+- `defaultTargetPlatform` is not currently overridden to match the emulated device's
+  platform; Material adaptive widgets, scroll physics, and page transitions reflect the
+  host OS rather than the emulated device (this is under investigation)

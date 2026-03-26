@@ -92,6 +92,7 @@ flutter test
 ```dart
 class _MyWidget extends StatelessWidget {
   const _MyWidget({required this.controller});
+
   final PreviewController controller;
 
   @override
@@ -110,7 +111,8 @@ class _MyWidget extends StatelessWidget {
 ### Adding a new device profile
 
 Add an entry to `device_database.dart`. The `DeviceProfile` constructor is the only
-thing that needs to change — no registration, no factory, no codegen.
+thing that needs to change — no registration, no factory, no codegen. Include a comment
+noting the data source for cutout geometry and corner radius.
 
 ```dart
 DeviceProfile(
@@ -121,7 +123,8 @@ DeviceProfile(
   devicePixelRatio: 2.625,
   safeAreaPortrait: const EdgeInsets.only(top: 48, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
-  frameStyle: DeviceFrameStyle.punchHole,
+  screenCornerRadius: 25,       // AOSP config_mainDisplayShape, converted from px
+  cutout: PunchHoleCutout(diameter: 11, topOffset: 13),
 ),
 ```
 
