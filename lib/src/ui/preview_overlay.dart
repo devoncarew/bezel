@@ -43,6 +43,7 @@ class PreviewOverlay extends StatelessWidget {
             return ColoredBox(
               color: _kBackgroundColor,
               child: Stack(
+                textDirection: TextDirection.ltr,
                 children: [
                   // Device frame, centered and scaled to fit.
                   // ClipRect prevents overflow debug banners when the emulated
