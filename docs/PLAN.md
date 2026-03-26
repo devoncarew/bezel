@@ -115,19 +115,21 @@ child in a `Shortcuts` + `Actions` pair. Defines three `Intent` subclasses
 `defaultTargetPlatform`). Wired into `PreviewOverlay` wrapping the `ColoredBox`/`Stack`
 content so it covers all keyboard focus within the overlay.
 
-### Step 3.2 — macOS menu bar integration
+### Step 3.2 — macOS menu bar integration [done]
 
-Create `lib/src/ui/macos_menu.dart`.
+Created `lib/src/ui/macos_menu.dart` — `class MacosPreviewMenu extends StatelessWidget`
+that wraps its child in a `PlatformMenuBar` on macOS (guarded by
+`defaultTargetPlatform == TargetPlatform.macOS`) and returns the child unchanged on all
+other platforms. Uses `ListenableBuilder` so the check-mark tracks the active profile in
+real time.
 
-`class MacosPreviewMenu extends StatelessWidget` — conditionally compiled for macOS only
-via `if (Platform.isMacOS)`.
+The "Preview" menu contains:
+- A "Device" submenu with iOS and Android profiles in separate `PlatformMenuItemGroup`s
+  (a native divider separates the two platforms). The active profile is prefixed with `✓`.
+- A second group with "Toggle Orientation" (⌘L) and "Reassemble" (⌘R) items.
 
-Uses `PlatformMenuBar` to add a "Preview" top-level menu with:
-- Device submenu listing all `DeviceDatabase.all` profiles (checkmark on active)
-- "Toggle Orientation" item with keyboard shortcut display
-- "Reassemble" item
-
-Integrate into `PreviewOverlay` as an additional root-level widget (macOS only).
+`MacosPreviewMenu` is integrated into `PreviewOverlay` wrapping the entire
+`ListenableBuilder` so the native menu bar is always present when the overlay is active.
 
 ### Step 3.3 — Smooth device transition animation
 
