@@ -65,21 +65,32 @@ class _DeviceNameButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: _kPillRadius,
+      mouseCursor: SystemMouseCursors.click,
       onTap: controller.toggleDevicePicker,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 160.0),
-          child: Text(
-            controller.activeProfile.name,
-            style: const TextStyle(
-              color: _kForegroundColor,
-              fontSize: 13.0,
-              fontWeight: FontWeight.w500,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 160.0),
+              child: Text(
+                controller.activeProfile.name,
+                style: const TextStyle(
+                  color: _kForegroundColor,
+                  fontSize: 13.0,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
             ),
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-          ),
+            const Icon(
+              Icons.arrow_drop_down,
+              color: _kForegroundColor,
+              size: 16.0,
+            ),
+          ],
         ),
       ),
     );

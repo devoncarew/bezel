@@ -9,7 +9,10 @@ import 'device_picker.dart';
 import 'preview_toolbar.dart';
 
 /// Background colour shown behind the device frame.
-const _kBackgroundColor = Color(0xFF121212);
+///
+/// A medium-dark neutral so the near-black device frame has enough contrast
+/// to read clearly without the background feeling overly bright.
+const _kBackgroundColor = Color(0xFF4A4A52);
 
 /// Wraps the app in a device-frame preview UI.
 ///
