@@ -195,7 +195,7 @@ Add bounds logic:
 
 Update `computeTargetSize` and tests.
 
-### Step 4.5 — Update overlay layout for aspect-ratio scaling
+### Step 4.5 — Update overlay layout for aspect-ratio scaling [done]
 
 Update `PreviewOverlay`:
 - Content area = available space minus toolbar height at bottom.

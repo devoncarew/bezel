@@ -203,32 +203,40 @@ void main() {
   });
 
   group('PreviewOverlay.computeScale', () {
-    test('returns 1.0 when device fits within 90% of available space', () {
-      // 390 <= 500 * 0.9 = 450, 844 <= 1000 * 0.9 = 900 → scale = 1.0
+    test('returns 1.0 when content area is larger than emulated size', () {
+      // 500 > 390 and 900 > 844 → fits, scale = 1.0
       final scale = PreviewOverlay.computeScale(
-        const Size(500, 1000),
+        const Size(500, 900),
         const Size(390, 844),
       );
       expect(scale, equals(1.0));
     });
 
-    test('scales down when device is larger than 90% of available space', () {
-      // Device same size as window → neither fits within 90%
-      const available = Size(390, 844);
+    test('returns 1.0 when content area exactly matches emulated size', () {
       const emulated = Size(390, 844);
-      final scale = PreviewOverlay.computeScale(available, emulated);
-      expect(scale, lessThan(1.0));
-      // Should be min(390/390, 844/844) * 0.9 = 0.9
-      expect(scale, closeTo(0.9, 0.001));
+      expect(PreviewOverlay.computeScale(emulated, emulated), equals(1.0));
     });
 
+    test(
+      'scales down to fit when content area is smaller than emulated size',
+      () {
+        // Content area is exactly half the emulated size → scale = 0.5
+        final scale = PreviewOverlay.computeScale(
+          const Size(195, 422),
+          const Size(390, 844),
+        );
+        expect(scale, closeTo(0.5, 0.001));
+      },
+    );
+
     test('scale is bounded by the tighter dimension', () {
-      // Width fits (200 <= 400 * 0.9 = 360) but height does not (900 > 600 * 0.9 = 540)
-      const available = Size(400, 600);
-      const emulated = Size(200, 900);
-      final scale = PreviewOverlay.computeScale(available, emulated);
-      // min(400/200, 600/900) * 0.9 = min(2.0, 0.667) * 0.9 = 0.6
-      expect(scale, closeTo(0.6, 0.001));
+      // Width fits (400 > 200) but height does not (600 < 900)
+      // → min(400/200, 600/900) = min(2.0, 0.667) → clamped to 0.667
+      final scale = PreviewOverlay.computeScale(
+        const Size(400, 600),
+        const Size(200, 900),
+      );
+      expect(scale, closeTo(0.667, 0.001));
     });
   });
 }

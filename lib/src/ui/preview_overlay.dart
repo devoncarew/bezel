@@ -16,11 +16,19 @@ import 'preview_toolbar.dart';
 /// to read clearly without the background feeling overly bright.
 const _kBackgroundColor = Color(0xFF4A4A52);
 
+/// Height reserved at the bottom of the window for the floating toolbar.
+///
+/// Must stay in sync with `_kToolbarAreaHeight` in
+/// `window_manager_sizing_service.dart`.
+const double _kToolbarAreaHeight = 40.0;
+
 /// Wraps the app in a device-frame preview UI.
 ///
 /// Uses [LayoutBuilder] + [ListenableBuilder] to react to both window-size
-/// changes and [PreviewController] state changes. Centers a [ScreenClipWidget]
-/// scaled to fit the available space, with a dark matte background.
+/// changes and [PreviewController] state changes. Scales the [ScreenClipWidget]
+/// to fill the content area (available space minus the toolbar strip at the
+/// bottom), letterboxing with the background colour on whichever axis has
+/// leftover space.
 ///
 /// Installed automatically by [PreviewBinding.wrapWithDefaultView]. Should not
 /// need to be used directly.
@@ -44,15 +52,24 @@ class PreviewOverlay extends StatelessWidget {
       child: ListenableBuilder(
         listenable: controller,
         builder: (context, _) {
+          if (controller.passthroughMode) {
+            return child;
+          }
+
           return LayoutBuilder(
             builder: (context, constraints) {
               final available = constraints.biggest;
               final emulated = controller.emulatedLogicalSize;
-              final scale = _computeScale(available, emulated);
-
-              if (controller.passthroughMode) {
-                return child;
-              }
+              // Reserve the bottom strip for the toolbar; scale content to fill
+              // the remaining area.
+              final contentArea = Size(
+                available.width,
+                (available.height - _kToolbarAreaHeight).clamp(
+                  1.0,
+                  double.infinity,
+                ),
+              );
+              final scale = computeScale(contentArea, emulated);
 
               // Directionality + Theme are provided here because the overlay
               // sits above the user's MaterialApp and has no such ancestors.
@@ -66,21 +83,21 @@ class PreviewOverlay extends StatelessWidget {
                       color: _kBackgroundColor,
                       child: Stack(
                         children: [
-                          // Device frame, centered and scaled to fit.
-                          // ClipRect prevents overflow debug banners when the
-                          // emulated device is larger than the available window.
-                          ClipRect(
+                          // Content area: fills window above the toolbar strip.
+                          // Device frame is centered and letterboxed within it.
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: _kToolbarAreaHeight,
                             child: Center(
                               child: SizedBox(
-                                width: emulated.width,
-                                height: emulated.height,
-                                child: Transform.scale(
-                                  scale: scale,
-                                  child: ScreenClipWidget(
-                                    profile: controller.activeProfile,
-                                    orientation: controller.orientation,
-                                    child: child,
-                                  ),
+                                width: emulated.width * scale,
+                                height: emulated.height * scale,
+                                child: ScreenClipWidget(
+                                  profile: controller.activeProfile,
+                                  orientation: controller.orientation,
+                                  child: child,
                                 ),
                               ),
                             ),
@@ -116,23 +133,16 @@ class PreviewOverlay extends StatelessWidget {
     );
   }
 
-  /// Computes the uniform scale factor to apply to the device frame.
+  /// Computes the uniform scale factor to fit [emulated] inside [contentArea].
   ///
-  /// Returns 1.0 when the emulated size fits within 90 % of [available].
-  /// Otherwise returns the largest scale that fits within [available] with a
-  /// 10 % margin.
-  static double computeScale(Size available, Size emulated) =>
-      _computeScale(available, emulated);
-
-  static double _computeScale(Size available, Size emulated) {
-    if (emulated.width <= available.width * 0.9 &&
-        emulated.height <= available.height * 0.9) {
-      return 1.0;
-    }
-    return math.min(
-          available.width / emulated.width,
-          available.height / emulated.height,
-        ) *
-        0.9;
+  /// Returns the largest scale ≤ 1.0 such that the scaled emulated size fits
+  /// within [contentArea]. Returns 1.0 when the emulated size already fits.
+  static double computeScale(Size contentArea, Size emulated) {
+    return math
+        .min(
+          contentArea.width / emulated.width,
+          contentArea.height / emulated.height,
+        )
+        .clamp(0.0, 1.0);
   }
 }
