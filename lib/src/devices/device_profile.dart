@@ -38,9 +38,6 @@ class DeviceProfile {
   /// Logical screen size in **portrait** orientation.
   final Size logicalSize;
 
-  /// Physical pixels per logical pixel.
-  final double devicePixelRatio;
-
   /// Safe area insets in portrait orientation.
   final EdgeInsets safeAreaPortrait;
 
@@ -62,7 +59,6 @@ class DeviceProfile {
     required this.name,
     required this.platform,
     required this.logicalSize,
-    required this.devicePixelRatio,
     required this.safeAreaPortrait,
     required this.safeAreaLandscape,
     required this.screenCornerRadius,

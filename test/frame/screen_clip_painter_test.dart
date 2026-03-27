@@ -17,7 +17,6 @@ void main() {
       name: 'Test',
       platform: DevicePlatform.iOS,
       logicalSize: logicalSize,
-      devicePixelRatio: 3.0,
       safeAreaPortrait: const EdgeInsets.only(top: 59, bottom: 34),
       safeAreaLandscape: const EdgeInsets.only(left: 59, right: 59, bottom: 21),
       screenCornerRadius: 0,

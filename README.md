@@ -29,6 +29,13 @@ Run your app on macOS, Linux, or Windows and the preview UI appears
 automatically. The call is a no-op in profile and release builds, so no code
 change is needed before shipping.
 
+## WidgetsFlutterBinding.ensureInitialized()
+
+If your app is already calling `WidgetsFlutterBinding.ensureInitialized()`,
+place the call to `Bezel.ensureInitialized()` before the `WidgetsFlutterBinding`
+call; you'll want to initialize Bezel first (and, you'll want to keep the call
+to WidgetsFlutterBinding so that your app keeps working in release mode).
+
 ## Keyboard shortcuts
 
 | Action | MacOS | Linux / Windows |

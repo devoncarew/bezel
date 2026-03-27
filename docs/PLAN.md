@@ -239,8 +239,29 @@ document findings and recommend whether to proceed.
 
 ### Step 4.8 - General cleanup
 
++ Find a list of the most commonly used mobile devices and compare that to the devices we ship with (done — see findings below)
++ Remove DeviceProfile.devicePixelRatio.
 - Verify the portrait and landscape safe areas for the included devices (the Pixel 7a, Pixel 8, and Pixel 8 Pro have already been verified)
-- Find a list of the most commonly used mobile devices and compare that to the devices we ship with
+- Experiment with a neumorphic design and fixed padding around the emulation
+  area.
+- Experiment with a slightly smaller (2.0 => 1.8) default DPR.
+- Consider having the currently selected device persist.
+- Consider renaming Bezel.ensureInitialized().
+
+### Step 4.9 - Device update
+
++ replace the Pixel 7a with the Pixel 8a
++ drop Pixel 8 pro
++ add Pixel 9
++ add Pixel 10
++ add Pixel 10 Pro
++ add Samsung Galaxy A15
+- add iPhone 14
+- add iPhone 17
+- add iPhone 17 Pro
+- add iPhone 17 Pro Max
+- add iPhone Air
+- add iPhone 17e
 
 ---
 
