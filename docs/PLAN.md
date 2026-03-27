@@ -14,7 +14,7 @@ A step is **done** when: the described files exist, `flutter analyze` is clean,
 
 Created `pubspec.yaml`, `analysis_options.yaml`, the `lib/src/` skeleton, and a stub
 `lib/bezel.dart` barrel file. Added an `example/` Flutter desktop app that calls
-`Bezel.ensureInitialized()` before `runApp`.
+`Bezel.configure()` before `runApp`.
 
 ### Step 1.2 — DeviceProfile model and ScreenCutout [done]
 
@@ -49,7 +49,7 @@ real dispatcher.
 ### Step 1.7 — PreviewBinding [done]
 
 Created `PreviewBinding` — a `WidgetsFlutterBinding` subclass that installs
-`PreviewPlatformDispatcher` and exposes `ensureInitialized()` / `controller`; updated
+`PreviewPlatformDispatcher` and exposes `configure()` / `controller`; updated
 `bezel.dart` to use a conditional import so all preview code is tree-shaken in release.
 
 ---
@@ -243,11 +243,11 @@ document findings and recommend whether to proceed.
 + Remove DeviceProfile.devicePixelRatio.
 + Experiment with a neumorphic design and fixed padding around the emulation
   area.
-- Verify the portrait and landscape safe areas for the included devices (the
-  Pixel 7a, Pixel 8, and Pixel 8 Pro have already been verified)
+- Manually verify the safe area for all devices.
+- Manually verify the notch areas for all devices.
 - Consider having the currently selected device persist.
 - Consider renaming from 'Bezel' to 'Flight Check' / flight_check.
-- Rename `Bezel.ensureInitialized()` => `Bezel.configure()`?
++ Renamed `Bezel.ensureInitialized()` => `Bezel.configure()`.
 
 ### Step 4.9 - Device update
 

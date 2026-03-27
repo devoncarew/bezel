@@ -13,13 +13,13 @@ Add `bezel` as a regular dependency:
 flutter pub add bezel
 ```
 
-In your `main.dart`, call `Bezel.ensureInitialized()` **before** `runApp`:
+In your `main.dart`, call `Bezel.configure()` **before** `runApp`:
 
 ```dart
 import 'package:bezel/bezel.dart';
 
 void main() {
-  Bezel.ensureInitialized();
+  Bezel.configure();
 
   runApp(const MyApp());
 }
@@ -37,7 +37,7 @@ in unconditionally:
 ## WidgetsFlutterBinding.ensureInitialized()
 
 If your app is already calling `WidgetsFlutterBinding.ensureInitialized()`,
-place the call to `Bezel.ensureInitialized()` before the `WidgetsFlutterBinding`
+place the call to `Bezel.configure()` before the `WidgetsFlutterBinding`
 call; you'll want to initialize Bezel first.
 
 ## Keyboard shortcuts

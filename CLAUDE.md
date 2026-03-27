@@ -49,7 +49,7 @@ The pattern is:
 
 ```dart
 // In bezel.dart:
-void ensureInitialized() {
+void configure() {
   assert(() {
     _debugEnsureInitialized();
     return true;

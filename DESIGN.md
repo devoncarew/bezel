@@ -337,7 +337,7 @@ import 'package:bezel/bezel.dart';
 void main() {
   // In debug mode: installs PreviewBinding, returns true.
   // In release/profile mode: no-op, returns false.
-  Bezel.ensureInitialized();
+  Bezel.configure();
   runApp(const MyApp());
 }
 ```
