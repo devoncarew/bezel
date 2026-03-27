@@ -9,9 +9,9 @@ import 'preview_platform_dispatcher.dart';
 /// A custom binding that installs [PreviewPlatformDispatcher], causing the
 /// framework to receive spoofed device metrics for the active [DeviceProfile].
 ///
-/// Installed by calling [ensureInitialized] before [runApp]. In release and
-/// profile builds the call is inside an `assert`, so the binding — and all
-/// preview code — is tree-shaken out entirely.
+/// Installed by calling [ensureInitialized] before [runApp]. The binding is
+/// never installed in release/profile builds (tree-shaken out entirely) or
+/// when running on a real mobile device (iOS/Android).
 class PreviewBinding extends WidgetsFlutterBinding {
   // _controller must be a field declaration (not assigned in the constructor
   // body) so that it is available when super() calls initInstances(), which
@@ -38,14 +38,9 @@ class PreviewBinding extends WidgetsFlutterBinding {
 
   /// The shared [PreviewController] for this session.
   ///
-  /// Throws if [ensureInitialized] has not yet been called.
-  static PreviewController get controller {
-    assert(
-      _instance != null,
-      'PreviewBinding.ensureInitialized() must be called before accessing controller.',
-    );
-    return _instance!._controller;
-  }
+  /// Returns `null` if [ensureInitialized] has not been called, or was skipped
+  /// because the app is running on a mobile platform.
+  static PreviewController? get controller => _instance?._controller;
 
   /// Injects [PreviewOverlay] inside the [View] widget so that [LayoutBuilder]
   /// receives real layout constraints from the render tree.

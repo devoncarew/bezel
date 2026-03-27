@@ -17,13 +17,18 @@ import 'src/preview_real.dart' if (dart.library.html) 'src/preview_stub.dart';
 /// Entry point for the bezel package.
 ///
 /// Call [ensureInitialized] before [runApp] to activate the device preview.
-/// In debug mode this installs [PreviewBinding]; in release/profile mode it
-/// is a no-op and is tree-shaken out entirely.
+/// The call is a no-op — and safe to leave in unconditionally — in three cases:
+///
+/// - **Release / profile builds**: the `assert` wrapper tree-shakes out all
+///   preview code at compile time.
+/// - **Mobile targets (iOS / Android)**: checked at runtime so the tool never
+///   interferes with real-device runs during development.
+/// - **Flutter Web**: excluded via a conditional import.
 abstract final class Bezel {
-  /// Activates the bezel preview in debug mode.
+  /// Activates the bezel preview.
   ///
-  /// Safe to call in release/profile builds — the assert ensures the
-  /// implementation is unreachable and tree-shaken out entirely.
+  /// Safe to call unconditionally — it is a no-op in release/profile builds,
+  /// on iOS/Android devices, and on Flutter Web.
   static void ensureInitialized() {
     assert(() {
       debugEnsureInitialized();
@@ -33,8 +38,8 @@ abstract final class Bezel {
 
   /// The active [PreviewController] for the current session.
   ///
-  /// Returns `null` in release/profile builds or before [ensureInitialized]
-  /// has been called.
+  /// Returns `null` in release/profile builds, on iOS/Android, on Flutter Web,
+  /// or before [ensureInitialized] has been called.
   static PreviewController? get controller {
     PreviewController? result;
     assert(() {

@@ -25,9 +25,14 @@ void main() {
 }
 ```
 
-Run your app on macOS, Linux, or Windows and the preview UI appears
-automatically. The call is a no-op in profile and release builds, so no code
-change is needed before shipping.
+Run your app on MacOS, Linux, or Windows and the preview UI appears
+automatically. The call is a no-op in several situations, so you can leave it
+in unconditionally:
+
+- **Release / profile builds** — tree-shaken out at compile time.
+- **iOS / Android** — skipped at runtime so real-device debug sessions are
+  unaffected.
+- **Flutter Web** — excluded via a conditional import.
 
 ## WidgetsFlutterBinding.ensureInitialized()
 
@@ -44,18 +49,20 @@ call; you'll want to initialize Bezel first.
 
 ## Supported devices
 
-| Device | Platform | Logical size | DPR |
-|---|---|---|---|
-| iPhone SE (3rd gen) | iOS | 375 × 667 | 2.0 |
-| iPhone 15 | iOS | 393 × 852 | 3.0 |
-| iPhone 15 Pro | iOS | 393 × 852 | 3.0 |
-| iPhone 15 Pro Max | iOS | 430 × 932 | 3.0 |
-| iPad (10th gen) | iOS | 820 × 1180 | 2.0 |
-| iPad mini (6th gen) | iOS | 744 × 1133 | 2.0 |
-| Samsung Galaxy S24 | Android | 411 × 915 | 3.0 |
-| Google Pixel 7a | Android | 411 × 914 | 2.625 |
-| Google Pixel 8 | Android | 411 × 914 | 2.625 |
-| Google Pixel 8 Pro | Android | 448 × 998 | 3.0 |
+| Device | Platform | Logical size |
+|---|---|---|
+| iPhone SE (3rd gen) | iOS | 375 × 667 |
+| iPhone 15 | iOS | 393 × 852 |
+| iPhone 15 Pro | iOS | 393 × 852 |
+| iPhone 15 Pro Max | iOS | 430 × 932 |
+| iPad (10th gen) | iOS | 820 × 1180 |
+| iPad mini (6th gen) | iOS | 744 × 1133 |
+| Samsung Galaxy S24 | Android | 411 × 915 |
+| Samsung Galaxy A15 | Android | 411 × 892 |
+| Google Pixel 8a | Android | 411 × 914 |
+| Google Pixel 9 | Android | 411 × 923 |
+| Google Pixel 10 | Android | 411 × 923 |
+| Google Pixel 10 Pro | Android | 410 × 914 |
 
 ## Known limitations
 
