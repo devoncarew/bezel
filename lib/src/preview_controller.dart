@@ -28,7 +28,7 @@ class PreviewController extends ChangeNotifier {
 
   DeviceProfile _activeProfile = DeviceDatabase.defaultProfile;
   DeviceOrientation _orientation = DeviceOrientation.portrait;
-  bool _toolbarVisible = true;
+
   bool _passthroughMode = false;
   bool _devicePickerVisible = false;
 
@@ -37,9 +37,6 @@ class PreviewController extends ChangeNotifier {
 
   /// The current screen orientation.
   DeviceOrientation get orientation => _orientation;
-
-  /// Whether the preview toolbar is visible.
-  bool get toolbarVisible => _toolbarVisible;
 
   /// Whether passthrough mode is active.
   ///
@@ -81,12 +78,6 @@ class PreviewController extends ChangeNotifier {
   /// in response to window-size changes, in addition to controller-state
   /// changes.
   void notifyMetricsChanged() => notifyListeners();
-
-  /// Toggles toolbar visibility and notifies listeners.
-  void toggleToolbar() {
-    _toolbarVisible = !_toolbarVisible;
-    notifyListeners();
-  }
 
   /// Toggles passthrough mode and notifies listeners.
   void togglePassthrough() {

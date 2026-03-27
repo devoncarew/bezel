@@ -46,30 +46,5 @@ void main() {
       await tester.tap(find.byIcon(Icons.screen_rotation));
       expect(toggled, isTrue);
     });
-
-    testWidgets('tapping passthrough button toggles passthroughMode', (
-      tester,
-    ) async {
-      await tester.pumpWidget(_wrap(PreviewToolbar(controller: controller)));
-
-      expect(controller.passthroughMode, isFalse);
-      await tester.tap(find.byIcon(Icons.phone_android));
-      expect(controller.passthroughMode, isTrue);
-    });
-
-    testWidgets('passthrough icon changes when passthroughMode is active', (
-      tester,
-    ) async {
-      await tester.pumpWidget(_wrap(PreviewToolbar(controller: controller)));
-
-      expect(find.byIcon(Icons.phone_android), findsOneWidget);
-      expect(find.byIcon(Icons.crop_free), findsNothing);
-
-      controller.togglePassthrough();
-      await tester.pump();
-
-      expect(find.byIcon(Icons.crop_free), findsOneWidget);
-      expect(find.byIcon(Icons.phone_android), findsNothing);
-    });
   });
 }

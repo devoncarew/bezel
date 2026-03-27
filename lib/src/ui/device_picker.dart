@@ -32,8 +32,13 @@ class DevicePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iOS = DeviceDatabase.forPlatform(DevicePlatform.iOS);
-    final android = DeviceDatabase.forPlatform(DevicePlatform.android);
+    final iOS = DeviceDatabase.all
+        .where((d) => d.platform == DevicePlatform.iOS && !d.tablet)
+        .toList();
+    final android = DeviceDatabase.all
+        .where((d) => d.platform == DevicePlatform.android && !d.tablet)
+        .toList();
+    final tablets = DeviceDatabase.all.where((d) => d.tablet).toList();
 
     return GestureDetector(
       // Tapping outside the card closes the picker.
@@ -71,6 +76,16 @@ class DevicePicker extends StatelessWidget {
                         ),
                       const _SectionHeader(label: 'Android'),
                       for (final profile in android)
+                        _DeviceItem(
+                          profile: profile,
+                          isActive: profile.id == controller.activeProfile.id,
+                          onTap: () {
+                            controller.setProfile(profile);
+                            controller.toggleDevicePicker();
+                          },
+                        ),
+                      const _SectionHeader(label: 'Tablets'),
+                      for (final profile in tablets)
                         _DeviceItem(
                           profile: profile,
                           isActive: profile.id == controller.activeProfile.id,
@@ -130,6 +145,11 @@ class _DeviceItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = profile.logicalSize;
+
+    final w = size.width.truncate();
+    final h = size.height.truncate();
+
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -137,9 +157,27 @@ class _DeviceItem extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: Text(
-                profile.name,
-                style: const TextStyle(color: _kForegroundColor, fontSize: 14),
+              child: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      profile.name,
+                      style: const TextStyle(
+                        color: _kForegroundColor,
+                        fontSize: 14,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${w}x$h',
+                    style: const TextStyle(
+                      color: _kForegroundColor,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
               ),
             ),
             if (isActive)

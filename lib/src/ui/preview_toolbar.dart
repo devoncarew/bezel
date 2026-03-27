@@ -8,8 +8,7 @@ const _kPillRadius = BorderRadius.all(Radius.circular(14.0));
 
 /// Compact pill-shaped toolbar rendered at the bottom of the preview overlay.
 ///
-/// Shows the active device name, an orientation toggle, a reassemble button,
-/// and a passthrough-mode toggle.
+/// Shows the active device name, an orientation toggle, and a reload button.
 class PreviewToolbar extends StatelessWidget {
   const PreviewToolbar({super.key, required this.controller});
 
@@ -38,8 +37,7 @@ class PreviewToolbar extends StatelessWidget {
               _DeviceNameButton(controller: controller),
               _ToolbarDivider(),
               _OrientationButton(controller: controller),
-              _ReassembleButton(),
-              _PassthroughButton(controller: controller),
+              _ReloadButton(),
             ],
           ),
         ),
@@ -125,9 +123,9 @@ class _OrientationButton extends StatelessWidget {
   }
 }
 
-// ── Reassemble button ─────────────────────────────────────────────────────────
+// ── Reload button ─────────────────────────────────────────────────────────
 
-class _ReassembleButton extends StatelessWidget {
+class _ReloadButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
@@ -137,30 +135,6 @@ class _ReassembleButton extends StatelessWidget {
       padding: const EdgeInsets.all(4.0),
       constraints: const BoxConstraints(),
       onPressed: () => WidgetsBinding.instance.reassembleApplication(),
-    );
-  }
-}
-
-// ── Passthrough toggle ────────────────────────────────────────────────────────
-
-class _PassthroughButton extends StatelessWidget {
-  const _PassthroughButton({required this.controller});
-
-  final PreviewController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(
-        controller.passthroughMode ? Icons.crop_free : Icons.phone_android,
-      ),
-      color: controller.passthroughMode
-          ? kPreviewForeground.withAlpha(0x99)
-          : kPreviewForeground,
-      iconSize: 14.0,
-      padding: const EdgeInsets.all(4.0),
-      constraints: const BoxConstraints(),
-      onPressed: controller.togglePassthrough,
     );
   }
 }

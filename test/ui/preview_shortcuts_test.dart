@@ -27,17 +27,6 @@ void main() {
   tearDown(() => controller.dispose());
 
   group('PreviewShortcuts', () {
-    testWidgets('Ctrl+\\ toggles toolbar', (tester) async {
-      await _pump(tester, controller);
-      expect(controller.toolbarVisible, isTrue);
-
-      await tester.sendKeyDownEvent(LogicalKeyboardKey.control);
-      await tester.sendKeyEvent(LogicalKeyboardKey.backslash);
-      await tester.sendKeyUpEvent(LogicalKeyboardKey.control);
-
-      expect(controller.toolbarVisible, isFalse);
-    });
-
     testWidgets('Ctrl+L toggles orientation', (tester) async {
       await _pump(tester, controller);
       expect(controller.orientation, isNot(isNull));

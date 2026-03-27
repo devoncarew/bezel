@@ -112,24 +112,6 @@ void main() {
       expect(find.byType(PreviewToolbar), findsOneWidget);
     });
 
-    testWidgets('hides PreviewToolbar when toolbarVisible is false', (
-      tester,
-    ) async {
-      controller.toggleToolbar();
-
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: PreviewOverlay(
-            controller: controller,
-            child: const SizedBox.expand(),
-          ),
-        ),
-      );
-
-      expect(find.byType(PreviewToolbar), findsNothing);
-    });
-
     testWidgets('passthrough mode shows child without device frame', (
       tester,
     ) async {

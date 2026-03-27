@@ -7,19 +7,14 @@ import '../preview_controller.dart';
 
 // ── Intents ───────────────────────────────────────────────────────────────────
 
-/// Fired by `Ctrl+\` / `Cmd+\` — toggles toolbar visibility.
-class ToggleToolbarIntent extends Intent {
-  const ToggleToolbarIntent();
-}
-
 /// Fired by `Ctrl+L` / `Cmd+L` — toggles portrait ↔ landscape.
 class ToggleOrientationIntent extends Intent {
   const ToggleOrientationIntent();
 }
 
 /// Fired by `Ctrl+R` / `Cmd+R` — reassembles the application.
-class ReassembleIntent extends Intent {
-  const ReassembleIntent();
+class ReloadIntent extends Intent {
+  const ReloadIntent();
 }
 
 // ── Widget ────────────────────────────────────────────────────────────────────
@@ -45,11 +40,6 @@ class PreviewShortcuts extends StatelessWidget {
     return Shortcuts(
       shortcuts: {
         SingleActivator(
-          LogicalKeyboardKey.backslash,
-          meta: useMeta,
-          control: !useMeta,
-        ): const ToggleToolbarIntent(),
-        SingleActivator(
           LogicalKeyboardKey.keyL,
           meta: useMeta,
           control: !useMeta,
@@ -58,17 +48,14 @@ class PreviewShortcuts extends StatelessWidget {
           LogicalKeyboardKey.keyR,
           meta: useMeta,
           control: !useMeta,
-        ): const ReassembleIntent(),
+        ): const ReloadIntent(),
       },
       child: Actions(
         actions: {
-          ToggleToolbarIntent: CallbackAction<ToggleToolbarIntent>(
-            onInvoke: (_) => controller.toggleToolbar(),
-          ),
           ToggleOrientationIntent: CallbackAction<ToggleOrientationIntent>(
             onInvoke: (_) => controller.toggleOrientation(),
           ),
-          ReassembleIntent: CallbackAction<ReassembleIntent>(
+          ReloadIntent: CallbackAction<ReloadIntent>(
             onInvoke: (_) => WidgetsBinding.instance.reassembleApplication(),
           ),
         },

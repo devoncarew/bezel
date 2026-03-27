@@ -54,46 +54,6 @@ class _HomePage extends StatefulWidget {
 class _HomePageState extends State<_HomePage> {
   int _selectedIndex = 0;
 
-  void _showDeviceInfo(BuildContext context) {
-    final mq = MediaQuery.of(context);
-    final platform = Theme.of(context).platform;
-    final size = mq.size;
-    final dpr = mq.devicePixelRatio;
-    final padding = mq.padding;
-
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Device info'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _InfoRow('Platform', platform.name),
-            _InfoRow(
-              'Screen size',
-              '${size.width.toStringAsFixed(0)} × '
-                  '${size.height.toStringAsFixed(0)} pt',
-            ),
-            _InfoRow('Device pixel ratio', dpr.toStringAsFixed(3)),
-            _InfoRow(
-              'Safe area (LTRB)',
-              '${padding.left.toStringAsFixed(0)}, '
-                  '${padding.top.toStringAsFixed(0)}, '
-                  '${padding.right.toStringAsFixed(0)}, '
-                  '${padding.bottom.toStringAsFixed(0)}',
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,13 +65,10 @@ class _HomePageState extends State<_HomePage> {
             icon: Icon(widget.isDark ? Icons.light_mode : Icons.dark_mode),
             onPressed: widget.onToggleTheme,
           ),
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: () => _showDeviceInfo(context),
-          ),
         ],
         actionsPadding: const EdgeInsets.symmetric(horizontal: 8),
       ),
+      drawer: const _DeviceInfoDrawer(),
       body: _pages[0],
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
@@ -120,6 +77,54 @@ class _HomePageState extends State<_HomePage> {
           NavigationDestination(icon: Icon(Icons.explore), label: 'Discover'),
           NavigationDestination(icon: Icon(Icons.star), label: 'Favourites'),
           NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+        ],
+      ),
+    );
+  }
+}
+
+class _DeviceInfoDrawer extends StatelessWidget {
+  const _DeviceInfoDrawer();
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final platform = Theme.of(context).platform;
+    final size = mq.size;
+    final dpr = mq.devicePixelRatio;
+    final padding = mq.padding;
+
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            child: Text(
+              'Device info',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                _InfoRow('Platform', platform.name),
+                _InfoRow(
+                  'Screen size',
+                  '${size.width.toStringAsFixed(0)} x '
+                      '${size.height.toStringAsFixed(0)} pt',
+                ),
+                _InfoRow('Device pixel ratio', dpr.toStringAsFixed(3)),
+                _InfoRow(
+                  'Safe area (LTRB)',
+                  '${padding.left.toStringAsFixed(0)}, '
+                      '${padding.top.toStringAsFixed(0)}, '
+                      '${padding.right.toStringAsFixed(0)}, '
+                      '${padding.bottom.toStringAsFixed(0)}',
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

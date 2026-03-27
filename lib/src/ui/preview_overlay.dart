@@ -65,6 +65,7 @@ class PreviewOverlay extends StatelessWidget {
                       Column(
                         children: [
                           const SizedBox(height: kPreviewPadding),
+
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
@@ -101,16 +102,16 @@ class PreviewOverlay extends StatelessWidget {
                               ),
                             ),
                           ),
-                          if (controller.toolbarVisible) ...[
-                            const SizedBox(height: kPreviewPadding),
-                            SizedBox(
-                              height: kToolbarHeight,
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: PreviewToolbar(controller: controller),
-                              ),
+
+                          const SizedBox(height: kPreviewPadding),
+                          SizedBox(
+                            height: kToolbarHeight,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: PreviewToolbar(controller: controller),
                             ),
-                          ],
+                          ),
+
                           const SizedBox(height: kPreviewPadding),
                         ],
                       ),

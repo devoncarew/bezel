@@ -4,13 +4,16 @@ import 'package:flutter/widgets.dart';
 const Color kPreviewBackground = Color(0xFF606068);
 
 /// Foreground (icon / text) colour for preview UI controls.
-const Color kPreviewForeground = Color(0xFFFFFFFF);
+const Color kPreviewForeground = Color(0xFFCCCCCC);
 
 /// Dark shadow colour for neumorphic raised surfaces (bottom-right offset).
 const Color kPreviewShadowDark = Color(0xFF46464E);
 
 /// Light shadow colour for neumorphic raised surfaces (top-left offset).
 const Color kPreviewShadowLight = Color(0xFF7A7A84);
+
+/// Border colour drawn between the surface contents and the drop shadow.
+const Color kPreviewBorder = Color(0xFF636374);
 
 /// Uniform padding (logical pixels) around the device frame and between the
 /// frame and the toolbar row.
@@ -53,6 +56,7 @@ class RaisedSurface extends StatelessWidget {
       decoration: BoxDecoration(
         color: kPreviewBackground,
         borderRadius: borderRadius,
+        border: Border.all(color: kPreviewBorder),
         boxShadow: [
           BoxShadow(
             color: kPreviewShadowDark,

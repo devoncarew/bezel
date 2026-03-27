@@ -54,6 +54,9 @@ class DeviceProfile {
   /// Camera cutout geometry in portrait orientation.
   final ScreenCutout cutout;
 
+  /// Whether this device is a tablet.
+  final bool tablet;
+
   const DeviceProfile({
     required this.id,
     required this.name,
@@ -63,6 +66,7 @@ class DeviceProfile {
     required this.safeAreaLandscape,
     required this.screenCornerRadius,
     required this.cutout,
+    this.tablet = false,
   });
 
   /// Returns the logical screen size for [orientation].

@@ -23,10 +23,6 @@ void main() {
     test('orientation is portrait', () {
       expect(controller.orientation, DeviceOrientation.portrait);
     });
-
-    test('toolbarVisible is true', () {
-      expect(controller.toolbarVisible, isTrue);
-    });
   });
 
   group('setProfile', () {
@@ -75,26 +71,6 @@ void main() {
       var notified = false;
       controller.addListener(() => notified = true);
       controller.toggleOrientation();
-      expect(notified, isTrue);
-    });
-  });
-
-  group('toggleToolbar', () {
-    test('hides the toolbar', () {
-      controller.toggleToolbar();
-      expect(controller.toolbarVisible, isFalse);
-    });
-
-    test('shows the toolbar again', () {
-      controller.toggleToolbar();
-      controller.toggleToolbar();
-      expect(controller.toolbarVisible, isTrue);
-    });
-
-    test('notifies listeners', () {
-      var notified = false;
-      controller.addListener(() => notified = true);
-      controller.toggleToolbar();
       expect(notified, isTrue);
     });
   });
