@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:bezel/src/ui/preview_theme.dart';
 import 'package:flutter/widgets.dart' show Offset, WidgetsBinding;
 import 'package:window_manager/window_manager.dart';
 
@@ -44,8 +45,8 @@ class WindowManagerSizingService implements WindowSizingService {
     await windowManager.setMinimumSize(_kMinWindowSize);
     await windowManager.setSize(clamped);
 
-    // Reposition the window if it would extend off the right or bottom edge
-    // of the screen after the resize.
+    // Reposition the window if it would extend off the right or bottom edge of
+    // the screen after the resize.
     final pos = await windowManager.getPosition();
     final maxLeft = screen.width - clamped.width;
     final maxTop = screen.height - clamped.height;
@@ -68,7 +69,10 @@ class WindowManagerSizingService implements WindowSizingService {
     DeviceOrientation orientation,
   ) {
     final emulated = profile.logicalSizeForOrientation(orientation);
-    return ui.Size(emulated.width, emulated.height);
+    return ui.Size(
+      emulated.width + 2 * kPreviewPadding,
+      emulated.height + 3 * kPreviewPadding + kToolbarHeight,
+    );
   }
 
   /// Returns the logical size of the display the app is currently on.
@@ -77,7 +81,10 @@ class WindowManagerSizingService implements WindowSizingService {
   static ui.Size _screenLogicalSize() {
     final display =
         WidgetsBinding.instance.platformDispatcher.implicitView?.display;
-    if (display == null) return const ui.Size(1920, 1080);
+    if (display == null) {
+      return const ui.Size(1920, 1080);
+    }
+
     // display.size is in physical pixels; divide by DPR to get logical.
     return display.size / display.devicePixelRatio;
   }

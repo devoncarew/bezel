@@ -8,26 +8,19 @@ import '../preview_controller.dart';
 import 'device_picker.dart';
 import 'macos_menu.dart';
 import 'preview_shortcuts.dart';
+import 'preview_theme.dart';
 import 'preview_toolbar.dart';
-
-/// Background colour shown behind the device frame.
-///
-/// A medium-dark neutral so the near-black device frame has enough contrast
-/// to read clearly without the background feeling overly bright.
-const _kBackgroundColor = Color(0xFF4A4A52);
 
 /// Wraps the app in a device-frame preview UI.
 ///
-/// Uses [LayoutBuilder] + [ListenableBuilder] to react to both window-size
-/// changes and [PreviewController] state changes. Scales the [ScreenClipWidget]
-/// to fill the available area, letterboxing with the background colour on
-/// whichever axis has leftover space.
+/// Layout (top to bottom):
+///   [kPreviewPadding] — [device area, kPreviewPadding left/right] —
+///   [kPreviewPadding] — [toolbar] — [kPreviewPadding]
 ///
-/// The floating toolbar overlaps the bottom edge of the device content.
-/// Because [PreviewFlutterView] reports a [physicalSize] derived purely from
-/// the emulated logical dimensions, the available area normally equals the
-/// emulated size and [computeScale] returns 1.0. If the user manually resizes
-/// the window, [computeScale] letterboxes the content to fit.
+/// [ListenableBuilder] rebuilds on [PreviewController] changes. The device
+/// area uses an inner [LayoutBuilder] so [computeScale] operates on the actual
+/// available device space (already accounting for padding) rather than the
+/// full window size.
 ///
 /// Installed automatically by [PreviewBinding.wrapWithDefaultView]. Should not
 /// need to be used directly.
@@ -55,65 +48,83 @@ class PreviewOverlay extends StatelessWidget {
             return child;
           }
 
-          return LayoutBuilder(
-            builder: (context, constraints) {
-              final available = constraints.biggest;
-              final emulated = controller.emulatedLogicalSize;
-              final scale = computeScale(available, emulated);
-
-              // Directionality + Theme are provided here because the overlay
-              // sits above the user's MaterialApp and has no such ancestors.
-              return Directionality(
-                textDirection: TextDirection.ltr,
-                child: Theme(
-                  data: ThemeData(brightness: Brightness.dark),
-                  child: PreviewShortcuts(
-                    controller: controller,
-                    child: ColoredBox(
-                      color: _kBackgroundColor,
-                      child: Stack(
+          // Directionality + Theme are provided here because the overlay
+          // sits above the user's MaterialApp and has no such ancestors.
+          return Directionality(
+            textDirection: TextDirection.ltr,
+            child: Theme(
+              data: ThemeData(brightness: Brightness.dark),
+              child: PreviewShortcuts(
+                controller: controller,
+                child: ColoredBox(
+                  color: kPreviewBackground,
+                  child: Stack(
+                    children: [
+                      // Main column: padding → device area → padding →
+                      // toolbar → padding.
+                      Column(
                         children: [
-                          // Device content — centered and letterboxed within
-                          // the full available area.
-                          Positioned.fill(
-                            child: Center(
-                              child: SizedBox(
-                                width: emulated.width * scale,
-                                height: emulated.height * scale,
-                                child: ScreenClipWidget(
-                                  profile: controller.activeProfile,
-                                  orientation: controller.orientation,
-                                  child: child,
-                                ),
+                          const SizedBox(height: kPreviewPadding),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: kPreviewPadding,
+                              ),
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  final emulated =
+                                      controller.emulatedLogicalSize;
+                                  final scale = computeScale(
+                                    constraints.biggest,
+                                    emulated,
+                                  );
+                                  return Center(
+                                    child: RaisedSurface(
+                                      borderRadius: BorderRadius.circular(
+                                        controller
+                                            .activeProfile
+                                            .screenCornerRadius,
+                                      ),
+                                      height: 6,
+                                      child: SizedBox(
+                                        width: emulated.width * scale,
+                                        height: emulated.height * scale,
+                                        child: ScreenClipWidget(
+                                          profile: controller.activeProfile,
+                                          orientation: controller.orientation,
+                                          child: child,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                           ),
-
-                          // Floating toolbar — bottom-center with a small margin,
-                          // overlapping the bottom edge of the device content.
-                          if (controller.toolbarVisible)
-                            Positioned(
-                              bottom: 8.0,
-                              left: 0,
-                              right: 0,
+                          if (controller.toolbarVisible) ...[
+                            const SizedBox(height: kPreviewPadding),
+                            SizedBox(
+                              height: kToolbarHeight,
                               child: Align(
-                                alignment: Alignment.bottomCenter,
+                                alignment: Alignment.center,
                                 child: PreviewToolbar(controller: controller),
                               ),
                             ),
-
-                          // Device picker — covers the full overlay when open.
-                          if (controller.devicePickerVisible)
-                            Positioned.fill(
-                              child: DevicePicker(controller: controller),
-                            ),
+                          ],
+                          const SizedBox(height: kPreviewPadding),
                         ],
                       ),
-                    ),
+
+                      // Device picker — covers the full overlay when open.
+                      if (controller.devicePickerVisible)
+                        Positioned.fill(
+                          child: DevicePicker(controller: controller),
+                        ),
+                    ],
                   ),
                 ),
-              );
-            },
+              ),
+            ),
           );
         },
       ),

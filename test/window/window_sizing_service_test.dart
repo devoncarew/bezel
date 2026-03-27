@@ -21,25 +21,24 @@ class _SpySizingService implements WindowSizingService {
 
 void main() {
   group('WindowManagerSizingService.computeTargetSize', () {
-    test('portrait target matches emulated logical size exactly', () {
-      final profile = DeviceDatabase.defaultProfile; // iPhone 15: 393×852
+    test('portrait target adds padding and toolbar to emulated size', () {
+      final profile = DeviceDatabase.defaultProfile;
       final size = WindowManagerSizingService.computeTargetSize(
         profile,
         DeviceOrientation.portrait,
       );
-      expect(size.width, profile.logicalSize.width);
-      expect(size.height, profile.logicalSize.height);
+      expect(size.width, profile.logicalSize.width + 24); // 2 × 12pt padding
+      expect(size.height, profile.logicalSize.height + 68); // 3×12 + 32 toolbar
     });
 
-    test('landscape target uses swapped emulated dimensions', () {
+    test('landscape target uses swapped emulated dimensions plus padding', () {
       final profile = DeviceDatabase.defaultProfile;
       final landscape = WindowManagerSizingService.computeTargetSize(
         profile,
         DeviceOrientation.landscape,
       );
-      // Landscape swaps the emulated width/height.
-      expect(landscape.width, profile.logicalSize.height);
-      expect(landscape.height, profile.logicalSize.width);
+      expect(landscape.width, profile.logicalSize.height + 24);
+      expect(landscape.height, profile.logicalSize.width + 68);
     });
   });
 

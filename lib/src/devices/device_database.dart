@@ -150,6 +150,46 @@ const List<DeviceProfile> kDeviceProfiles = [
     cutout: PunchHoleCutout(diameter: 10, topOffset: 12),
   ),
 
+  // Pixel 7a (codename: lynx).
+  // Cutout: AOSP config_mainBuiltInDisplayCutout, lynx device tree.
+  //   Circle ~28px physical diameter, center ~34px from screen top.
+  //   28px / 2.625 DPR ≈ 11dp diameter; 34px / 2.625 ≈ 13dp center Y.
+  // Corner radius: ~22pt (community measurement; AOSP config_mainDisplayShape
+  //   for lynx not publicly indexed at time of authoring).
+  // Safe area portrait: status bar 24dp covers the cutout
+  //   (cutout bottom = topOffset + radius = 13 + 5.5 = 18.5dp).
+  // Safe area landscape: punch hole rotates to left edge; left inset =
+  //   edgeOffset + diameter = 13 + 11 = 24dp.
+  DeviceProfile(
+    id: 'pixel_7a',
+    name: 'Google Pixel 7a',
+    platform: DevicePlatform.android,
+    logicalSize: Size(411, 914),
+    safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
+    safeAreaLandscape: EdgeInsets.only(left: 24, bottom: 24),
+    screenCornerRadius: 22,
+    cutout: PunchHoleCutout(diameter: 11, topOffset: 13),
+  ),
+
+  // Pixel 8 (codename: shiba).
+  // Cutout: AOSP config_mainBuiltInDisplayCutout, shiba device tree.
+  //   Circle ~28px physical diameter, center ~34px from screen top.
+  //   28px / 2.625 DPR ≈ 11dp diameter; 34px / 2.625 ≈ 13dp center Y.
+  // Corner radius: ~25pt (AOSP config_mainDisplayShape, shiba;
+  //   physical arc ~65px / DPR 2.625 ≈ 25dp).
+  // Safe area portrait: cutout bottom = 13 + 5.5 = 18.5dp < 24dp status bar.
+  // Safe area landscape: left = edgeOffset + diameter = 13 + 11 = 24dp.
+  DeviceProfile(
+    id: 'pixel_8',
+    name: 'Google Pixel 8',
+    platform: DevicePlatform.android,
+    logicalSize: Size(411, 914),
+    safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
+    safeAreaLandscape: EdgeInsets.only(left: 24, bottom: 24),
+    screenCornerRadius: 25,
+    cutout: PunchHoleCutout(diameter: 11, topOffset: 13),
+  ),
+
   // Pixel 8a (codename: akita).
   // Cutout: AOSP config_mainBuiltInDisplayCutout, akita device tree.
   //   m 573.22,68.71 a 33.72,33.72 0 0 0 -67.43,0 ... Z @left
@@ -171,25 +211,6 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(left: 52, bottom: 24),
     screenCornerRadius: 37,
     cutout: PunchHoleCutout(diameter: 26, topOffset: 26),
-  ),
-
-  // Pixel 8 (codename: shiba).
-  // Cutout: AOSP config_mainBuiltInDisplayCutout, shiba device tree.
-  //   Circle ~28px physical diameter, center ~34px from screen top.
-  //   28px / 2.625 DPR ≈ 11dp diameter; 34px / 2.625 ≈ 13dp center Y.
-  // Corner radius: ~25pt (AOSP config_mainDisplayShape, shiba;
-  //   physical arc ~65px / DPR 2.625 ≈ 25dp).
-  // Safe area portrait: cutout bottom = 13 + 5.5 = 18.5dp < 24dp status bar.
-  // Safe area landscape: left = edgeOffset + diameter = 13 + 11 = 24dp.
-  DeviceProfile(
-    id: 'pixel_8',
-    name: 'Google Pixel 8',
-    platform: DevicePlatform.android,
-    logicalSize: Size(411, 914),
-    safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
-    safeAreaLandscape: EdgeInsets.only(left: 24, bottom: 24),
-    screenCornerRadius: 25,
-    cutout: PunchHoleCutout(diameter: 11, topOffset: 13),
   ),
 
   // Pixel 9 (codename: tokay, in caimito repo).
@@ -282,5 +303,5 @@ abstract final class DeviceDatabase {
   /// The default profile used when no selection has been made.
   // todo: Switch back to an iphone device.
   // static DeviceProfile get defaultProfile => findById('iphone_15')!;
-  static DeviceProfile get defaultProfile => findById('pixel_8a')!;
+  static DeviceProfile get defaultProfile => findById('pixel_7a')!;
 }

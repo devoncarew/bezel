@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../preview_controller.dart';
+import 'preview_theme.dart';
 
 /// Border radius applied to the pill-shaped toolbar container.
 const _kPillRadius = BorderRadius.all(Radius.circular(14.0));
 
-/// Background colour of the toolbar pill — semi-transparent dark.
-const _kBackgroundColor = Color(0xCC1A1A1A);
-
-/// Colour applied to toolbar icons and text.
-const _kForegroundColor = Color(0xFFFFFFFF);
-
 /// Compact pill-shaped toolbar rendered at the bottom of the preview overlay.
 ///
-/// Shows the active device name (tapping will open the device picker — step
-/// 2.6), an orientation toggle, a reassemble button, and a passthrough-mode
-/// toggle.
+/// Shows the active device name, an orientation toggle, a reassemble button,
+/// and a passthrough-mode toggle.
 class PreviewToolbar extends StatelessWidget {
   const PreviewToolbar({super.key, required this.controller});
 
@@ -33,21 +27,21 @@ class PreviewToolbar extends StatelessWidget {
   Widget _buildToolbar(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: Container(
-        decoration: const BoxDecoration(
-          color: _kBackgroundColor,
-          borderRadius: _kPillRadius,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _DeviceNameButton(controller: controller),
-            _ToolbarDivider(),
-            _OrientationButton(controller: controller),
-            _ReassembleButton(),
-            _PassthroughButton(controller: controller),
-          ],
+      child: RaisedSurface(
+        borderRadius: _kPillRadius,
+        height: 3,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _DeviceNameButton(controller: controller),
+              _ToolbarDivider(),
+              _OrientationButton(controller: controller),
+              _ReassembleButton(),
+              _PassthroughButton(controller: controller),
+            ],
+          ),
         ),
       ),
     );
@@ -77,7 +71,7 @@ class _DeviceNameButton extends StatelessWidget {
               child: Text(
                 controller.activeProfile.name,
                 style: const TextStyle(
-                  color: _kForegroundColor,
+                  color: kPreviewForeground,
                   fontSize: 11.0,
                   fontWeight: FontWeight.w500,
                 ),
@@ -87,7 +81,7 @@ class _DeviceNameButton extends StatelessWidget {
             ),
             const Icon(
               Icons.arrow_drop_down,
-              color: _kForegroundColor,
+              color: kPreviewForeground,
               size: 14.0,
             ),
           ],
@@ -122,7 +116,7 @@ class _OrientationButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       icon: const Icon(Icons.screen_rotation),
-      color: _kForegroundColor,
+      color: kPreviewForeground,
       iconSize: 14.0,
       padding: const EdgeInsets.all(4.0),
       constraints: const BoxConstraints(),
@@ -138,7 +132,7 @@ class _ReassembleButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       icon: const Icon(Icons.refresh),
-      color: _kForegroundColor,
+      color: kPreviewForeground,
       iconSize: 14.0,
       padding: const EdgeInsets.all(4.0),
       constraints: const BoxConstraints(),
@@ -161,8 +155,8 @@ class _PassthroughButton extends StatelessWidget {
         controller.passthroughMode ? Icons.crop_free : Icons.phone_android,
       ),
       color: controller.passthroughMode
-          ? _kForegroundColor.withAlpha(0x99)
-          : _kForegroundColor,
+          ? kPreviewForeground.withAlpha(0x99)
+          : kPreviewForeground,
       iconSize: 14.0,
       padding: const EdgeInsets.all(4.0),
       constraints: const BoxConstraints(),

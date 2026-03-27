@@ -241,9 +241,10 @@ document findings and recommend whether to proceed.
 
 + Find a list of the most commonly used mobile devices and compare that to the devices we ship with (done — see findings below)
 + Remove DeviceProfile.devicePixelRatio.
-- Verify the portrait and landscape safe areas for the included devices (the Pixel 7a, Pixel 8, and Pixel 8 Pro have already been verified)
-- Experiment with a neumorphic design and fixed padding around the emulation
++ Experiment with a neumorphic design and fixed padding around the emulation
   area.
+- Verify the portrait and landscape safe areas for the included devices (the
+  Pixel 7a, Pixel 8, and Pixel 8 Pro have already been verified)
 - Experiment with a slightly smaller (2.0 => 1.8) default DPR.
 - Consider having the currently selected device persist.
 - Consider renaming Bezel.ensureInitialized().

@@ -7,22 +7,45 @@ void main() {
   runApp(const BezelExampleApp());
 }
 
-class BezelExampleApp extends StatelessWidget {
+class BezelExampleApp extends StatefulWidget {
   const BezelExampleApp({super.key});
 
   @override
+  State<BezelExampleApp> createState() => _BezelExampleAppState();
+}
+
+class _BezelExampleAppState extends State<BezelExampleApp> {
+  ThemeMode _themeMode = ThemeMode.light;
+
+  void _toggleTheme() {
+    setState(() {
+      _themeMode = _themeMode == ThemeMode.light
+          ? ThemeMode.dark
+          : ThemeMode.light;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Stellar',
-      // theme: ThemeData.dark(),
+      themeMode: _themeMode,
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
-      home: _HomePage(),
+      home: _HomePage(
+        isDark: _themeMode == ThemeMode.dark,
+        onToggleTheme: _toggleTheme,
+      ),
     );
   }
 }
 
 class _HomePage extends StatefulWidget {
-  const _HomePage();
+  const _HomePage({required this.isDark, required this.onToggleTheme});
+
+  final bool isDark;
+  final VoidCallback onToggleTheme;
 
   @override
   State<_HomePage> createState() => _HomePageState();
@@ -79,10 +102,15 @@ class _HomePageState extends State<_HomePage> {
         centerTitle: true,
         actions: [
           IconButton(
+            icon: Icon(widget.isDark ? Icons.light_mode : Icons.dark_mode),
+            onPressed: widget.onToggleTheme,
+          ),
+          IconButton(
             icon: const Icon(Icons.info_outline),
             onPressed: () => _showDeviceInfo(context),
           ),
         ],
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 8),
       ),
       body: _pages[0],
       bottomNavigationBar: NavigationBar(
@@ -121,7 +149,6 @@ class _DiscoverPage extends StatelessWidget {
               title: Text(item.$2),
               subtitle: Text(item.$3),
               trailing: const Icon(Icons.chevron_right),
-              // isThreeLine: true,
             ),
           ),
       ],
