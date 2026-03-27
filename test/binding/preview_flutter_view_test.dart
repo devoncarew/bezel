@@ -1,10 +1,11 @@
 import 'dart:math' as math;
-
-import 'package:flutter_test/flutter_test.dart';
+import 'dart:ui' as ui;
 
 import 'package:bezel/src/binding/preview_flutter_view.dart';
 import 'package:bezel/src/devices/device_database.dart';
 import 'package:bezel/src/preview_controller.dart';
+import 'package:bezel/src/theme.dart' show kPreviewPadding, kToolbarHeight;
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   // Initialize the test binding so we have a real FlutterView to use as _real.
@@ -25,12 +26,18 @@ void main() {
     controller.dispose();
   });
 
-  test('devicePixelRatio is min of width-ratio and height-ratio', () {
-    final realPhysical = binding.platformDispatcher.implicitView!.physicalSize;
-    final emulatedLogical = controller.emulatedLogicalSize;
+  test('devicePixelRatio uses available area minus overlay chrome', () {
+    final realView = binding.platformDispatcher.implicitView!;
+    final realDpr = realView.devicePixelRatio;
+    final available = ui.Size(
+      realView.physicalSize.width - 2 * kPreviewPadding * realDpr,
+      realView.physicalSize.height -
+          (3 * kPreviewPadding + kToolbarHeight) * realDpr,
+    );
+    final emulated = controller.emulatedLogicalSize;
     final expected = math.min(
-      realPhysical.width / emulatedLogical.width,
-      realPhysical.height / emulatedLogical.height,
+      available.width / emulated.width,
+      available.height / emulated.height,
     );
     expect(view.devicePixelRatio, closeTo(expected, 0.001));
   });
@@ -53,12 +60,18 @@ void main() {
   );
 
   test('devicePixelRatio updates when orientation toggles', () {
-    final realPhysical = binding.platformDispatcher.implicitView!.physicalSize;
+    final realView = binding.platformDispatcher.implicitView!;
+    final realDpr = realView.devicePixelRatio;
+    final available = ui.Size(
+      realView.physicalSize.width - 2 * kPreviewPadding * realDpr,
+      realView.physicalSize.height -
+          (3 * kPreviewPadding + kToolbarHeight) * realDpr,
+    );
     controller.toggleOrientation();
-    final emulatedLogical = controller.emulatedLogicalSize; // now landscape
+    final emulated = controller.emulatedLogicalSize; // now landscape
     final expected = math.min(
-      realPhysical.width / emulatedLogical.width,
-      realPhysical.height / emulatedLogical.height,
+      available.width / emulated.width,
+      available.height / emulated.height,
     );
     expect(view.devicePixelRatio, closeTo(expected, 0.001));
   });

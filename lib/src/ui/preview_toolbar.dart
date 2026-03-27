@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../preview_controller.dart';
-import 'preview_theme.dart';
+import '../theme.dart';
+import 'common.dart';
 
 /// Border radius applied to the pill-shaped toolbar container.
 const _kPillRadius = BorderRadius.all(Radius.circular(14.0));

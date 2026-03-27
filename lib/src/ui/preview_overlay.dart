@@ -5,10 +5,11 @@ import 'package:flutter/widgets.dart';
 
 import '../frame/screen_clip_widget.dart';
 import '../preview_controller.dart';
+import '../theme.dart';
+import 'common.dart';
 import 'device_picker.dart';
 import 'macos_menu.dart';
 import 'preview_shortcuts.dart';
-import 'preview_theme.dart';
 import 'preview_toolbar.dart';
 
 /// Wraps the app in a device-frame preview UI.

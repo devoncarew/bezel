@@ -1,10 +1,10 @@
 import 'dart:ui' as ui;
 
-import 'package:bezel/src/ui/preview_theme.dart';
 import 'package:flutter/widgets.dart' show Offset, WidgetsBinding;
 import 'package:window_manager/window_manager.dart';
 
 import '../devices/device_profile.dart';
+import '../theme.dart';
 import 'window_sizing_service.dart';
 
 /// Minimum window dimensions — prevents the window from shrinking to a

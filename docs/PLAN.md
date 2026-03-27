@@ -245,9 +245,9 @@ document findings and recommend whether to proceed.
   area.
 - Verify the portrait and landscape safe areas for the included devices (the
   Pixel 7a, Pixel 8, and Pixel 8 Pro have already been verified)
-- Experiment with a slightly smaller (2.0 => 1.8) default DPR.
 - Consider having the currently selected device persist.
-- Consider renaming Bezel.ensureInitialized().
+- Consider renaming from 'Bezel' to 'Flight Check' / flight_check.
+- Rename `Bezel.ensureInitialized()` => `Bezel.configure()`?
 
 ### Step 4.9 - Device update
 
@@ -259,10 +259,10 @@ document findings and recommend whether to proceed.
 + add Samsung Galaxy A15
 - add iPhone 14
 - add iPhone 17
+- add iPhone 17e
+- add iPhone Air
 - add iPhone 17 Pro
 - add iPhone 17 Pro Max
-- add iPhone Air
-- add iPhone 17e
 
 ---
 

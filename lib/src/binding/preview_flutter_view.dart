@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/painting.dart' show EdgeInsets;
 
 import '../preview_controller.dart';
+import '../theme.dart' show kPreviewPadding, kToolbarHeight;
 
 /// A [ui.FlutterView] that reports spoofed metrics for the active device
 /// profile, delegating everything else to the real underlying view.
@@ -20,16 +21,24 @@ class PreviewFlutterView implements ui.FlutterView {
 
   // ── Spoofed members ───────────────────────────────────────────────────────
 
-  /// Returns a DPR that maps the real physical width onto the emulated logical
-  /// width. This scales with window size so that zooming the window in or out
-  /// only changes the effective DPR rather than the reported logical dimensions.
+  /// Returns a DPR scaled to the area the emulator can actually draw into.
+  ///
+  /// Subtracts the overlay chrome (padding + toolbar) from the real physical
+  /// window size before dividing by the emulated logical size. This matches the
+  /// window sizing formula in [WindowManagerSizingService.computeTargetSize],
+  /// so the emulator fills the available space at exactly the right scale.
   @override
   double get devicePixelRatio {
-    final widthRatio =
-        _real.physicalSize.width / _controller.emulatedLogicalSize.width;
-    final heightRatio =
-        _real.physicalSize.height / _controller.emulatedLogicalSize.height;
-    return math.min(widthRatio, heightRatio);
+    final realDpr = _real.devicePixelRatio;
+    final available = ui.Size(
+      _real.physicalSize.width - 2 * kPreviewPadding * realDpr,
+      _real.physicalSize.height -
+          (3 * kPreviewPadding + kToolbarHeight) * realDpr,
+    );
+    return math.min(
+      available.width / _controller.emulatedLogicalSize.width,
+      available.height / _controller.emulatedLogicalSize.height,
+    );
   }
 
   /// Reports the emulated device's physical dimensions at the current effective

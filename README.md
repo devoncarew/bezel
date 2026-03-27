@@ -33,14 +33,12 @@ change is needed before shipping.
 
 If your app is already calling `WidgetsFlutterBinding.ensureInitialized()`,
 place the call to `Bezel.ensureInitialized()` before the `WidgetsFlutterBinding`
-call; you'll want to initialize Bezel first (and, you'll want to keep the call
-to WidgetsFlutterBinding so that your app keeps working in release mode).
+call; you'll want to initialize Bezel first.
 
 ## Keyboard shortcuts
 
 | Action | MacOS | Linux / Windows |
 | --- | --- | --- |
-| Toggle toolbar | ⌘\\ | Ctrl+\\ |
 | Toggle orientation | ⌘L | Ctrl+L |
 | Reload | ⌘R | Ctrl+R |
 
