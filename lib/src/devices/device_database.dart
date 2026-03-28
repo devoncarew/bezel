@@ -34,6 +34,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.zero,
     screenCornerRadius: 0,
     cutout: NoCutout(),
+    verified: true,
   ),
 
   // iPhone 15: 6.1" Super Retina XDR, Dynamic Island.
@@ -50,6 +51,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(left: 59, bottom: 20),
     screenCornerRadius: 44,
     cutout: DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
+    verified: true,
   ),
 
   // iPhone 15 Pro: same screen size as iPhone 15, Pro chassis.
@@ -64,6 +66,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(left: 59, bottom: 20),
     screenCornerRadius: 44,
     cutout: DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
+    verified: true,
   ),
 
   // iPhone 15 Pro Max: 6.7" variant; same DI cutout geometry.
@@ -78,6 +81,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(left: 59, right: 59, bottom: 21),
     screenCornerRadius: 44,
     cutout: DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
+    verified: false,
   ),
 
   // iPad (10th gen): thin-bezel design; rounded display corners visible.
@@ -93,6 +97,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(top: 20, bottom: 20),
     screenCornerRadius: 18,
     cutout: NoCutout(),
+    verified: false,
     tablet: true,
   ),
 
@@ -109,6 +114,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(top: 20, bottom: 20),
     screenCornerRadius: 18,
     cutout: NoCutout(),
+    verified: false,
     tablet: true,
   ),
 
@@ -127,6 +133,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(bottom: 24),
     screenCornerRadius: 26, // community approximation
     cutout: PunchHoleCutout(diameter: 10, topOffset: 12),
+    verified: false,
   ),
 
   // Samsung Galaxy A15 (4G, SM-A155F, released Dec 2023): community
@@ -134,13 +141,15 @@ const List<DeviceProfile> kDeviceProfiles = [
   // Physical: 1080×2340px, ~396 PPI. Runtime density: ~420 dpi (2.625 DPR),
   //   inferred from Samsung One UI convention for this resolution class.
   //   Logical size: 1080/2.625 × 2340/2.625 ≈ 411×892dp.
-  // Display type: Infinity-U (teardrop/waterdrop notch) — NOT a punch-hole.
-  //   No measured source found; approximate values based on Samsung A-series
-  //   Infinity-U design language.
-  //   Notch size: ~54×32dp. Notch topOffset: 0 (flush with screen top edge).
-  // Corner radius: ~20dp (budget-tier approximation; no measured source).
-  // Safe area portrait: status bar matches notch height ≈ 32dp.
-  // Safe area landscape: notch rotates to left edge; left ≈ 32dp.
+  // Display type: Infinity-U (teardrop/waterdrop notch). The camera sits in
+  //   the circular bottom of the teardrop; concave "ear" arcs (sideRadius)
+  //   connect the notch sides to the screen top edge.
+  //   Dimensions measured from Android Emulator skin PNG via tool/measure_device.py.
+  //   Width: ~44dp (straight-side width, 25% depth). Height: ~31dp. SideRadius: ~7dp.
+  //   Total ear-to-ear width at screen edge: ~58dp.
+  // Corner radius: ~42dp (measured from skin PNG via tool/measure_device.py).
+  // Safe area portrait: status bar 32dp covers the full notch height.
+  // Safe area landscape: teardrop rotates to left edge; left ≈ 32dp.
   DeviceProfile(
     id: 'samsung_galaxy_a15',
     name: 'Samsung Galaxy A15',
@@ -148,8 +157,9 @@ const List<DeviceProfile> kDeviceProfiles = [
     logicalSize: Size(411, 892),
     safeAreaPortrait: EdgeInsets.only(top: 32, bottom: 24),
     safeAreaLandscape: EdgeInsets.only(left: 32, bottom: 24),
-    screenCornerRadius: 20, // community approximation
-    cutout: NotchCutout(size: Size(54, 32)),
+    screenCornerRadius: 42, // measured from skin PNG
+    cutout: TeardropCutout(width: 44, height: 31, sideRadius: 13),
+    verified: true,
   ),
 
   // Pixel 7a (codename: lynx).
@@ -168,6 +178,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(left: 45, top: 28, bottom: 24),
     screenCornerRadius: 18,
     cutout: PunchHoleCutout(diameter: 25, topOffset: 25),
+    verified: true,
   ),
 
   // // Pixel 8 (codename: shiba).
@@ -187,6 +198,7 @@ const List<DeviceProfile> kDeviceProfiles = [
   //   safeAreaLandscape: EdgeInsets.only(left: 24, bottom: 24),
   //   screenCornerRadius: 25,
   //   cutout: PunchHoleCutout(diameter: 11, topOffset: 13),
+  //   verified: false,
   // ),
 
   // // Pixel 8a (codename: akita).
@@ -210,6 +222,7 @@ const List<DeviceProfile> kDeviceProfiles = [
   //   safeAreaLandscape: EdgeInsets.only(left: 52, bottom: 24),
   //   screenCornerRadius: 37,
   //   cutout: PunchHoleCutout(diameter: 26, topOffset: 26),
+  //   verified: false,
   // ),
 
   // Pixel 9 (codename: tokay, in caimito repo).
@@ -233,6 +246,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(left: 65, bottom: 24),
     screenCornerRadius: 74,
     cutout: PunchHoleCutout(diameter: 32, topOffset: 33),
+    verified: false,
   ),
 
   // Pixel 10 (codename: frankel, in muzel repo).
@@ -255,6 +269,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(left: 65, bottom: 24),
     screenCornerRadius: 74,
     cutout: PunchHoleCutout(diameter: 32, topOffset: 33),
+    verified: false,
   ),
 
   // Pixel 10 Pro (codename: blazer, in muzel repo).
@@ -279,6 +294,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(left: 64, bottom: 24),
     screenCornerRadius: 73,
     cutout: PunchHoleCutout(diameter: 31, topOffset: 33),
+    verified: false,
   ),
 ];
 

@@ -240,6 +240,8 @@ be satisfied on desktop; platform switch resets ephemeral widget state via reass
 + Renamed `Bezel.ensureInitialized()` => `Bezel.configure()`.
 + Consider having the currently selected device persist.
 - Consider renaming from 'Bezel' to 'Flight Check' / flight_check.
+- Have a script which will update the readme from the device database.
+- Add a 'similarTo' field to the DeviceProfile class.
 
 ### Step 4.9 - Device update
 

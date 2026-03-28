@@ -21,6 +21,7 @@ void main() {
       safeAreaLandscape: const EdgeInsets.only(left: 59, right: 59, bottom: 21),
       screenCornerRadius: 0,
       cutout: cutout,
+      verified: false,
     );
   }
 
@@ -58,6 +59,62 @@ void main() {
           );
         }
       }
+    });
+  });
+
+  group('ScreenClipPainter.buildClipPath teardrop', () {
+    // Screen geometry matching the Galaxy A15 profile.
+    const screenSize = Size(411, 892);
+    const cutout = TeardropCutout(width: 44, height: 31, sideRadius: 7);
+
+    late Path clipPath;
+
+    setUp(() {
+      final profile = makeProfile(cutout: cutout, logicalSize: screenSize);
+      clipPath = ScreenClipPainter.buildClipPath(
+        screenSize,
+        profile,
+        DeviceOrientation.portrait,
+      );
+    });
+
+    test('clip path has screen-sized bounds', () {
+      final bounds = clipPath.getBounds();
+      expect(bounds.width, closeTo(screenSize.width, 1.0));
+      expect(bounds.height, closeTo(screenSize.height, 1.0));
+    });
+
+    test('center of notch body is clipped out', () {
+      // 15 dp down at the horizontal center — well inside the teardrop body.
+      final cx = screenSize.width / 2;
+      expect(
+        clipPath.contains(Offset(cx, 15)),
+        isFalse,
+        reason: 'notch body center should be outside the clip path',
+      );
+    });
+
+    test('far below notch is visible', () {
+      final cx = screenSize.width / 2;
+      expect(
+        clipPath.contains(Offset(cx, 50)),
+        isTrue,
+        reason: 'below the notch should be inside the clip path',
+      );
+    });
+
+    test('screen sides at notch depth are visible', () {
+      // Left and right edges at the same y as the notch — outside the notch width.
+      expect(
+        clipPath.contains(const Offset(10, 15)),
+        isTrue,
+        reason: 'left edge at notch depth should be visible',
+      );
+      expect(
+        clipPath.contains(Offset(screenSize.width - 10, 15)),
+        isTrue,
+        reason: 'right edge at notch depth should be visible',
+      );
     });
   });
 

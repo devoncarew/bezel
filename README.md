@@ -45,7 +45,6 @@ call; you'll want to initialize Bezel first.
 | Action | MacOS | Linux / Windows |
 | --- | --- | --- |
 | Toggle orientation | ⌘L | Ctrl+L |
-| Reload | ⌘R | Ctrl+R |
 
 ## Supported devices
 

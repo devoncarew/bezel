@@ -65,6 +65,45 @@ final class DynamicIslandCutout extends ScreenCutout {
   );
 }
 
+/// Teardrop / Infinity-U notch — Samsung Galaxy A-series and similar Androids.
+///
+/// The notch is flush with the screen top edge. The bottom is a semicircular
+/// arc (radius defaults to [width] / 2) surrounding the camera. At the top
+/// corners, the notch curves *outward* — away from the notch centre — with
+/// radius [sideRadius], giving the characteristic concave "ear" shape where
+/// the notch meets the screen edge.
+final class TeardropCutout extends ScreenCutout {
+  /// Maximum width of the notch at its widest (circular bottom), in logical px.
+  final double width;
+
+  /// Total depth of the notch from the screen top edge, in logical pixels.
+  final double height;
+
+  /// Radius of the bottom arc. Defaults to [width] / 2 (a perfect semicircle).
+  final double bottomRadius;
+
+  /// Radius of the concave ear where the notch sides meet the top edge,
+  /// in logical pixels.
+  final double sideRadius;
+
+  const TeardropCutout({
+    required this.width,
+    required this.height,
+    double? bottomRadius,
+    this.sideRadius = 4,
+  }) : bottomRadius = bottomRadius ?? width / 2;
+
+  @override
+  ScreenCutout rotatedForLandscape(Size portraitScreenSize) => SideCutout(
+    // Portrait width ↔ landscape height, portrait height ↔ landscape width.
+    size: Size(height, width),
+    // The notch is centered on the portrait width; after rotation that
+    // x-centre becomes the landscape y-centre.
+    centerOffset: portraitScreenSize.width / 2,
+    cornerRadius: bottomRadius,
+  );
+}
+
 /// Small circular punch-hole camera — Pixel, Galaxy S series.
 final class PunchHoleCutout extends ScreenCutout {
   /// Diameter of the circle in logical pixels.

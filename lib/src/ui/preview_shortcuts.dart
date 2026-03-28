@@ -12,10 +12,10 @@ class ToggleOrientationIntent extends Intent {
   const ToggleOrientationIntent();
 }
 
-/// Fired by `Ctrl+R` / `Cmd+R` — reassembles the application.
-class ReloadIntent extends Intent {
-  const ReloadIntent();
-}
+// /// Fired by `Ctrl+R` / `Cmd+R` — reassembles the application.
+// class ReloadIntent extends Intent {
+//   const ReloadIntent();
+// }
 
 // ── Widget ────────────────────────────────────────────────────────────────────
 
@@ -44,20 +44,20 @@ class PreviewShortcuts extends StatelessWidget {
           meta: useMeta,
           control: !useMeta,
         ): const ToggleOrientationIntent(),
-        SingleActivator(
-          LogicalKeyboardKey.keyR,
-          meta: useMeta,
-          control: !useMeta,
-        ): const ReloadIntent(),
+        // SingleActivator(
+        //   LogicalKeyboardKey.keyR,
+        //   meta: useMeta,
+        //   control: !useMeta,
+        // ): const ReloadIntent(),
       },
       child: Actions(
         actions: {
           ToggleOrientationIntent: CallbackAction<ToggleOrientationIntent>(
             onInvoke: (_) => controller.toggleOrientation(),
           ),
-          ReloadIntent: CallbackAction<ReloadIntent>(
-            onInvoke: (_) => WidgetsBinding.instance.reassembleApplication(),
-          ),
+          // ReloadIntent: CallbackAction<ReloadIntent>(
+          //   onInvoke: (_) => WidgetsBinding.instance.reassembleApplication(),
+          // ),
         },
         child: child,
       ),

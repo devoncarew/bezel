@@ -89,15 +89,16 @@ authoritative source.
 | Device              | ID                   | Logical size | Corner r | Cutout        | DPR   | Safe area portrait | Safe area landscape | Data source               | Verified |
 |---------------------|----------------------|--------------|----------|---------------|-------|--------------------|---------------------|---------------------------|----------|
 | Samsung Galaxy S24  | `samsung_galaxy_s24` | 360 × 780    | 26       | PH d:10 @12pt | 3.0   | T:24 B:24          | B:24                | community approx.         | —        |
-| Samsung Galaxy A15  | `samsung_galaxy_a15` | 411 × 892    | 20       | Notch 54×32pt | 2.625 | T:32 B:24          | L:32 B:24           | community approx.         | —        |
+| Samsung Galaxy A15  | `samsung_galaxy_a15` | 411 × 892    | 42       | TD w:44 h:31pt | 2.625 | T:32 B:24         | L:32 B:24           | skin PNG (tool)           | yes      |
 | Google Pixel 7a     | `pixel_7a`           | 411 × 914    | 18       | PH d:25 @25pt | 2.625 | T:45 B:24          | L:45 T:28 B:24      | Android Emulator (adb)    | yes      |
 | Google Pixel 9      | `pixel_9`            | 411 × 923    | 74       | PH d:32 @33pt | 2.625 | T:66 B:24          | L:65 B:24           | AOSP device tree          | —        |
 | Google Pixel 10     | `pixel_10`           | 411 × 923    | 74       | PH d:32 @33pt | 2.625 | T:66 B:24          | L:65 B:24           | community (TensorG5-devs) | —        |
 | Google Pixel 10 Pro | `pixel_10_pro`       | 410 × 914    | 73       | PH d:31 @33pt | 3.125 | T:65 B:24          | L:64 B:24           | community (TensorG5-devs) | —        |
 
 **Column key:** T = top, B = bottom, L = left, R = right inset (logical pixels). DI =
-Dynamic Island. PH = punch hole (diameter d, center-Y offset from screen top). Corner r
-= screen corner radius (logical pixels). Data source "AOSP device tree" = derived from
+Dynamic Island. PH = punch hole (diameter d, center-Y offset from screen top). TD =
+teardrop / Infinity-U notch (width w, height h). Corner r = screen corner radius
+(logical pixels). Data source "AOSP device tree" = derived from
 `config_mainBuiltInDisplayCutout` and `config_mainDisplayShape` XML; "community approx."
 = measured or estimated from community sources (Samsung does not publish device-tree
 cutout configs).

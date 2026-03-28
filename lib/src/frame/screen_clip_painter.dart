@@ -1,3 +1,5 @@
+import 'dart:math' show pi;
+
 import 'package:flutter/rendering.dart';
 
 import '../devices/device_profile.dart';
@@ -76,6 +78,19 @@ class ScreenClipPainter extends CustomPainter {
   static Path _buildCutoutPath(ScreenCutout cutout, Rect screenRect) {
     return switch (cutout) {
       NoCutout() => Path(),
+      TeardropCutout(
+        :final width,
+        :final height,
+        :final bottomRadius,
+        :final sideRadius,
+      ) =>
+        _buildTeardropPath(
+          screenRect,
+          width: width,
+          height: height,
+          bottomRadius: bottomRadius,
+          sideRadius: sideRadius,
+        ),
       NotchCutout(:final size, :final topOffset) =>
         Path()..addRRect(
           RRect.fromRectAndRadius(
@@ -132,6 +147,59 @@ class ScreenClipPainter extends CustomPainter {
           ),
         ),
     };
+  }
+
+  // Builds the clip path for a TeardropCutout centred at the top of
+  // [screenRect]. The shape is a narrow U with:
+  //   - concave "ear" arcs (radius [sideRadius]) at the top corners, curving
+  //     outward into the screen area
+  //   - straight sides running down from the ears
+  //   - a semicircular bottom arc (radius [bottomRadius]) surrounding the camera
+  static Path _buildTeardropPath(
+    Rect screenRect, {
+    required double width,
+    required double height,
+    required double bottomRadius,
+    required double sideRadius,
+  }) {
+    final cx = screenRect.left + screenRect.width / 2;
+    final top = screenRect.top;
+    return Path()
+      // Left ear: concave arc from the outer top edge into the left wall.
+      // clockwise: false gives the inward-bowing (concave) arc whose centre is
+      // at (cx − width/2, top), creating the characteristic Infinity-U scoop.
+      ..moveTo(cx - width / 2 - sideRadius, top)
+      ..arcToPoint(
+        Offset(cx - width / 2, top + sideRadius),
+        radius: Radius.circular(sideRadius),
+        clockwise: true,
+      )
+      // Left straight side, down to where the bottom arc begins.
+      ..lineTo(cx - width / 2, top + height - bottomRadius)
+      // Semicircular bottom arc. arcTo with explicit angles is unambiguous:
+      // startAngle=π is the leftmost point; sweepAngle=-π sweeps counter-clockwise
+      // in Flutter's trig convention, which is the visually downward direction in
+      // screen coords (Y increases downward), tracing the camera-housing arc.
+      ..arcTo(
+        Rect.fromCenter(
+          center: Offset(cx, top + height - bottomRadius),
+          width: bottomRadius * 2,
+          height: bottomRadius * 2,
+        ),
+        pi, // startAngle: leftmost point of circle
+        -pi, // sweepAngle: -π → visually downward U-arc in screen coords
+        false, // forceMoveTo: false — continue the current sub-path
+      )
+      // Right straight side, back up to the ear.
+      ..lineTo(cx + width / 2, top + sideRadius)
+      // Right ear: symmetric concave arc back to the top edge.
+      ..arcToPoint(
+        Offset(cx + width / 2 + sideRadius, top),
+        radius: Radius.circular(sideRadius),
+        clockwise: true,
+      )
+      // Close across the top edge back to the start.
+      ..close();
   }
 
   @override
