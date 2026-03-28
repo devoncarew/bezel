@@ -58,12 +58,16 @@ class PreviewFlutterView implements ui.FlutterView {
   }
 
   @override
-  ui.ViewPadding get padding =>
-      _EdgeInsetsViewPadding(_controller.emulatedSafeArea);
+  ui.ViewPadding get padding {
+    final dpr = devicePixelRatio;
+    return _EdgeInsetsViewPadding(_controller.emulatedSafeArea * dpr);
+  }
 
   @override
-  ui.ViewPadding get viewPadding =>
-      _EdgeInsetsViewPadding(_controller.emulatedSafeArea);
+  ui.ViewPadding get viewPadding {
+    final dpr = devicePixelRatio;
+    return _EdgeInsetsViewPadding(_controller.emulatedSafeArea * dpr);
+  }
 
   @override
   ui.ViewPadding get viewInsets => ui.ViewPadding.zero;

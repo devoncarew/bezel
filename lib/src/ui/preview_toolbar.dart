@@ -38,7 +38,7 @@ class PreviewToolbar extends StatelessWidget {
               _DeviceNameButton(controller: controller),
               _ToolbarDivider(),
               _OrientationButton(controller: controller),
-              _ReloadButton(),
+              // _ReloadButton(),
             ],
           ),
         ),
@@ -126,16 +126,16 @@ class _OrientationButton extends StatelessWidget {
 
 // ── Reload button ─────────────────────────────────────────────────────────
 
-class _ReloadButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.refresh),
-      color: kPreviewForeground,
-      iconSize: 14.0,
-      padding: const EdgeInsets.all(4.0),
-      constraints: const BoxConstraints(),
-      onPressed: () => WidgetsBinding.instance.reassembleApplication(),
-    );
-  }
-}
+// class _ReloadButton extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return IconButton(
+//       icon: const Icon(Icons.refresh),
+//       color: kPreviewForeground,
+//       iconSize: 14.0,
+//       padding: const EdgeInsets.all(4.0),
+//       constraints: const BoxConstraints(),
+//       onPressed: () => WidgetsBinding.instance.reassembleApplication(),
+//     );
+//   }
+// }

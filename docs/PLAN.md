@@ -243,11 +243,9 @@ document findings and recommend whether to proceed.
 + Remove DeviceProfile.devicePixelRatio.
 + Experiment with a neumorphic design and fixed padding around the emulation
   area.
-- Manually verify the safe area for all devices.
-- Manually verify the notch areas for all devices.
++ Renamed `Bezel.ensureInitialized()` => `Bezel.configure()`.
 - Consider having the currently selected device persist.
 - Consider renaming from 'Bezel' to 'Flight Check' / flight_check.
-+ Renamed `Bezel.ensureInitialized()` => `Bezel.configure()`.
 
 ### Step 4.9 - Device update
 

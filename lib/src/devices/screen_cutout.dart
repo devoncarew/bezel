@@ -35,8 +35,11 @@ final class NotchCutout extends ScreenCutout {
   @override
   ScreenCutout rotatedForLandscape(Size portraitScreenSize) => SideCutout(
     size: Size(size.height, size.width),
-    centerOffset: portraitScreenSize.height / 2,
+    // The notch is horizontally centered in portrait; after rotation its
+    // portrait x-center (portrait width / 2) becomes the landscape y-center.
+    centerOffset: portraitScreenSize.width / 2,
     edgeOffset: topOffset,
+    cornerRadius: 4,
   );
 }
 
@@ -53,8 +56,12 @@ final class DynamicIslandCutout extends ScreenCutout {
   @override
   ScreenCutout rotatedForLandscape(Size portraitScreenSize) => SideCutout(
     size: Size(size.height, size.width),
-    centerOffset: portraitScreenSize.height / 2,
+    // The DI is horizontally centered in portrait; after rotation its
+    // portrait x-center (portrait width / 2) becomes the landscape y-center.
+    centerOffset: portraitScreenSize.width / 2,
     edgeOffset: topOffset,
+    // Rotated pill: short axis is now the width (size.height from portrait).
+    cornerRadius: size.height / 2,
   );
 }
 
@@ -86,6 +93,7 @@ final class PunchHoleCutout extends ScreenCutout {
       size: Size(diameter, diameter),
       centerOffset: cx,
       edgeOffset: topOffset,
+      cornerRadius: diameter / 2,
     );
   }
 }
@@ -99,17 +107,24 @@ final class SideCutout extends ScreenCutout {
   /// Width and height of the cutout bounding box, in logical pixels.
   final Size size;
 
-  /// Distance from the vertical midpoint of the left edge to the center of
-  /// the cutout, in logical pixels.
+  /// Distance from the top of the screen to the center of the cutout,
+  /// in logical pixels.
   final double centerOffset;
 
   /// Distance from the left edge of the screen area to the near side of the
   /// cutout, in logical pixels.
   final double edgeOffset;
 
+  /// Corner radius of the cutout shape, in logical pixels.
+  ///
+  /// Defaults to 4, which suits a notch. A Dynamic Island rotated to landscape
+  /// should use [size.width] / 2 to preserve the pill shape.
+  final double cornerRadius;
+
   const SideCutout({
     required this.size,
     required this.centerOffset,
     this.edgeOffset = 0,
+    this.cornerRadius = 4,
   });
 }

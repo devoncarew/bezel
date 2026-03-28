@@ -405,34 +405,8 @@ The screen clipping is hand-rolled `CustomPainter`, not an image asset dependenc
   platform; Material adaptive widgets, scroll physics, and page transitions reflect the
   host OS rather than the emulated device (this is under investigation)
 
-## Device coverage findings (March 2026)
+## Device coverage
 
-Sources: TelemetryDeck iOS usage share (Feb 2026), CounterPoint Research best-sellers (2024/Q1 2025).
-
-**Currently supported:**
-
-| Device | Notes |
-|---|---|
-| iPhone SE (3rd gen) | Budget/legacy segment |
-| iPhone 15 | 14.59% usage share; also covers iPhone 16 (same logical size 393×852) |
-| iPhone 15 Pro | Covers iPhone 16 (same 393×852); 16 Pro is larger (402×874) — gap |
-| iPhone 15 Pro Max | 11.6% usage; 16 Pro Max is larger (440×956) — gap |
-| iPad (10th gen) | Strong tablet coverage |
-| iPad mini (6th gen) | Strong tablet coverage |
-| Samsung Galaxy S24 | Top-5 best-seller 2024 |
-| Google Pixel 7a / 8 / 8 Pro | Good Pixel coverage |
-
-**Notable gaps:**
-
-| Device | Why it matters |
-|---|---|
-| iPhone 13 / 14 (390×844, DPR 3.0) | 14.59% active usage share — tied #1 with iPhone 15; very different logical height from the 15 series |
-| iPhone 16 Pro (402×874, DPR 3.0) | New screen size not covered by any existing profile |
-| iPhone 16 Pro Max (440×956, DPR 3.0) | New screen size not covered by any existing profile |
-| Google Pixel 9 (412×915, DPR 2.625) | Successor to Pixel 8; significant Pixel growth in 2025 |
-| Samsung Galaxy A15 (360×800, DPR 2.0) | 4th best-selling phone globally in 2024; represents budget/mid-range Android |
-
-**Lower priority / out of scope for now:**
-- Samsung Galaxy S24 Ultra, S25 series — niche premium, covered adequately by S24
-- Xiaomi Redmi 14C — only non-Apple/Samsung phone in global top 10, low relevance for typical Flutter dev targets
-- Android tablets (Galaxy Tab etc.) — 18.8% global share but Flutter tablet support is niche
+See [`docs/devices.md`](docs/devices.md) for the full device coverage document: top
+devices in market, currently supported profiles with geometry details, proxy groups,
+coverage assessment, and verification status.
