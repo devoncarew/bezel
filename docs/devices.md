@@ -75,7 +75,7 @@ authoritative source.
 | iPhone SE (3rd gen) | `iphone_se_3`       | 375 × 667    | 0        | None            | 2.0 | T:20               | —                   | community   | yes      |
 | iPhone 15           | `iphone_15`         | 393 × 852    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community   | yes      |
 | iPhone 15 Pro       | `iphone_15_pro`     | 393 × 852    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community   | yes      |
-| iPhone 15 Pro Max   | `iphone_15_pro_max` | 430 × 932    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 R:59 B:21      | community   | —        |
+| iPhone 15 Pro Max   | `iphone_15_pro_max` | 430 × 932    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community   | yes      |
 
 ### iOS tablets
 
@@ -88,7 +88,7 @@ authoritative source.
 
 | Device              | ID                   | Logical size | Corner r | Cutout        | DPR   | Safe area portrait | Safe area landscape | Data source               | Verified |
 |---------------------|----------------------|--------------|----------|---------------|-------|--------------------|---------------------|---------------------------|----------|
-| Samsung Galaxy S24  | `samsung_galaxy_s24` | 360 × 780    | 26       | PH d:10 @12pt | 3.0   | T:24 B:24          | B:24                | community approx.         | —        |
+| Samsung Galaxy S24  | `samsung_galaxy_s24` | 360 × 780    | 36       | PH d:10 @12pt | 3.0   | T:24 B:24          | B:24                | skin PNG (tool) / community | yes    |
 | Samsung Galaxy A15  | `samsung_galaxy_a15` | 411 × 892    | 42       | TD w:44 h:31pt | 2.625 | T:32 B:24         | L:32 B:24           | skin PNG (tool)           | yes      |
 | Google Pixel 7a     | `pixel_7a`           | 411 × 914    | 18       | PH d:25 @25pt | 2.625 | T:45 B:24          | L:45 T:28 B:24      | Android Emulator (adb)    | yes      |
 | Google Pixel 9      | `pixel_9`            | 411 × 923    | 74       | PH d:32 @33pt | 2.625 | T:66 B:24          | L:65 B:24           | AOSP device tree          | —        |

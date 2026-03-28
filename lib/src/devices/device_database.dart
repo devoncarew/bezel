@@ -78,10 +78,10 @@ const List<DeviceProfile> kDeviceProfiles = [
     platform: DevicePlatform.iOS,
     logicalSize: Size(430, 932),
     safeAreaPortrait: EdgeInsets.only(top: 59, bottom: 34),
-    safeAreaLandscape: EdgeInsets.only(left: 59, right: 59, bottom: 21),
+    safeAreaLandscape: EdgeInsets.only(left: 59, bottom: 20),
     screenCornerRadius: 44,
     cutout: DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
-    verified: false,
+    verified: true,
   ),
 
   // iPad (10th gen): thin-bezel design; rounded display corners visible.
@@ -120,10 +120,12 @@ const List<DeviceProfile> kDeviceProfiles = [
 
   // ── Android ──────────────────────────────────────────────────────────────
 
-  // Samsung Galaxy S24: community approximation — Samsung does not publish
-  // device-tree cutout geometry (config is proprietary).
-  // Corner radius: ~26pt (community measurement).
+  // Samsung Galaxy S24: Samsung does not publish device-tree cutout geometry.
+  // Corner radius: 108.3px / 3.0 DPR ≈ 36dp (measured from skin PNG via
+  //   tool/measure_device.py; skin PNG is 1080×2340px at native resolution).
   // Punch hole: ~10pt diameter, centered, ~12pt from screen top (center Y).
+  //   Punch holes are transparent in device-skin images and cannot be measured
+  //   by the tool; value retained from community approximation.
   DeviceProfile(
     id: 'samsung_galaxy_s24',
     name: 'Samsung Galaxy S24',
@@ -131,9 +133,9 @@ const List<DeviceProfile> kDeviceProfiles = [
     logicalSize: Size(360, 780),
     safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
     safeAreaLandscape: EdgeInsets.only(bottom: 24),
-    screenCornerRadius: 26, // community approximation
+    screenCornerRadius: 36, // measured from skin PNG
     cutout: PunchHoleCutout(diameter: 10, topOffset: 12),
-    verified: false,
+    verified: true,
   ),
 
   // Samsung Galaxy A15 (4G, SM-A155F, released Dec 2023): community
@@ -180,50 +182,6 @@ const List<DeviceProfile> kDeviceProfiles = [
     cutout: PunchHoleCutout(diameter: 25, topOffset: 25),
     verified: true,
   ),
-
-  // // Pixel 8 (codename: shiba).
-  // // Cutout: AOSP config_mainBuiltInDisplayCutout, shiba device tree.
-  // //   Circle ~28px physical diameter, center ~34px from screen top.
-  // //   28px / 2.625 DPR ≈ 11dp diameter; 34px / 2.625 ≈ 13dp center Y.
-  // // Corner radius: ~25pt (AOSP config_mainDisplayShape, shiba;
-  // //   physical arc ~65px / DPR 2.625 ≈ 25dp).
-  // // Safe area portrait: cutout bottom = 13 + 5.5 = 18.5dp < 24dp status bar.
-  // // Safe area landscape: left = edgeOffset + diameter = 13 + 11 = 24dp.
-  // DeviceProfile(
-  //   id: 'pixel_8',
-  //   name: 'Google Pixel 8',
-  //   platform: DevicePlatform.android,
-  //   logicalSize: Size(411, 914),
-  //   safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
-  //   safeAreaLandscape: EdgeInsets.only(left: 24, bottom: 24),
-  //   screenCornerRadius: 25,
-  //   cutout: PunchHoleCutout(diameter: 11, topOffset: 13),
-  //   verified: false,
-  // ),
-
-  // // Pixel 8a (codename: akita).
-  // // Cutout: AOSP config_mainBuiltInDisplayCutout, akita device tree.
-  // //   m 573.22,68.71 a 33.72,33.72 0 0 0 -67.43,0 ... Z @left
-  // //   Circle: center (539.5, 68.71)px physical, radius 33.72px physical.
-  // //   Diameter: 67.44px / 2.625 ≈ 26dp. Center Y: 68.71px / 2.625 ≈ 26dp.
-  // // Corner radius: AOSP config_mainDisplayShape, akita:
-  // //   M 96.5,0.09 ... — path starts at x=96.5 on top edge (= corner radius).
-  // //   96.5px / 2.625 ≈ 37dp.
-  // // Safe area portrait: AOSP config_mainBuiltInDisplayCutoutRectApproximation,
-  // //   akita: m 485.5,0 h 110 v 121 h -110 Z → height 121px / 2.625 ≈ 46dp.
-  // // Safe area landscape: punch hole rotates to left edge;
-  // //   left = topOffset + diameter = 26 + 26 = 52dp.
-  // DeviceProfile(
-  //   id: 'pixel_8a',
-  //   name: 'Google Pixel 8a',
-  //   platform: DevicePlatform.android,
-  //   logicalSize: Size(411, 914),
-  //   safeAreaPortrait: EdgeInsets.only(top: 46, bottom: 24),
-  //   safeAreaLandscape: EdgeInsets.only(left: 52, bottom: 24),
-  //   screenCornerRadius: 37,
-  //   cutout: PunchHoleCutout(diameter: 26, topOffset: 26),
-  //   verified: false,
-  // ),
 
   // Pixel 9 (codename: tokay, in caimito repo).
   // Cutout: AOSP config_mainBuiltInDisplayCutout, caimito/tokay device tree.

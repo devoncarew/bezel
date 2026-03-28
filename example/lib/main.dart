@@ -101,8 +101,9 @@ class _DeviceInfoDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mq = MediaQuery.of(context);
     final platform = Theme.of(context).platform;
+    final mq = MediaQuery.of(context);
+
     final size = mq.size;
     final dpr = mq.devicePixelRatio;
     final padding = mq.padding;
