@@ -114,7 +114,12 @@ class ScreenClipPainter extends CustomPainter {
             height: diameter,
           ),
         ),
-      SideCutout(:final size, :final centerOffset, :final edgeOffset) =>
+      SideCutout(
+        :final size,
+        :final centerOffset,
+        :final edgeOffset,
+        :final cornerRadius,
+      ) =>
         Path()..addRRect(
           RRect.fromRectAndRadius(
             Rect.fromLTWH(
@@ -123,7 +128,7 @@ class ScreenClipPainter extends CustomPainter {
               size.width,
               size.height,
             ),
-            const Radius.circular(4),
+            Radius.circular(cornerRadius),
           ),
         ),
     };

@@ -76,9 +76,17 @@ void main() {
     expect(view.devicePixelRatio, closeTo(expected, 0.001));
   });
 
-  test('padding.top returns the profile safe area top', () {
+  test('padding returns profile safe area scaled to physical pixels', () {
     final profile = DeviceDatabase.defaultProfile;
-    expect(view.padding.top, profile.safeAreaPortrait.top);
+    final dpr = view.devicePixelRatio;
+    expect(
+      view.padding.top,
+      closeTo(profile.safeAreaPortrait.top * dpr, 0.001),
+    );
+    expect(
+      view.padding.bottom,
+      closeTo(profile.safeAreaPortrait.bottom * dpr, 0.001),
+    );
   });
 
   test('viewPadding matches padding', () {
