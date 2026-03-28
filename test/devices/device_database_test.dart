@@ -28,36 +28,36 @@ void main() {
     });
 
     test('prints device list in markdown format', () {
-      final devices = DeviceDatabase.all;
-
-      String sizeStr(DeviceProfile d) =>
+      String size(DeviceProfile d) =>
           '${d.logicalSize.width.toInt()} × ${d.logicalSize.height.toInt()}';
 
-      String platformStr(DeviceProfile d) =>
-          d.platform == DevicePlatform.iOS ? 'iOS' : 'Android';
+      String platform(DeviceProfile d) =>
+          d.platform.label + (d.tablet ? ' / tablet' : '');
 
-      final nameW = devices
-          .map((d) => d.name.length)
-          .fold('Device'.length, (w, l) => l > w ? l : w);
-      final platformW = devices
-          .map((d) => platformStr(d).length)
-          .fold('Platform'.length, (w, l) => l > w ? l : w);
-      final sizeW = devices
-          .map((d) => sizeStr(d).length)
-          .fold('Logical size'.length, (w, l) => l > w ? l : w);
+      final iOS = DeviceDatabase.all
+          .where((d) => d.platform == DevicePlatform.iOS && !d.tablet)
+          .toList();
+      final android = DeviceDatabase.all
+          .where((d) => d.platform == DevicePlatform.android && !d.tablet)
+          .toList();
+      final tablets = DeviceDatabase.all.where((d) => d.tablet).toList();
 
-      final header =
-          '| ${'Device'.padRight(nameW)} | ${'Platform'.padRight(platformW)} | ${'Logical size'.padRight(sizeW)} |';
-      final divider =
-          '|-${'-' * nameW}-|-${'-' * platformW}-|-${'-' * sizeW}-|';
+      final devices = [...iOS, ...android, ...tablets];
 
-      print(header);
-      print(divider);
-      for (final d in devices) {
+      print('## Supported devices');
+      print('');
+
+      print('| Device | Size | Platform | Device category |');
+      print('| --- | --- | --- | --- |');
+
+      for (final device in devices) {
         print(
-          '| ${d.name.padRight(nameW)} | ${platformStr(d).padRight(platformW)} | ${sizeStr(d).padRight(sizeW)} |',
+          '| ${device.name} | ${size(device)} | '
+          '${platform(device)} | ${device.description ?? ''} |',
         );
       }
+
+      print('');
     });
   });
 

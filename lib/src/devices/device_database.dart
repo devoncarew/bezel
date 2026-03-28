@@ -120,24 +120,6 @@ const List<DeviceProfile> kDeviceProfiles = [
         'Largest iPhone screen, 440 × 956 — exposes wide-layout edge cases',
   ),
 
-  // iPad (A16): thin-bezel design; rounded display corners visible.
-  // Corner radius: ~18pt (community approximation).
-  // No camera cutout — front camera sits in the top bezel.
-  // Source: iosresolution.com, useyourloaf.com
-  DeviceProfile(
-    id: 'ipad_a16',
-    name: 'iPad (A16)',
-    platform: DevicePlatform.iOS,
-    logicalSize: Size(820, 1180),
-    safeAreaPortrait: EdgeInsets.only(top: 32, bottom: 20),
-    safeAreaLandscape: EdgeInsets.only(top: 32, bottom: 20),
-    screenCornerRadius: 18,
-    cutout: NoCutout(),
-    verified: true,
-    tablet: true,
-    description: 'Standard iPad, 820 × 1180',
-  ),
-
   // iPad mini (A17 Pro): compact form factor with thin bezels.
   // Corner radius: ~18pt (community approximation; same family as iPad 10th
   // gen).
@@ -157,41 +139,25 @@ const List<DeviceProfile> kDeviceProfiles = [
     description: 'Compact iPad, 744 × 1133',
   ),
 
-  // ── Android ──────────────────────────────────────────────────────────────
-
-  // Samsung Galaxy S24: Samsung does not publish device-tree cutout geometry.
-  // Corner radius: 108.3px / 3.0 DPR ≈ 36dp (measured from skin PNG via
-  //   tool/measure_device.py; skin PNG is 1080×2340px at native resolution).
-  // Punch hole: ~10pt diameter, centered, ~12pt from screen top (center Y).
-  //   Punch holes are transparent in device-skin images and cannot be measured
-  //   by the tool; value retained from community approximation.
+  // iPad (A16): thin-bezel design; rounded display corners visible.
+  // Corner radius: ~18pt (community approximation).
+  // No camera cutout — front camera sits in the top bezel.
+  // Source: iosresolution.com, useyourloaf.com
   DeviceProfile(
-    id: 'samsung_galaxy_s24',
-    name: 'Samsung Galaxy S24',
-    platform: DevicePlatform.android,
-    logicalSize: Size(360, 780),
-    safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
-    safeAreaLandscape: EdgeInsets.only(bottom: 24),
-    screenCornerRadius: 36, // measured from skin PNG
-    cutout: PunchHoleCutout(diameter: 10, topOffset: 12),
+    id: 'ipad_a16',
+    name: 'iPad (A16)',
+    platform: DevicePlatform.iOS,
+    logicalSize: Size(820, 1180),
+    safeAreaPortrait: EdgeInsets.only(top: 32, bottom: 20),
+    safeAreaLandscape: EdgeInsets.only(top: 32, bottom: 20),
+    screenCornerRadius: 18,
+    cutout: NoCutout(),
     verified: true,
-    description: 'Flagship Samsung, 360 × 780 — covers S23, S24',
+    tablet: true,
+    description: 'Standard iPad, 820 × 1180',
   ),
 
-  // Samsung Galaxy A55 (mid-range): PLACEHOLDER — geometry not yet verified.
-  // Approximate logical size from community sources; specs to be filled in.
-  DeviceProfile(
-    id: 'samsung_galaxy_a55',
-    name: 'Samsung Galaxy A55',
-    platform: DevicePlatform.android,
-    logicalSize: Size(384, 854),
-    safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
-    safeAreaLandscape: EdgeInsets.only(bottom: 24),
-    screenCornerRadius: 36,
-    cutout: PunchHoleCutout(diameter: 10, topOffset: 12),
-    verified: false,
-    description: 'Mid-range Samsung A-series, ~384 × 854 — covers A54, A55',
-  ),
+  // ── Android ──────────────────────────────────────────────────────────────
 
   // Samsung Galaxy A15 (4G, SM-A155F, released Dec 2023): community
   // approximation — Samsung does not publish device-tree cutout configs.
@@ -218,6 +184,40 @@ const List<DeviceProfile> kDeviceProfiles = [
     cutout: TeardropCutout(width: 44, height: 31, sideRadius: 13),
     verified: true,
     description: 'Budget Samsung Infinity-U notch, 411 × 892 — covers A15, A25',
+  ),
+
+  // Samsung Galaxy A55 (mid-range): PLACEHOLDER — geometry not yet verified.
+  // Approximate logical size from community sources; specs to be filled in.
+  DeviceProfile(
+    id: 'samsung_galaxy_a55',
+    name: 'Samsung Galaxy A55',
+    platform: DevicePlatform.android,
+    logicalSize: Size(384, 854),
+    safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
+    safeAreaLandscape: EdgeInsets.only(bottom: 24),
+    screenCornerRadius: 36,
+    cutout: PunchHoleCutout(diameter: 10, topOffset: 12),
+    verified: false,
+    description: 'Mid-range Samsung A-series, ~384 × 854 — covers A54, A55',
+  ),
+
+  // Samsung Galaxy S24: Samsung does not publish device-tree cutout geometry.
+  // Corner radius: 108.3px / 3.0 DPR ≈ 36dp (measured from skin PNG via
+  //   tool/measure_device.py; skin PNG is 1080×2340px at native resolution).
+  // Punch hole: ~10pt diameter, centered, ~12pt from screen top (center Y).
+  //   Punch holes are transparent in device-skin images and cannot be measured
+  //   by the tool; value retained from community approximation.
+  DeviceProfile(
+    id: 'samsung_galaxy_s24',
+    name: 'Samsung Galaxy S24',
+    platform: DevicePlatform.android,
+    logicalSize: Size(360, 780),
+    safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
+    safeAreaLandscape: EdgeInsets.only(bottom: 24),
+    screenCornerRadius: 36, // measured from skin PNG
+    cutout: PunchHoleCutout(diameter: 10, topOffset: 12),
+    verified: true,
+    description: 'Flagship Samsung, 360 × 780 — covers S23, S24',
   ),
 
   // Pixel 7a (codename: lynx).

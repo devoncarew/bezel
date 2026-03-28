@@ -5,10 +5,14 @@ import 'screen_cutout.dart';
 /// The host platform of a device.
 enum DevicePlatform {
   /// Apple iOS device.
-  iOS,
+  iOS('iOS'),
 
   /// Android device.
-  android,
+  android('Android');
+
+  const DevicePlatform(this.label);
+
+  final String label;
 }
 
 /// Screen orientation.
