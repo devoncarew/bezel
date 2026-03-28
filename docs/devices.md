@@ -90,7 +90,7 @@ authoritative source.
 |---------------------|----------------------|--------------|----------|---------------|-------|--------------------|---------------------|---------------------------|----------|
 | Samsung Galaxy S24  | `samsung_galaxy_s24` | 360 × 780    | 26       | PH d:10 @12pt | 3.0   | T:24 B:24          | B:24                | community approx.         | —        |
 | Samsung Galaxy A15  | `samsung_galaxy_a15` | 411 × 892    | 20       | Notch 54×32pt | 2.625 | T:32 B:24          | L:32 B:24           | community approx.         | —        |
-| Google Pixel 7a     | `pixel_7a`           | 411 × 914    | 22       | PH d:11 @13pt | 2.625 | T:24 B:24          | L:24 B:24           | AOSP device tree          | —        |
+| Google Pixel 7a     | `pixel_7a`           | 411 × 914    | 18       | PH d:25 @25pt | 2.625 | T:45 B:24          | L:45 T:28 B:24      | Android Emulator (adb)    | yes      |
 | Google Pixel 9      | `pixel_9`            | 411 × 923    | 74       | PH d:32 @33pt | 2.625 | T:66 B:24          | L:65 B:24           | AOSP device tree          | —        |
 | Google Pixel 10     | `pixel_10`           | 411 × 923    | 74       | PH d:32 @33pt | 2.625 | T:66 B:24          | L:65 B:24           | community (TensorG5-devs) | —        |
 | Google Pixel 10 Pro | `pixel_10_pro`       | 410 × 914    | 73       | PH d:31 @33pt | 3.125 | T:65 B:24          | L:64 B:24           | community (TensorG5-devs) | —        |
@@ -125,9 +125,9 @@ target it explicitly. Testing on `pixel_9` covers `pixel_10` completely.
 
 ### Group 3 — Pixel 7a / Pixel 8 (411 × 914, small punch hole)
 
-The commented-out `pixel_8` entry shares the same logical size (411 × 914) and a
-near-identical small punch hole (d:11 @13pt) with `pixel_7a`. Corner radius differs
-slightly (22 vs 25pt). `pixel_7a` serves as a reasonable proxy for `pixel_8`.
+The commented-out `pixel_8` entry shares the same logical size (411 × 914) with `pixel_7a`.
+Corner radius differs slightly (18 vs 25pt) and the Pixel 8 cutout geometry differs, so
+`pixel_7a` is a rough proxy for `pixel_8` — good enough for layout testing.
 
 ### Group 4 — Samsung Galaxy A15 / similar budget Android (notch, ~411pt wide)
 
@@ -178,8 +178,9 @@ at the top-center of an ~411pt-wide display would be reasonably covered by this 
 
 ## Verification status
 
-No devices have been manually verified against a simulator or emulator yet. The
-following process is recommended for verification:
+Several devices have been manually verified against a simulator or emulator (see
+**Verified** column in tables above). The following process is recommended for
+verification:
 
 1. Run the example app in bezel targeting the device profile.
 2. Open an iOS Simulator (for iOS) or Android Emulator (for Android) for the same

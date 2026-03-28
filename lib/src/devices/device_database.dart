@@ -153,24 +153,21 @@ const List<DeviceProfile> kDeviceProfiles = [
   ),
 
   // Pixel 7a (codename: lynx).
-  // Cutout: AOSP config_mainBuiltInDisplayCutout, lynx device tree.
-  //   Circle ~28px physical diameter, center ~34px from screen top.
-  //   28px / 2.625 DPR ≈ 11dp diameter; 34px / 2.625 ≈ 13dp center Y.
-  // Corner radius: ~22pt (community measurement; AOSP config_mainDisplayShape
-  //   for lynx not publicly indexed at time of authoring).
-  // Safe area portrait: status bar 24dp covers the cutout
-  //   (cutout bottom = topOffset + radius = 13 + 5.5 = 18.5dp).
-  // Safe area landscape: punch hole rotates to left edge; left inset =
-  //   edgeOffset + diameter = 13 + 11 = 24dp.
+  // Cutout: verified against Android Emulator via `adb shell dumpsys display`.
+  //   Cutout spec: M 507,66 a 33,33 0 1 0 66,0 33,33 0 1 0 -66,0 Z @left
+  //   Circle: center (540, 66)px physical, radius 33px physical.
+  //   Diameter: 66px / 2.625 DPR ≈ 25dp; center Y: 66px / 2.625 ≈ 25dp.
+  // Corner radius: 47px / 2.625 ≈ 18dp (from roundedCorners in dumpsys output).
+  // Safe areas: verified against Android Emulator.
   DeviceProfile(
     id: 'pixel_7a',
     name: 'Google Pixel 7a',
     platform: DevicePlatform.android,
     logicalSize: Size(411, 914),
-    safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
-    safeAreaLandscape: EdgeInsets.only(left: 24, bottom: 24),
-    screenCornerRadius: 22,
-    cutout: PunchHoleCutout(diameter: 11, topOffset: 13),
+    safeAreaPortrait: EdgeInsets.only(top: 45, bottom: 24),
+    safeAreaLandscape: EdgeInsets.only(left: 45, top: 28, bottom: 24),
+    screenCornerRadius: 18,
+    cutout: PunchHoleCutout(diameter: 25, topOffset: 25),
   ),
 
   // // Pixel 8 (codename: shiba).
