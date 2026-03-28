@@ -109,17 +109,11 @@ on macOS with a "Preview" menu containing a "Device" submenu (iOS/Android groups
 on the active profile), "Toggle Orientation" (⌘L), and "Reload" (⌘R); only rebuilds the
 menus list when the active profile changes to avoid dismissing an open menu.
 
-### Step 3.3 — Smooth device transition animation [on hold]
+### Step 3.3 — Smooth device transition animation [no longer planned]
 
-Update `PreviewOverlay` to animate between device profiles:
+Update `PreviewOverlay` to animate between device profiles.
 
-- Wrap `DeviceFrameWidget` in an `AnimatedContainer` for size changes
-- Use `AnimatedSwitcher` with a fade + scale transition when the profile changes
-- Duration: 250ms, curve: `Curves.easeInOut`
-
-This is purely cosmetic — no logic changes.
-
-### Step 3.4 — VM service hot-reload integration (optional / experimental) [on hold]
+### Step 3.4 — VM service hot-reload integration (experimental) [on hold]
 
 Create `lib/src/hotreload/vm_reload_service.dart`.
 
@@ -221,7 +215,7 @@ iosresolution.com). Dynamic Island dimensions from community measurements (~126�
 
 Add source comments in `device_database.dart` for each profile's data provenance.
 
-### Step 4.7 (stretch) — Investigate platform emulation
+### Step 4.7 Investigate platform emulation (stretch)
 
 Research overriding `defaultTargetPlatform` to match the emulated device's platform
 (iOS device → `TargetPlatform.iOS`, Android → `TargetPlatform.android`). This would make
@@ -249,6 +243,8 @@ document findings and recommend whether to proceed.
 
 ### Step 4.9 - Device update
 
+TODO: Validate this list against docs/devices.md.
+
 + replace the Pixel 7a with the Pixel 8a
 + drop Pixel 8 pro
 + add Pixel 9
@@ -261,14 +257,3 @@ document findings and recommend whether to proceed.
 - add iPhone Air
 - add iPhone 17 Pro
 - add iPhone 17 Pro Max
-
----
-
-## Phase ordering summary
-
-| Phase | What you get |
-|---|---|
-| After Phase 1 | App runs inside a spoofed device environment; metrics are correct; no visual frame |
-| After Phase 2 | Full visual — device frame, floating toolbar, device picker, auto window sizing |
-| After Phase 3 | Keyboard shortcuts, macOS menu bar, animations, optional hot reload |
-| After Phase 4 | No device chrome, accurate screen clipping, toolbar at bottom, smarter window sizing |
