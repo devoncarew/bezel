@@ -19,3 +19,5 @@ coverage/
 
 # claude
 .claude/settings.local.json
+
+tool/images/
