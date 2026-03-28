@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart' show Widget, WidgetsFlutterBinding;
 import 'package:window_manager/window_manager.dart';
 
+import '../devices/device_database.dart';
+import '../persistence/device_persistence.dart';
 import '../preview_controller.dart';
 import '../ui/preview_overlay.dart';
 import '../window/window_manager_sizing_service.dart';
@@ -25,6 +27,30 @@ class PreviewBinding extends WidgetsFlutterBinding {
     _controller.windowSizingService = WindowManagerSizingService(
       windowManager.ensureInitialized(),
     );
+
+    // Restore the last-selected device, if any.
+    final savedId = loadLastDeviceId();
+    if (savedId != null) {
+      final profile = DeviceDatabase.findById(savedId);
+      if (profile != null) {
+        _controller.setProfile(profile);
+      }
+    }
+
+    // Persist the device whenever the user changes it.
+    _controller.addListener(_saveProfile);
+  }
+
+  String? _lastSavedProfileId;
+
+  void _saveProfile() {
+    final id = _controller.activeProfile.id;
+    if (id == _lastSavedProfileId) {
+      return;
+    }
+
+    _lastSavedProfileId = id;
+    saveLastDeviceId(id);
   }
 
   static PreviewBinding? _instance;

@@ -303,7 +303,5 @@ abstract final class DeviceDatabase {
   }
 
   /// The default profile used when no selection has been made.
-  // todo: Switch back to an iphone device.
-  // static DeviceProfile get defaultProfile => findById('iphone_15')!;
-  static DeviceProfile get defaultProfile => findById('pixel_7a')!;
+  static DeviceProfile get defaultProfile => findById('iphone_15')!;
 }

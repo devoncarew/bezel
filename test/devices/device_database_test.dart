@@ -67,8 +67,8 @@ void main() {
       expect(DeviceDatabase.all, contains(DeviceDatabase.defaultProfile));
     });
 
-    test('is the Pixel 7a', () {
-      expect(DeviceDatabase.defaultProfile.id, 'pixel_7a');
+    test('is the iPhone 15', () {
+      expect(DeviceDatabase.defaultProfile.id, 'iphone_15');
     });
   });
 }

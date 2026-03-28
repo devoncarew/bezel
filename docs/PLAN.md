@@ -244,7 +244,7 @@ document findings and recommend whether to proceed.
 + Experiment with a neumorphic design and fixed padding around the emulation
   area.
 + Renamed `Bezel.ensureInitialized()` => `Bezel.configure()`.
-- Consider having the currently selected device persist.
++ Consider having the currently selected device persist.
 - Consider renaming from 'Bezel' to 'Flight Check' / flight_check.
 
 ### Step 4.9 - Device update
