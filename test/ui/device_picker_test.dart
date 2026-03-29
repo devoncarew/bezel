@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:bezel/src/devices/device_database.dart';
-import 'package:bezel/src/devices/device_profile.dart';
-import 'package:bezel/src/preview_controller.dart';
-import 'package:bezel/src/ui/device_picker.dart';
+import 'package:flight_check/src/devices/device_database.dart';
+import 'package:flight_check/src/devices/device_profile.dart';
+import 'package:flight_check/src/preview_controller.dart';
+import 'package:flight_check/src/ui/device_picker.dart';
 
 /// Wraps [child] with the ancestors required by Material-level widgets.
 Widget _wrap(Widget child) {

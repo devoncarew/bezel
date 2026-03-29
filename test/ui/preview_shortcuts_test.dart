@@ -2,8 +2,8 @@ import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:bezel/src/preview_controller.dart';
-import 'package:bezel/src/ui/preview_shortcuts.dart';
+import 'package:flight_check/src/preview_controller.dart';
+import 'package:flight_check/src/ui/preview_shortcuts.dart';
 
 /// Pumps a [PreviewShortcuts] with a focusable child so key events are routed.
 Future<void> _pump(WidgetTester tester, PreviewController controller) async {

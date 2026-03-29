@@ -1,4 +1,4 @@
-# Bezel
+# Flight Check
 
 A Flutter debug-mode tool for previewing your app against popular mobile device
 profiles while running on desktop. It spoofs device metrics at the binding layer
@@ -7,19 +7,19 @@ what a real device would report.
 
 ## Getting started
 
-Add `bezel` as a regular dependency:
+Add `flight_check` as a regular dependency:
 
 ```
-flutter pub add bezel
+flutter pub add flight_check
 ```
 
-In your `main.dart`, call `Bezel.configure()` **before** `runApp`:
+In your `main.dart`, call `FlightCheck.configure()` **before** `runApp`:
 
 ```dart
-import 'package:bezel/bezel.dart';
+import 'package:flight_check/flight_check.dart';
 
 void main() {
-  Bezel.configure();
+  FlightCheck.configure();
 
   runApp(const MyApp());
 }
@@ -37,8 +37,8 @@ in unconditionally:
 ## WidgetsFlutterBinding.ensureInitialized()
 
 If your app is already calling `WidgetsFlutterBinding.ensureInitialized()`,
-place the call to `Bezel.configure()` before the `WidgetsFlutterBinding`
-call; you'll want to initialize Bezel first.
+place the call to `FlightCheck.configure()` before the `WidgetsFlutterBinding`
+call; you'll want to initialize Flight Check first.
 
 ## Supported devices
 

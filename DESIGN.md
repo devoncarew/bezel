@@ -1,4 +1,4 @@
-# bezel — Design Document
+# flight_check — Design Document
 
 ## Goal
 
@@ -332,18 +332,18 @@ sources). Full hot reload integration via the VM service is a Phase 3 considerat
 
 ```dart
 // In main.dart:
-import 'package:bezel/bezel.dart';
+import 'package:flight_check/flight_check.dart';
 
 void main() {
   // In debug mode: installs PreviewBinding, returns true.
   // In release/profile mode: no-op, returns false.
-  Bezel.configure();
+  FlightCheck.configure();
   runApp(const MyApp());
 }
 ```
 
 No wrapper widget is required. The preview activates automatically in debug mode.
-An optional `Bezel.configure(...)` call allows setting the default device profile
+An optional `FlightCheck.configure(...)` call allows setting the default device profile
 and whether the toolbar starts visible.
 
 ---
@@ -352,7 +352,7 @@ and whether the toolbar starts visible.
 
 ```
 lib/
-  bezel.dart          # public API surface
+  flight_check.dart   # public API surface
   src/
     binding/
       preview_binding.dart

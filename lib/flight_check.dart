@@ -1,11 +1,11 @@
-/// Bezel — Flutter debug-mode device preview tool.
+/// Flight Check — Flutter debug-mode device preview tool.
 ///
 /// Add two lines to your `main.dart`:
 /// ```dart
-/// import 'package:bezel/bezel.dart';
+/// import 'package:flight_check/flight_check.dart';
 ///
 /// void main() {
-///   Bezel.configure();
+///   FlightCheck.configure();
 ///   runApp(const MyApp());
 /// }
 /// ```
@@ -14,7 +14,7 @@ library;
 import 'src/preview_controller.dart';
 import 'src/preview_real.dart' if (dart.library.html) 'src/preview_stub.dart';
 
-/// Entry point for the bezel package.
+/// Entry point for the flight_check package.
 ///
 /// Call [configure] before [runApp] to activate the device preview.
 /// The call is a no-op — and safe to leave in unconditionally — in three cases:
@@ -24,8 +24,8 @@ import 'src/preview_real.dart' if (dart.library.html) 'src/preview_stub.dart';
 /// - **Mobile targets (iOS / Android)**: checked at runtime so the tool never
 ///   interferes with real-device runs during development.
 /// - **Flutter Web**: excluded via a conditional import.
-abstract final class Bezel {
-  /// Activates the bezel preview.
+abstract final class FlightCheck {
+  /// Activates the Flight Check preview.
   ///
   /// Safe to call unconditionally — it is a no-op in release/profile builds,
   /// on iOS/Android devices, and on Flutter Web.

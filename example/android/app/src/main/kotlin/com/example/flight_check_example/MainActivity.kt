@@ -1,4 +1,4 @@
-package com.example.bezel_example
+package com.example.flight_check_example
 
 import io.flutter.embedding.android.FlutterActivity
 

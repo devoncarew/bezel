@@ -1,6 +1,6 @@
 # Device Coverage
 
-This document tracks the mobile device landscape, which devices bezel supports, and
+This document tracks the mobile device landscape, which devices flight_check supports, and
 how well the current set covers common real-world usage.
 
 ---
@@ -9,7 +9,7 @@ how well the current set covers common real-world usage.
 
 Market share data varies by region and source, but the following devices and families
 represent the bulk of active mobile usage as of early 2025. The most relevant dimension
-for bezel is screen geometry — logical size, DPR, cutout type, and safe-area structure.
+for flight_check is screen geometry — logical size, DPR, cutout type, and safe-area structure.
 
 ### iOS
 
@@ -63,7 +63,7 @@ screen sizes and cutout geometry; a representative sample is difficult to define
 
 ## Supported devices
 
-Devices currently in the bezel database. "DPR" is the device's nominal display
+Devices currently in the flight_check database. "DPR" is the device's nominal display
 pixel ratio. "Verified" indicates whether safe-area and cutout values have been
 manually confirmed against an iOS Simulator, Android Emulator, or other
 authoritative source.
@@ -230,7 +230,7 @@ Several devices have been manually verified against a simulator or emulator (see
 **Verified** column in tables above). The following process is recommended for
 verification:
 
-1. Run the example app in bezel targeting the device profile.
+1. Run the example app in flight_check targeting the device profile.
 2. Open an iOS Simulator (for iOS) or Android Emulator (for Android) for the same
    device.
 3. Run the same app in the simulator/emulator.

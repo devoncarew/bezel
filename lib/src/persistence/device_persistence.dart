@@ -5,8 +5,8 @@ const _kDeviceKey = 'lastDevice';
 
 /// Returns the settings file path.
 ///
-/// - macOS / Linux: `$HOME/.config/bezel.json`
-/// - Windows: `%APPDATA%\bezel.json`
+/// - macOS / Linux: `$HOME/.config/flight_check.json`
+/// - Windows: `%APPDATA%\flight_check.json`
 ///
 /// Returns `null` if the required environment variable is absent.
 File? _settingsFile() {
@@ -23,7 +23,7 @@ File? _settingsFile() {
     return null;
   }
 
-  return File('$dir${Platform.pathSeparator}bezel.json');
+  return File('$dir${Platform.pathSeparator}flight_check.json');
 }
 
 Map<String, Object?> _readJson(File file) {
@@ -41,7 +41,7 @@ Map<String, Object?> _readJson(File file) {
   return {};
 }
 
-/// Reads the last-selected device ID from `.dart_tool/bezel.json`.
+/// Reads the last-selected device ID from `.dart_tool/flight_check.json`.
 ///
 /// Returns `null` if the file does not exist, cannot be read, or contains no
 /// device entry. Silently swallows all errors.
@@ -57,7 +57,7 @@ String? loadLastDeviceId() {
   }
 }
 
-/// Persists [id] as the last-selected device ID in `.dart_tool/bezel.json`.
+/// Persists [id] as the last-selected device ID in `.dart_tool/flight_check.json`.
 ///
 /// Reads the existing file before writing so that any other fields in the
 /// object are preserved. Silently swallows all errors — persistence failures

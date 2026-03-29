@@ -1,4 +1,4 @@
-import 'package:bezel/bezel.dart';
+import 'package:flight_check/flight_check.dart';
 import 'package:flutter/material.dart';
 
 const List<(IconData, String, String)> _discoveries = [
@@ -14,19 +14,19 @@ const List<(IconData, String, String)> _discoveries = [
 ];
 
 void main() {
-  Bezel.configure();
+  FlightCheck.configure();
 
-  runApp(const BezelExampleApp());
+  runApp(const FlightCheckExampleApp());
 }
 
-class BezelExampleApp extends StatefulWidget {
-  const BezelExampleApp({super.key});
+class FlightCheckExampleApp extends StatefulWidget {
+  const FlightCheckExampleApp({super.key});
 
   @override
-  State<BezelExampleApp> createState() => _BezelExampleAppState();
+  State<FlightCheckExampleApp> createState() => _FlightCheckExampleAppState();
 }
 
-class _BezelExampleAppState extends State<BezelExampleApp> {
+class _FlightCheckExampleAppState extends State<FlightCheckExampleApp> {
   ThemeMode _themeMode = ThemeMode.light;
 
   void _toggleTheme() {

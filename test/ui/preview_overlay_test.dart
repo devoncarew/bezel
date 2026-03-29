@@ -1,13 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:bezel/src/devices/device_database.dart';
-import 'package:bezel/src/devices/device_profile.dart';
-import 'package:bezel/src/frame/screen_clip_widget.dart';
-import 'package:bezel/src/preview_controller.dart';
-import 'package:bezel/src/ui/device_picker.dart';
-import 'package:bezel/src/ui/preview_overlay.dart';
-import 'package:bezel/src/ui/preview_toolbar.dart';
+import 'package:flight_check/src/devices/device_database.dart';
+import 'package:flight_check/src/devices/device_profile.dart';
+import 'package:flight_check/src/frame/screen_clip_widget.dart';
+import 'package:flight_check/src/preview_controller.dart';
+import 'package:flight_check/src/ui/device_picker.dart';
+import 'package:flight_check/src/ui/preview_overlay.dart';
+import 'package:flight_check/src/ui/preview_toolbar.dart';
 
 void main() {
   group('PreviewOverlay', () {

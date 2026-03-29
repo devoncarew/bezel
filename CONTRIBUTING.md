@@ -1,4 +1,4 @@
-# Contributing to Bezel
+# Contributing to Flight Check
 
 Thank you for your interest in contributing! This document covers how to get
 started, how to submit changes, and the standards we apply to pull requests.
@@ -57,9 +57,9 @@ Before a new profile can be merged, all of the following must be **manually
 verified** against a physical device, the iOS Simulator, or the Android
 Emulator — whichever is appropriate for the platform.
 
-Use the `example/` app to check bezel's reported values. The **Device Info
+Use the `example/` app to check flight_check's reported values. The **Device Info
 drawer** (tap the hamburger menu) shows the logical screen size, DPR, and
-safe-area insets as bezel reports them to the app.
+safe-area insets as flight_check reports them to the app.
 
 ### Verification checklist
 
@@ -82,10 +82,10 @@ the pull request description.
 
 ### How to verify
 
-1. Run the example app in bezel targeting the new device profile.
+1. Run the example app in flight_check targeting the new device profile.
 2. Open the iOS Simulator (for iOS) or Android Emulator (for Android) for the
    same device, and run the same example app there.
-3. Compare the **Device Info drawer** values between bezel and the
+3. Compare the **Device Info drawer** values between flight_check and the
    simulator/emulator.
 4. Visually confirm the cutout shape and position in both orientations.
 5. Update the **Verified** column in [`docs/devices.md`](docs/devices.md) once

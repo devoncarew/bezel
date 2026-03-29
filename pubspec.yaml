@@ -1,4 +1,4 @@
-name: bezel
+name: flight_check
 description: >-
   A Flutter debug-mode tool for previewing your app against popular mobile
   device profiles while running on desktop.

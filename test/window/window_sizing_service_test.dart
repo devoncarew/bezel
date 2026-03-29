@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:bezel/src/devices/device_database.dart';
-import 'package:bezel/src/devices/device_profile.dart';
-import 'package:bezel/src/window/window_manager_sizing_service.dart';
-import 'package:bezel/src/window/window_sizing_service.dart';
-import 'package:bezel/src/preview_controller.dart';
+import 'package:flight_check/src/devices/device_database.dart';
+import 'package:flight_check/src/devices/device_profile.dart';
+import 'package:flight_check/src/window/window_manager_sizing_service.dart';
+import 'package:flight_check/src/window/window_sizing_service.dart';
+import 'package:flight_check/src/preview_controller.dart';
 
 /// A [WindowSizingService] that records calls without touching `window_manager`.
 class _SpySizingService implements WindowSizingService {

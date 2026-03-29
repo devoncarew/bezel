@@ -1,8 +1,8 @@
 import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:bezel/src/devices/device_profile.dart';
-import 'package:bezel/src/devices/screen_cutout.dart';
+import 'package:flight_check/src/devices/device_profile.dart';
+import 'package:flight_check/src/devices/screen_cutout.dart';
 
 void main() {
   // A reusable portrait size for rotation math checks.

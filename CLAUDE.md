@@ -1,4 +1,4 @@
-# CLAUDE.md — bezel
+# CLAUDE.md — flight_check
 
 This file is guidance for AI coding agents working on this project. Read it fully before
 making changes.
@@ -7,7 +7,7 @@ making changes.
 
 ## What This Project Is
 
-`bezel` is a Flutter debug-mode tool that lets developers preview their app
+`flight_check` is a Flutter debug-mode tool that lets developers preview their app
 against popular mobile device profiles while running on desktop. It spoofs device metrics
 at the binding layer (not via widget injection), provides a minimal floating UI for device
 selection and orientation toggle, and auto-resizes the desktop window to fit the emulated
@@ -37,7 +37,7 @@ exclusively in `PreviewBinding` / `PreviewPlatformDispatcher` / `PreviewFlutterV
 If you find yourself adding a `MediaQuery(data: ..., child: ...)` anywhere in the preview
 mechanism, stop and reconsider.
 
-**The `src/` directory is private.** Only `bezel.dart` (the barrel file) is
+**The `src/` directory is private.** Only `flight_check.dart` (the barrel file) is
 public API. Do not add exports from `src/` directly in consumer code.
 
 **`PreviewController` is the single source of truth** for active device profile,
@@ -48,7 +48,7 @@ orientation, and toolbar visibility. UI widgets read from it via `ListenableBuil
 The pattern is:
 
 ```dart
-// In bezel.dart:
+// In flight_check.dart:
 void configure() {
   assert(() {
     _debugEnsureInitialized();
@@ -60,7 +60,7 @@ void configure() {
 For tree-shaking guarantees on the binding itself, use conditional imports:
 
 ```dart
-// bezel.dart
+// flight_check.dart
 export 'src/preview_real.dart'
   if (dart.library.html) 'src/preview_stub.dart';
 ```

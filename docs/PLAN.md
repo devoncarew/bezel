@@ -1,4 +1,4 @@
-# PLAN.md — bezel Implementation Plan
+# PLAN.md — flight_check Implementation Plan
 
 Each step is designed to be self-contained and completable by a coding agent in one pass.
 Steps within a phase are ordered by dependency. Complete Phase 1 before starting Phase 2, etc.
@@ -13,8 +13,8 @@ A step is **done** when: the described files exist, `flutter analyze` is clean,
 ### Step 1.1 — Package scaffold [done]
 
 Created `pubspec.yaml`, `analysis_options.yaml`, the `lib/src/` skeleton, and a stub
-`lib/bezel.dart` barrel file. Added an `example/` Flutter desktop app that calls
-`Bezel.configure()` before `runApp`.
+`lib/flight_check.dart` barrel file. Added an `example/` Flutter desktop app that calls
+`FlightCheck.configure()` before `runApp`.
 
 ### Step 1.2 — DeviceProfile model and ScreenCutout [done]
 
@@ -50,7 +50,7 @@ real dispatcher.
 
 Created `PreviewBinding` — a `WidgetsFlutterBinding` subclass that installs
 `PreviewPlatformDispatcher` and exposes `configure()` / `controller`; updated
-`bezel.dart` to use a conditional import so all preview code is tree-shaken in release.
+`flight_check.dart` to use a conditional import so all preview code is tree-shaken in release.
 
 ---
 
@@ -237,13 +237,13 @@ be satisfied on desktop; platform switch resets ephemeral widget state via reass
 + Remove DeviceProfile.devicePixelRatio.
 + Experiment with a neumorphic design and fixed padding around the emulation
   area.
-+ Renamed `Bezel.ensureInitialized()` => `Bezel.configure()`.
++ Renamed `FlightCheck.ensureInitialized()` => `FlightCheck.configure()`.
 + Consider having the currently selected device persist.
 + Have a script which will update the readme from the device database.
 + Add a 'similarTo' field to the DeviceProfile class.
 + Update the code to generate the device list in the readme.
 + Finish valdating the devices.
 + Add iPhone 17
-- Consider renaming from 'Bezel' to 'Flight Check' / flight_check.
+- Renamed from 'Bezel' to 'Flight Check' / flight_check. [done]
 - Update our sizing logic so the emulator approximates the physical device.
 - Change the device picker to use a tabbed UI.
