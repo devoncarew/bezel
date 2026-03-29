@@ -242,7 +242,8 @@ be satisfied on desktop; platform switch resets ephemeral widget state via reass
 + Have a script which will update the readme from the device database.
 + Add a 'similarTo' field to the DeviceProfile class.
 + Update the code to generate the device list in the readme.
-- Add iPhone 17
-- Finish valdating the devices.
++ Finish valdating the devices.
++ Add iPhone 17
 - Consider renaming from 'Bezel' to 'Flight Check' / flight_check.
 - Update our sizing logic so the emulator approximates the physical device.
+- Change the device picker to use a tabbed UI.

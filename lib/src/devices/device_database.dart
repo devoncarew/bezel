@@ -94,22 +94,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     screenCornerRadius: 44,
     cutout: DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
     description:
-        'Dynamic Island, 393 × 852 — covers iPhone 14 Pro, 15 Pro, 16, 16e',
-  ),
-
-  // iPhone 15 Pro: same screen size as iPhone 15, Pro chassis.
-  // Geometry identical to iPhone 15 — same DI hardware cutout.
-  // Source: useyourloaf.com, iosresolution.com
-  DeviceProfile(
-    id: 'iphone_15_pro',
-    name: 'iPhone 15 Pro',
-    platform: DevicePlatform.iOS,
-    logicalSize: Size(393, 852),
-    safeAreaPortrait: EdgeInsets.only(top: 59, bottom: 34),
-    safeAreaLandscape: EdgeInsets.only(left: 59, bottom: 20),
-    screenCornerRadius: 44,
-    cutout: DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
-    description: 'Identical geometry to iPhone 15 — proxy for 14 Pro, 16',
+        'Dynamic Island, 393 × 852 — proxy for iPhone 14 Pro, 15 Pro, 16, 16e, 17',
   ),
 
   // iPhone 15 Pro Max: 6.7" variant; same DI cutout geometry.
@@ -127,8 +112,29 @@ const List<DeviceProfile> kDeviceProfiles = [
     description: 'Dynamic Island, 430 × 932 — covers iPhone 15 Plus, 16 Plus',
   ),
 
+  // iPhone 17: 6.1" display, same screen geometry as iPhone 16 and iPhone 15.
+  // Apple has held the 393×852 logical size constant from iPhone 14 Pro through
+  // iPhone 17; safe-area and DI cutout values are unchanged from iphone_15.
+  // Listed separately so the current flagship appears in the device picker.
+  // Source: iosresolution.com, useyourloaf.com
+  DeviceProfile(
+    id: 'iphone_17',
+    name: 'iPhone 17',
+    platform: DevicePlatform.iOS,
+    logicalSize: Size(393, 852),
+    safeAreaPortrait: EdgeInsets.only(top: 59, bottom: 34),
+    safeAreaLandscape: EdgeInsets.only(left: 59, bottom: 20),
+    screenCornerRadius: 44,
+    cutout: DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
+    description:
+        'Current standard iPhone, 393 × 852 — same geometry as iPhone 15 and 16',
+  ),
+
   // iPhone 17 Pro Max: 6.9" display, largest screen Apple has shipped.
-  // PLACEHOLDER — geometry not yet verified; specs to be filled in.
+  // Logical size 440×956pt confirmed at launch (Sept 2025).
+  // DI cutout and safe-area values extrapolated from the iPhone 15 Pro Max family;
+  // exact Simulator verification pending.
+  // Source: iosresolution.com, community measurements
   DeviceProfile(
     id: 'iphone_17_pro_max',
     name: 'iPhone 17 Pro Max',
@@ -138,8 +144,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(left: 62, bottom: 20),
     screenCornerRadius: 44,
     cutout: DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
-    description:
-        'Largest iPhone screen, 440 × 956 — exposes wide-layout edge cases',
+    description: 'Largest iPhone screen, 440 × 956',
   ),
 
   // iPad mini (A17 Pro): compact form factor with thin bezels.
@@ -256,7 +261,7 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaLandscape: EdgeInsets.only(left: 45, top: 28, bottom: 24),
     screenCornerRadius: 18,
     cutout: PunchHoleCutout(diameter: 25, topOffset: 25),
-    description: 'Mid-range Pixel, small punch hole — covers Pixel 7a, 8a',
+    description: 'Mid-range Pixel, small punch hole — covers Pixel 7a, 8, 8a',
   ),
 
   // Pixel 10 (codename: frankel, in muzel repo).

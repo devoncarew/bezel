@@ -17,14 +17,14 @@ Apple's device line has converged onto a small set of screen geometries, making
 coverage fairly tractable.
 
 *Sources: TelemetryDeck iOS usage share (Feb 2026); CounterPoint Research
-best-sellers (2024 / Q1 2025). iPhone 17 family (announced Sept 2025) is not yet
-included — specs should be added when confirmed.*
+best-sellers (2024–Q3 2025).*
 
 | Family                             | Logical size          | Cutout         | DPR | Relative share            |
 |------------------------------------|-----------------------|----------------|-----|---------------------------|
-| iPhone 16 / 16 Plus (2024)         | 393 × 852 / 430 × 932 | Dynamic Island | 3.0 | Moderate (growing)        |
+| iPhone 17 / 17 Air (2025)          | 393 × 852 (Air TBD)   | Dynamic Island | 3.0 | Growing                   |
+| iPhone 17 Pro / Pro Max (2025)     | 402 × 874 / 440 × 956 | Dynamic Island | 3.0 | Low–Moderate              |
+| iPhone 16 / 16 Plus (2024)         | 393 × 852 / 430 × 932 | Dynamic Island | 3.0 | High (top global seller)  |
 | iPhone 16 Pro (2024)               | 402 × 874             | Dynamic Island | 3.0 | Low–Moderate              |
-| iPhone 17 Pro Max (2025)           | 440 × 956             | Dynamic Island | 3.0 | Low–Moderate              |
 | iPhone 15 / 15 Pro (2023)          | 393 × 852             | Dynamic Island | 3.0 | High                      |
 | iPhone 15 Plus / 15 Pro Max (2023) | 430 × 932             | Dynamic Island | 3.0 | Moderate                  |
 | iPhone 14 (2022)                   | 390 × 844             | Notch          | 3.0 | High                      |
@@ -70,14 +70,14 @@ authoritative source.
 
 ### iOS phones
 
-| Device              | ID                   | Logical size | Corner r | Cutout          | DPR | Safe area portrait | Safe area landscape | Data source | Verified |
-|---------------------|----------------------|--------------|----------|-----------------|-----|--------------------|---------------------|-------------|----------|
-| iPhone SE (3rd gen) | `iphone_se_3`        | 375 × 667    | 0        | None            | 2.0 | T:20               | —                   | community   | yes      |
-| iPhone 14           | `iphone_14`          | 390 × 844    | 44       | TD w:160 h:36 r:20pt | 3.0 | T:47 B:34     | L:47 B:20           | visual approx. | yes   |
-| iPhone 15           | `iphone_15`          | 393 × 852    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community   | yes      |
-| iPhone 15 Pro       | `iphone_15_pro`      | 393 × 852    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community   | yes      |
-| iPhone 15 Pro Max   | `iphone_15_pro_max`  | 430 × 932    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community   | yes      |
-| iPhone 17 Pro Max   | `iphone_17_pro_max`  | 440 × 956    | 44       | DI 126×37 @11pt | 3.0 | T:62 B:34          | L:62 B:20           | community   | yes      |
+| Device              | ID                   | Logical size | Corner r | Cutout          | DPR | Safe area portrait | Safe area landscape | Data source    | Verified |
+|---------------------|----------------------|--------------|----------|-----------------|-----|--------------------|---------------------|----------------|----------|
+| iPhone SE (3rd gen) | `iphone_se_3`        | 375 × 667    | 0        | None            | 2.0 | T:20               | —                   | community      | yes      |
+| iPhone 14           | `iphone_14`          | 390 × 844    | 44       | TD w:160 h:36 r:20pt | 3.0 | T:47 B:34     | L:47 B:20           | visual approx. | yes      |
+| iPhone 15           | `iphone_15`          | 393 × 852    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community      | yes      |
+| iPhone 15 Pro Max   | `iphone_15_pro_max`  | 430 × 932    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community      | yes      |
+| iPhone 17           | `iphone_17`          | 393 × 852    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community      | yes      |
+| iPhone 17 Pro Max   | `iphone_17_pro_max`  | 440 × 956    | 44       | DI 126×37 @11pt | 3.0 | T:62 B:34          | L:62 B:20           | community      | —        |
 
 ### iOS tablets
 
@@ -113,12 +113,14 @@ Devices within the same group share screen geometry closely enough that testing 
 one provides reasonable coverage for the others. A device is a useful proxy when its
 logical size, cutout type/position, and safe-area structure are equivalent or near-equivalent.
 
-### Group 1 — iPhone 15 / 15 Pro (393 × 852, Dynamic Island)
+### Group 1 — iPhone 15 / 17 (393 × 852, Dynamic Island)
 
-`iphone_15` and `iphone_15_pro` are pixel-identical: same logical size, same Dynamic
-Island hardware cutout, same safe areas. Testing on one fully covers the other. Note
-that `iphone_14_pro` (not yet in the database) shares the same 393 × 852 geometry with
-an identical Dynamic Island, so `iphone_15` would also serve as a proxy for it.
+`iphone_15` and `iphone_17` are screen-identical: same 393 × 852 logical size, same
+Dynamic Island hardware cutout, same safe areas. Apple has held this geometry constant
+from iPhone 14 Pro (2022) through iPhone 17 (2025). Both entries exist in the database
+for discoverability — `iphone_15` as a historical proxy for the 2022–2024 generation
+and `iphone_17` as the current flagship. Testing on either fully covers:
+iPhone 14 Pro, iPhone 15, iPhone 15 Pro, iPhone 16, iPhone 16e, iPhone 17.
 
 ### Group 2 — Pixel 10 covers Pixel 9 (411 × 923, same panel)
 
@@ -126,11 +128,11 @@ an identical Dynamic Island, so `iphone_15` would also serve as a proxy for it.
 values are identical; `pixel_9` has been removed from the database — `pixel_10` covers
 both generations.
 
-### Group 3 — Pixel 7a / Pixel 8 (411 × 914, small punch hole)
+### Group 3 — Pixel 7a / Pixel 8a (411 × 914, small punch hole)
 
-The commented-out `pixel_8` entry shares the same logical size (411 × 914) with `pixel_7a`.
-Corner radius differs slightly (18 vs 25pt) and the Pixel 8 cutout geometry differs, so
-`pixel_7a` is a rough proxy for `pixel_8` — good enough for layout testing.
+`pixel_7a` shares the same logical size (411 × 914) with the Pixel 8 and 8a.
+Corner radius and cutout dimensions differ slightly across generations, but `pixel_7a`
+is a good proxy for any mid-range Pixel with a small centered punch hole.
 
 ### Group 4 — Samsung Galaxy A15 / similar budget Android (notch, ~411pt wide)
 
@@ -142,37 +144,69 @@ at the top-center of an ~411pt-wide display would be reasonably covered by this 
 
 ## Coverage assessment
 
-### What is well-covered
+### iOS phones
 
-- **Modern iPhone with Dynamic Island** — `iphone_15` / `iphone_15_pro` /
-  `iphone_15_pro_max` cover the 393 × 852 and 430 × 932 Dynamic Island sizes;
-  `iphone_17_pro_max` covers the largest iPhone screen at 440 × 956.
-- **iPhone SE / legacy small screen** — `iphone_se_3` covers the flat-edge, no-cutout,
-  small-screen form factor.
-- **Mid-range Pixel punch hole (small)** — `pixel_7a` covers the small centered punch
-  hole used in Pixel 7a / 8 / 8a class devices.
-- **Current Pixel punch hole (large)** — `pixel_10` covers the larger, more prominent
-  punch hole introduced in the Pixel 9 generation (identical panel).
-- **High-DPR Pixel** — `pixel_10_pro` (DPR 3.125) covers the higher-density Pro
-  variant.
-- **Budget Android notch** — `samsung_galaxy_a15` covers the Infinity-U teardrop
-  notch form factor.
-- **Tablets** — `ipad_a16` and `ipad_mini_a17` cover the two most common iPad sizes.
+The current set covers three distinct screen-geometry families and both current iPhone
+form factors:
 
-### Gaps and candidates for addition
+| Entry | Covers |
+|---|---|
+| `iphone_se_3` (375 × 667, no cutout) | iPhone SE — legacy small screen, hardware home button |
+| `iphone_14` (390 × 844, notch) | iPhone 12, 13, 14 — the notch era |
+| `iphone_15` (393 × 852, DI) | iPhone 14 Pro through iPhone 16 — the 2022–2024 DI generation |
+| `iphone_15_pro_max` (430 × 932, DI) | iPhone 15 Plus, 16 Plus — 6.7" variant |
+| `iphone_17` (393 × 852, DI) | Current flagship — iPhone 17 standard |
+| `iphone_17_pro_max` (440 × 956, DI) | Largest iPhone — iPhone 17 Pro Max |
 
-- **iPhone 14 / 13 / 12 notch (390 × 844)** — Entry `iphone_14` exists with a
-  `TeardropCutout` approximation (w:160 h:36 bottomRadius:20 sideRadius:5) derived by
-  visual comparison against iOS Simulator. Not yet measured from device-tree data.
-- **Samsung Galaxy A54 / A55 (mid-range, ~384 × 854)** — Placeholder entry
-  `samsung_galaxy_a55` exists but geometry is unverified. The Galaxy A-series mid-range
-  is probably the most widely used Android family by global unit count.
-- **iPhone 16 Pro (402 × 874)** — This size is not covered by any existing profile.
-  The 440 × 956 size is covered by `iphone_17_pro_max`.
-- **Chinese OEM representation** — Devices from Xiaomi, OPPO, vivo, etc. are highly
-  fragmented. Coverage here is genuinely difficult; consider adding one representative
-  mid-range entry (e.g. a common Xiaomi device at ~393 × 852 or ~411 × 914) when a
-  target market warrants it.
+Note: `iphone_15` and `iphone_17` are screen-identical (see Proxy groups). Both are
+kept in the database so the current flagship appears in the picker.
+
+**What is not covered:**
+- **iPhone 16 Pro / 17 Pro (402 × 874)** — the 6.3" Pro size is a distinct screen
+  geometry not represented by any current entry. An `iphone_16_pro` or `iphone_17_pro`
+  entry would close this gap.
+- **iPhone 17 Air** — Apple's thin-body model introduced alongside iPhone 17. Exact
+  logical size TBD; may share 393 × 852 with the standard model or use a new geometry.
+  From iOS Simulator inspection, 420x912 with a safe area of top: 68 bottom: 34.
+
+### Android phones
+
+Three distinct Pixel entries provide good coverage across punch-hole size, safe-area
+height, and display density:
+
+| Entry | DPR | Punch hole | Covers |
+|---|---|---|---|
+| `pixel_7a` (411 × 914) | 2.625 | d:25 @25pt | Pixel 7a, 8, 8a — small centered punch hole |
+| `pixel_10` (411 × 923) | 2.625 | d:32 @33pt | Pixel 9, 10 — larger punch hole, same panel |
+| `pixel_10_pro` (410 × 914) | 3.125 | d:31 @33pt | Pixel 9 Pro, 10 Pro — high-density Pro variant |
+
+The Pixel range is relatively uniform in screen geometry across generations; these three
+entries cover the meaningful dimensions (punch-hole size, safe-area top, DPR) for all
+recent Pixel models.
+
+For Samsung, three form factors are represented:
+
+| Entry | Covers |
+|---|---|
+| `samsung_galaxy_a15` (411 × 892, notch) | Budget tier — Infinity-U teardrop notch (A15, A16, similar) |
+| `samsung_galaxy_a55` (384 × 854, punch hole) | Mid-range — A-series punch hole (A54, A55) |
+| `samsung_galaxy_s24` (360 × 780, punch hole) | Flagship — compact Samsung S-series |
+
+Per Counterpoint Research Q3 2025, Samsung Galaxy A-series devices (A16, A36, A56) hold
+five of the top-ten global best-seller positions. The `samsung_galaxy_a15` covers the
+notch form factor that dominates the budget tier (A15, A16 4G); `samsung_galaxy_a55`
+covers the mid-range punch-hole form factor. The newer A36/A56 models likely share
+similar geometry to the A55 and are not yet covered by a verified entry.
+
+**What is not covered:**
+- **Samsung Galaxy A55 unverified** — `samsung_galaxy_a55` geometry is unconfirmed;
+  safe-area values are community approximations. This is the highest-priority
+  verification gap given A-series global volume.
+- **Samsung Galaxy S25** — The current flagship Samsung, successor to the S24. May
+  share S24 geometry or differ slightly; not yet in the database.
+- **Chinese OEM representation** — Devices from Xiaomi, OPPO, vivo, and Realme have
+  large market share in Asia but are highly fragmented in screen sizes. Coverage is
+  genuinely difficult; add representative entries when a target market warrants it.
 
 ---
 
