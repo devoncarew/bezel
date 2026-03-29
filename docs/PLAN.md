@@ -250,3 +250,48 @@ be satisfied on desktop; platform switch resets ephemeral widget state via reass
 + Improve window position management.
 - Consider updating sizing logic so the emulator approximates a physical device.
 - Consider a locale override.
+
+---
+
+## Phase 5 — iOS screen geometry fidelity (issue #63)
+
+Apple uses continuous-curvature (squircle/superellipse) corners on all iPhone
+displays, and the pre-Dynamic Island notch shape is also a squircle-cornered
+Bézier path. This phase improves rendering fidelity for iOS devices.
+
+### Step 5.1 — Update iPhone corner radii in the device database
+
+The current `screenCornerRadius` values (all 44pt) are a stale community
+approximation. Update them to Simulator-measured tangent points from
+`docs/notch-research.md`. These are still circular-arc radii (not squircles),
+but they are significantly closer to reality.
+
+- iPhone 12–14 family (390 × 844): 44pt → **53pt**
+- iPhone 15–16 family (393 × 852): 44pt → **61pt**
+- iPhone 17 Pro Max (440 × 956): 44pt → **69pt**
+
+### Step 5.2 — Introduce `ScreenBorder` sealed class; replace `screenCornerRadius`
+
+Replace `DeviceProfile.screenCornerRadius: double` with a sealed `ScreenBorder`
+type. Android and iPad devices use `CircularBorder(radius: ...)`. iOS devices
+remain on `CircularBorder` for now, ready to be upgraded to `SquircleBorder`
+once Bézier control points are extracted in step 5.4.
+
+### Step 5.3 — Enhance `extract_simdevicetype.dart` to output Bézier control points
+
+Extend the tool to parse `c` (curveto) commands in the corner region of the
+framebuffer PDF and print the Bézier control points for one corner (top-left),
+normalized to logical points. Also extract the iPhone 14 notch Bézier path from
+the sensor bar PDF.
+
+### Step 5.4 — Populate `SquircleBorder` for iOS devices; implement rendering
+
+With control points from step 5.3, populate `SquircleBorder` entries for each
+iPhone family. Implement path building in `ScreenClipPainter`: reflect/rotate
+one corner's Bézier points to all four corners.
+
+### Step 5.5 — iPhone 14 notch: `PathCutout` class and rendering
+
+Add a `PathCutout` variant to `ScreenCutout` that stores raw Bézier segments
+from the sensor bar PDF. Implement rendering in `ScreenClipPainter`. Replace
+the `TeardropCutout` on `iphone_14` with a `PathCutout`.
