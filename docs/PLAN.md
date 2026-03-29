@@ -231,7 +231,7 @@ slide vs Material zoom), haptic feedback patterns, text-selection toolbar items,
 the host OS and emulated platform differ; back-navigation platform assumptions cannot
 be satisfied on desktop; platform switch resets ephemeral widget state via reassemble.
 
-### Step 4.8 - General cleanup
+### Step 4.8 — General cleanup
 
 + Find a list of the most commonly used mobile devices and compare that to the
   devices we ship with
@@ -249,3 +249,4 @@ be satisfied on desktop; platform switch resets ephemeral widget state via reass
 + Change the device picker to use a tabbed UI.
 - Update our sizing logic so the emulator approximates the physical device?
 - Improve window position management.
+- Consdier a locale override.
