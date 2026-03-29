@@ -1,6 +1,7 @@
 import 'package:flutter/rendering.dart';
 
 import '../devices/device_profile.dart';
+import '../devices/screen_border.dart';
 import '../devices/screen_cutout.dart';
 
 // Screen background color (visible before the child paints).
@@ -48,7 +49,7 @@ class ScreenClipPainter extends CustomPainter {
     DeviceOrientation orientation,
   ) {
     final screenRect = Offset.zero & size;
-    final radius = Radius.circular(profile.screenCornerRadius);
+    final radius = _cornerRadius(profile.screenBorder);
     final screenRRect = RRect.fromRectAndRadius(screenRect, radius);
     final screenPath = Path()..addRRect(screenRRect);
 
@@ -62,7 +63,7 @@ class ScreenClipPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final screenRect = Offset.zero & size;
-    final radius = Radius.circular(profile.screenCornerRadius);
+    final radius = _cornerRadius(profile.screenBorder);
     final screenRRect = RRect.fromRectAndRadius(screenRect, radius);
 
     // Clip to rounded screen corners, then fill with black. This black fill
@@ -201,4 +202,10 @@ class ScreenClipPainter extends CustomPainter {
   @override
   bool shouldRepaint(ScreenClipPainter oldDelegate) =>
       oldDelegate.profile != profile || oldDelegate.orientation != orientation;
+}
+
+Radius _cornerRadius(ScreenBorder border) {
+  return switch (border) {
+    CircularBorder(:final radius) => Radius.circular(radius),
+  };
 }

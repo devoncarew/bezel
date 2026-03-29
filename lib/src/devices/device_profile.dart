@@ -1,5 +1,6 @@
 import 'package:flutter/painting.dart' show EdgeInsets, Size;
 
+import 'screen_border.dart';
 import 'screen_cutout.dart';
 
 /// The host platform of a device.
@@ -48,12 +49,12 @@ class DeviceProfile {
   /// Safe area insets in landscape orientation.
   final EdgeInsets safeAreaLandscape;
 
-  /// Screen corner radius in logical pixels.
+  /// Screen corner shape used to clip the display to its true rounded outline.
   ///
-  /// Used to clip the device screen to its true rounded-corner shape so the
-  /// preview background shows through where a real display's glass would end.
-  /// A value of 0 means square corners (e.g. iPhone SE, iPads).
-  final double screenCornerRadius;
+  /// A [CircularBorder] with radius 0 means square corners (e.g. iPhone SE).
+  /// All current profiles use [CircularBorder]; [SquircleBorder] will be added
+  /// for iOS devices in Step 5.4 once Bézier control points are available.
+  final ScreenBorder screenBorder;
 
   /// Camera cutout geometry in portrait orientation.
   final ScreenCutout cutout;
@@ -75,7 +76,7 @@ class DeviceProfile {
     required this.logicalSize,
     required this.safeAreaPortrait,
     required this.safeAreaLandscape,
-    required this.screenCornerRadius,
+    required this.screenBorder,
     required this.cutout,
     this.tablet = false,
     this.description,

@@ -2,6 +2,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flight_check/src/devices/device_profile.dart';
+import 'package:flight_check/src/devices/screen_border.dart';
 import 'package:flight_check/src/devices/screen_cutout.dart';
 
 void main() {
@@ -16,7 +17,7 @@ void main() {
       logicalSize: portraitSize,
       safeAreaPortrait: const EdgeInsets.only(top: 59, bottom: 34),
       safeAreaLandscape: const EdgeInsets.only(left: 59, right: 59, bottom: 21),
-      screenCornerRadius: 0,
+      screenBorder: const CircularBorder(0),
       cutout: cutout,
     );
   }

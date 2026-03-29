@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart' show Theme, ThemeData, Brightness;
 import 'package:flutter/widgets.dart';
 
+import '../devices/screen_border.dart';
 import '../frame/screen_clip_widget.dart';
 import '../preview_controller.dart';
 import '../theme.dart';
@@ -76,9 +77,9 @@ class PreviewOverlay extends StatelessWidget {
                                 return Center(
                                   child: RaisedSurface(
                                     borderRadius: BorderRadius.circular(
-                                      controller
-                                          .activeProfile
-                                          .screenCornerRadius,
+                                      _cornerRadiusValue(
+                                        controller.activeProfile.screenBorder,
+                                      ),
                                     ),
                                     height: 6,
                                     child: SizedBox(
@@ -140,4 +141,10 @@ class PreviewOverlay extends StatelessWidget {
         )
         .clamp(0.0, 1.0);
   }
+}
+
+double _cornerRadiusValue(ScreenBorder border) {
+  return switch (border) {
+    CircularBorder(:final radius) => radius,
+  };
 }

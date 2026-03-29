@@ -3,6 +3,7 @@
 import 'package:flutter/painting.dart' show EdgeInsets, Size;
 
 import 'device_profile.dart';
+import 'screen_border.dart';
 import 'screen_cutout.dart';
 
 /// The curated list of supported device profiles.
@@ -65,7 +66,7 @@ final iphone_se_3 = DeviceProfile(
   logicalSize: const Size(375, 667),
   safeAreaPortrait: const EdgeInsets.only(top: 20),
   safeAreaLandscape: EdgeInsets.zero,
-  screenCornerRadius: 0,
+  screenBorder: const CircularBorder(0),
   cutout: const NoCutout(),
   description: 'Flat-edge, no cutout, small screen — budget / upgrade path',
 );
@@ -97,7 +98,7 @@ final iphone_14 = DeviceProfile(
   logicalSize: const Size(390, 844),
   safeAreaPortrait: const EdgeInsets.only(top: 47, bottom: 34),
   safeAreaLandscape: const EdgeInsets.only(left: 47, bottom: 20),
-  screenCornerRadius: 53,
+  screenBorder: const CircularBorder(53),
   cutout: const TeardropCutout(
     width: 160,
     height: 36,
@@ -122,7 +123,7 @@ final iphone_15 = DeviceProfile(
   logicalSize: const Size(393, 852),
   safeAreaPortrait: const EdgeInsets.only(top: 59, bottom: 34),
   safeAreaLandscape: const EdgeInsets.only(left: 59, bottom: 20),
-  screenCornerRadius: 61,
+  screenBorder: const CircularBorder(61),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
   description:
       'Dynamic Island, 393 × 852 — proxy for iPhone 14 Pro, 15 Pro, 16, 16e, 17',
@@ -138,7 +139,7 @@ final iphone_15_pro_max = DeviceProfile(
   logicalSize: const Size(430, 932),
   safeAreaPortrait: const EdgeInsets.only(top: 59, bottom: 34),
   safeAreaLandscape: const EdgeInsets.only(left: 59, bottom: 20),
-  screenCornerRadius: 61,
+  screenBorder: const CircularBorder(61),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
   description: 'Dynamic Island, 430 × 932 — covers iPhone 15 Plus, 16 Plus',
 );
@@ -156,7 +157,7 @@ final iphone_17 = DeviceProfile(
   logicalSize: const Size(393, 852),
   safeAreaPortrait: const EdgeInsets.only(top: 59, bottom: 34),
   safeAreaLandscape: const EdgeInsets.only(left: 59, bottom: 20),
-  screenCornerRadius: 61,
+  screenBorder: const CircularBorder(61),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
   description:
       'Current standard iPhone, 393 × 852 — same geometry as iPhone 15 and 16',
@@ -175,7 +176,7 @@ final iphone_17_pro_max = DeviceProfile(
   logicalSize: const Size(440, 956),
   safeAreaPortrait: const EdgeInsets.only(top: 62, bottom: 34),
   safeAreaLandscape: const EdgeInsets.only(left: 62, bottom: 20),
-  screenCornerRadius: 69,
+  screenBorder: const CircularBorder(69),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
   description: 'Largest iPhone screen, 440 × 956',
 );
@@ -198,7 +199,7 @@ final samsung_galaxy_a15 = DeviceProfile(
   logicalSize: const Size(411, 892),
   safeAreaPortrait: const EdgeInsets.only(top: 32, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(left: 32, bottom: 24),
-  screenCornerRadius: 38,
+  screenBorder: const CircularBorder(38),
   cutout: const TeardropCutout(
     width: 44,
     height: 30,
@@ -221,7 +222,7 @@ final samsung_galaxy_a55 = DeviceProfile(
   logicalSize: const Size(384, 854),
   safeAreaPortrait: const EdgeInsets.only(top: 24, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(bottom: 24),
-  screenCornerRadius: 36,
+  screenBorder: const CircularBorder(36),
   cutout: const PunchHoleCutout(diameter: 21, topOffset: 25),
   description: 'Mid-range Samsung A-series, ~384 × 854 — covers A54, A55',
 );
@@ -238,7 +239,7 @@ final samsung_galaxy_s24 = DeviceProfile(
   logicalSize: const Size(360, 780),
   safeAreaPortrait: const EdgeInsets.only(top: 24, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(bottom: 24),
-  screenCornerRadius: 31,
+  screenBorder: const CircularBorder(31),
   cutout: const PunchHoleCutout(diameter: 18, topOffset: 18),
   description: 'Flagship Samsung, 360 × 780 — covers S23, S24',
 );
@@ -257,7 +258,7 @@ final pixel_7a = DeviceProfile(
   logicalSize: const Size(411, 914),
   safeAreaPortrait: const EdgeInsets.only(top: 45, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(left: 45, top: 28, bottom: 24),
-  screenCornerRadius: 18,
+  screenBorder: const CircularBorder(18),
   cutout: const PunchHoleCutout(diameter: 25, topOffset: 25),
   description: 'Mid-range Pixel, small punch hole — covers Pixel 7a, 8, 8a',
 );
@@ -284,7 +285,7 @@ final pixel_10 = DeviceProfile(
   logicalSize: const Size(411, 923),
   safeAreaPortrait: const EdgeInsets.only(top: 54, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(left: 54, top: 52, bottom: 24),
-  screenCornerRadius: 74,
+  screenBorder: const CircularBorder(74),
   cutout: const PunchHoleCutout(diameter: 32, topOffset: 33),
   description: 'Large punch hole, 411 × 923 — covers Pixel 9 and 10',
 );
@@ -311,7 +312,7 @@ final pixel_10_pro = DeviceProfile(
   logicalSize: const Size(410, 914),
   safeAreaPortrait: const EdgeInsets.only(top: 65, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(left: 64, bottom: 24),
-  screenCornerRadius: 73,
+  screenBorder: const CircularBorder(73),
   cutout: const PunchHoleCutout(diameter: 31, topOffset: 33),
   description: 'High-DPR Pixel (3.125), 410 × 914',
 );
@@ -330,7 +331,7 @@ final ipad_mini_a17 = DeviceProfile(
   logicalSize: const Size(744, 1133),
   safeAreaPortrait: const EdgeInsets.only(top: 32, bottom: 20),
   safeAreaLandscape: const EdgeInsets.only(top: 32, bottom: 20),
-  screenCornerRadius: 18,
+  screenBorder: const CircularBorder(18),
   cutout: const NoCutout(),
   tablet: true,
   description: 'Compact iPad, 744 × 1133',
@@ -347,7 +348,7 @@ final ipad_a16 = DeviceProfile(
   logicalSize: const Size(820, 1180),
   safeAreaPortrait: const EdgeInsets.only(top: 32, bottom: 20),
   safeAreaLandscape: const EdgeInsets.only(top: 32, bottom: 20),
-  screenCornerRadius: 18,
+  screenBorder: const CircularBorder(18),
   cutout: const NoCutout(),
   tablet: true,
   description: 'Standard iPad, 820 × 1180',

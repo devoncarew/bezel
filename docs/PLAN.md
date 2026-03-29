@@ -259,7 +259,7 @@ Apple uses continuous-curvature (squircle/superellipse) corners on all iPhone
 displays, and the pre-Dynamic Island notch shape is also a squircle-cornered
 Bézier path. This phase improves rendering fidelity for iOS devices.
 
-### Step 5.1 — Update iPhone corner radii in the device database
+### Step 5.1 — Update iPhone corner radii in the device database [done]
 
 The current `screenCornerRadius` values (all 44pt) are a stale community
 approximation. Update them to Simulator-measured tangent points from
@@ -270,7 +270,7 @@ but they are significantly closer to reality.
 - iPhone 15–16 family (393 × 852): 44pt → **61pt**
 - iPhone 17 Pro Max (440 × 956): 44pt → **69pt**
 
-### Step 5.2 — Introduce `ScreenBorder` sealed class; replace `screenCornerRadius`
+### Step 5.2 — Introduce `ScreenBorder` sealed class; replace `screenCornerRadius` [done]
 
 Replace `DeviceProfile.screenCornerRadius: double` with a sealed `ScreenBorder`
 type. Android and iPad devices use `CircularBorder(radius: ...)`. iOS devices
