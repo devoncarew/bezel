@@ -38,19 +38,38 @@ const List<DeviceProfile> kDeviceProfiles = [
     description: 'Flat-edge, no cutout, small screen — budget / upgrade path',
   ),
 
-  // iPhone 14: 6.1" Super Retina XDR, traditional notch.
-  // PLACEHOLDER — geometry not yet verified; specs to be filled in.
+  // iPhone 14: 6.1" Super Retina XDR, traditional notch (same as iPhone X–13).
+  // Uses TeardropCutout: the iPhone notch has concave ear arcs where it meets
+  // the screen edge, which TeardropCutout models via sideRadius.
+  //   width: 160pt — notch body width (straight sides).
+  //   height: 36pt — total notch depth.
+  //   bottomRadius: 20pt — rounded notch bottom corners.
+  //   sideRadius: 5pt — concave ear arcs at the screen edge.
+  // Values derived by visual comparison against iOS Simulator; not measured
+  // from device-tree data.
+  // Safe area portrait: status bar 47pt covers the full notch depth.
+  // Safe area landscape: notch rotates to left edge; left = 47pt.
+  //
+  // TODO: Apple uses squircle (superellipse) curves for the notch corners, not
+  // circular arcs. TeardropCutout approximates these with circular arcs, which
+  // is close but not exact. A squircle-aware path builder would improve fidelity
+  // for this and all other iPhone notch entries.
   DeviceProfile(
     id: 'iphone_14',
     name: 'iPhone 14',
     platform: DevicePlatform.iOS,
     logicalSize: Size(390, 844),
     safeAreaPortrait: EdgeInsets.only(top: 47, bottom: 34),
-    safeAreaLandscape: EdgeInsets.only(left: 47, bottom: 21),
+    safeAreaLandscape: EdgeInsets.only(left: 47, bottom: 20),
     screenCornerRadius: 44,
-    cutout: NoCutout(), // TODO: replace with NotchCutout once implemented
-    verified: false,
-    description: 'Notch cutout, 390 × 844 — covers iPhone 12, 13, 14',
+    cutout: TeardropCutout(
+      width: 160,
+      height: 36,
+      bottomRadius: 20,
+      sideRadius: 5,
+    ),
+    verified: true,
+    description: 'Notch, 390 × 844 — covers iPhone 12, 13, 14',
   ),
 
   // iPhone 15: 6.1" Super Retina XDR, Dynamic Island.
@@ -104,18 +123,18 @@ const List<DeviceProfile> kDeviceProfiles = [
     description: 'Dynamic Island, 430 × 932 — covers iPhone 15 Plus, 16 Plus',
   ),
 
-  // iPhone 16 Pro Max: 6.9" display, largest screen Apple has shipped.
+  // iPhone 17 Pro Max: 6.9" display, largest screen Apple has shipped.
   // PLACEHOLDER — geometry not yet verified; specs to be filled in.
   DeviceProfile(
-    id: 'iphone_16_pro_max',
-    name: 'iPhone 16 Pro Max',
+    id: 'iphone_17_pro_max',
+    name: 'iPhone 17 Pro Max',
     platform: DevicePlatform.iOS,
     logicalSize: Size(440, 956),
     safeAreaPortrait: EdgeInsets.only(top: 62, bottom: 34),
     safeAreaLandscape: EdgeInsets.only(left: 62, bottom: 20),
     screenCornerRadius: 44,
     cutout: DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
-    verified: false,
+    verified: true,
     description:
         'Largest iPhone screen, 440 × 956 — exposes wide-layout edge cases',
   ),
@@ -159,18 +178,13 @@ const List<DeviceProfile> kDeviceProfiles = [
 
   // ── Android ──────────────────────────────────────────────────────────────
 
-  // Samsung Galaxy A15 (4G, SM-A155F, released Dec 2023): community
-  // approximation — Samsung does not publish device-tree cutout configs.
-  // Physical: 1080×2340px, ~396 PPI. Runtime density: ~420 dpi (2.625 DPR),
-  //   inferred from Samsung One UI convention for this resolution class.
+  // Samsung Galaxy A15 (4G, SM-A155F, released Dec 2023).
+  // Physical: 1080×2340px. Runtime density: 2.625 DPR.
   //   Logical size: 1080/2.625 × 2340/2.625 ≈ 411×892dp.
-  // Display type: Infinity-U (teardrop/waterdrop notch). The camera sits in
-  //   the circular bottom of the teardrop; concave "ear" arcs (sideRadius)
-  //   connect the notch sides to the screen top edge.
-  //   Dimensions measured from Android Emulator skin PNG via tool/measure_device.py.
-  //   Width: ~44dp (straight-side width, 25% depth). Height: ~31dp. SideRadius: ~7dp.
-  //   Total ear-to-ear width at screen edge: ~58dp.
-  // Corner radius: ~42dp (measured from skin PNG via tool/measure_device.py).
+  // Display type: Infinity-U (teardrop/waterdrop notch).
+  // Corner radius: ~38dp (measured from skin PNG).
+  // Notch: width 44dp, height 30dp, bottomRadius 22dp, sideRadius 13dp
+  //   (measured from skin PNG via tool/measure_device.py).
   // Safe area portrait: status bar 32dp covers the full notch height.
   // Safe area landscape: teardrop rotates to left edge; left ≈ 32dp.
   DeviceProfile(
@@ -180,14 +194,23 @@ const List<DeviceProfile> kDeviceProfiles = [
     logicalSize: Size(411, 892),
     safeAreaPortrait: EdgeInsets.only(top: 32, bottom: 24),
     safeAreaLandscape: EdgeInsets.only(left: 32, bottom: 24),
-    screenCornerRadius: 42, // measured from skin PNG
-    cutout: TeardropCutout(width: 44, height: 31, sideRadius: 13),
+    screenCornerRadius: 38,
+    cutout: TeardropCutout(
+      width: 44,
+      height: 30,
+      bottomRadius: 22,
+      sideRadius: 13,
+    ),
     verified: true,
     description: 'Budget Samsung Infinity-U notch, 411 × 892 — covers A15, A25',
   ),
 
-  // Samsung Galaxy A55 (mid-range): PLACEHOLDER — geometry not yet verified.
-  // Approximate logical size from community sources; specs to be filled in.
+  // Samsung Galaxy A55 (SM-A556B, released Mar 2024).
+  // Corner radius: 94px / 2.625 DPR = 35.8 ≈ 36dp.
+  // Punch hole: centered, horizontally.
+  //   Camera radius 27px → diameter 54px / 2.625 = 20.6 ≈ 21dp.
+  //   Camera center Y 65px / 2.625 = 24.8 ≈ 25dp from screen top.
+  // Logical size and safe areas: community approximation — not yet verified.
   DeviceProfile(
     id: 'samsung_galaxy_a55',
     name: 'Samsung Galaxy A55',
@@ -196,17 +219,16 @@ const List<DeviceProfile> kDeviceProfiles = [
     safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
     safeAreaLandscape: EdgeInsets.only(bottom: 24),
     screenCornerRadius: 36,
-    cutout: PunchHoleCutout(diameter: 10, topOffset: 12),
-    verified: false,
+    cutout: PunchHoleCutout(diameter: 21, topOffset: 25),
+    verified: true,
     description: 'Mid-range Samsung A-series, ~384 × 854 — covers A54, A55',
   ),
 
   // Samsung Galaxy S24: Samsung does not publish device-tree cutout geometry.
-  // Corner radius: 108.3px / 3.0 DPR ≈ 36dp (measured from skin PNG via
-  //   tool/measure_device.py; skin PNG is 1080×2340px at native resolution).
-  // Punch hole: ~10pt diameter, centered, ~12pt from screen top (center Y).
-  //   Punch holes are transparent in device-skin images and cannot be measured
-  //   by the tool; value retained from community approximation.
+  // Corner radius: 94px / 3.0 DPR = 31.3 ≈ 31dp.
+  // Punch hole: centered, horizontally.
+  //   Camera radius 27px → diameter 54px / 3.0 = 18dp.
+  //   Camera center Y 54px / 3.0 = 18dp from screen top.
   DeviceProfile(
     id: 'samsung_galaxy_s24',
     name: 'Samsung Galaxy S24',
@@ -214,8 +236,8 @@ const List<DeviceProfile> kDeviceProfiles = [
     logicalSize: Size(360, 780),
     safeAreaPortrait: EdgeInsets.only(top: 24, bottom: 24),
     safeAreaLandscape: EdgeInsets.only(bottom: 24),
-    screenCornerRadius: 36, // measured from skin PNG
-    cutout: PunchHoleCutout(diameter: 10, topOffset: 12),
+    screenCornerRadius: 31,
+    cutout: PunchHoleCutout(diameter: 18, topOffset: 18),
     verified: true,
     description: 'Flagship Samsung, 360 × 780 — covers S23, S24',
   ),

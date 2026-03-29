@@ -65,7 +65,12 @@ void main() {
   group('ScreenClipPainter.buildClipPath teardrop', () {
     // Screen geometry matching the Galaxy A15 profile.
     const screenSize = Size(411, 892);
-    const cutout = TeardropCutout(width: 44, height: 31, sideRadius: 7);
+    const cutout = TeardropCutout(
+      width: 44,
+      height: 31,
+      bottomRadius: 22,
+      sideRadius: 7,
+    );
 
     late Path clipPath;
 

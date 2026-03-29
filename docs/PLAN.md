@@ -245,3 +245,4 @@ be satisfied on desktop; platform switch resets ephemeral widget state via reass
 - Add iPhone 17
 - Finish valdating the devices.
 - Consider renaming from 'Bezel' to 'Flight Check' / flight_check.
+- Update our sizing logic so the emulator approximates the physical device.

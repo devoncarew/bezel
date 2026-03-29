@@ -1,5 +1,3 @@
-import 'dart:math' show pi;
-
 import 'package:flutter/rendering.dart';
 
 import '../devices/device_profile.dart';
@@ -166,8 +164,6 @@ class ScreenClipPainter extends CustomPainter {
     final top = screenRect.top;
     return Path()
       // Left ear: concave arc from the outer top edge into the left wall.
-      // clockwise: false gives the inward-bowing (concave) arc whose centre is
-      // at (cx − width/2, top), creating the characteristic Infinity-U scoop.
       ..moveTo(cx - width / 2 - sideRadius, top)
       ..arcToPoint(
         Offset(cx - width / 2, top + sideRadius),
@@ -176,19 +172,19 @@ class ScreenClipPainter extends CustomPainter {
       )
       // Left straight side, down to where the bottom arc begins.
       ..lineTo(cx - width / 2, top + height - bottomRadius)
-      // Semicircular bottom arc. arcTo with explicit angles is unambiguous:
-      // startAngle=π is the leftmost point; sweepAngle=-π sweeps counter-clockwise
-      // in Flutter's trig convention, which is the visually downward direction in
-      // screen coords (Y increases downward), tracing the camera-housing arc.
-      ..arcTo(
-        Rect.fromCenter(
-          center: Offset(cx, top + height - bottomRadius),
-          width: bottomRadius * 2,
-          height: bottomRadius * 2,
-        ),
-        pi, // startAngle: leftmost point of circle
-        -pi, // sweepAngle: -π → visually downward U-arc in screen coords
-        false, // forceMoveTo: false — continue the current sub-path
+      // Bottom left corner.
+      ..arcToPoint(
+        Offset(cx - width / 2 + bottomRadius, top + height),
+        radius: Radius.circular(bottomRadius),
+        clockwise: false,
+      )
+      // Line across the bottom.
+      ..lineTo(cx + width / 2 - bottomRadius, top + height)
+      // Bottom right corner.
+      ..arcToPoint(
+        Offset(cx + width / 2, top + height - bottomRadius),
+        radius: Radius.circular(bottomRadius),
+        clockwise: false,
       )
       // Right straight side, back up to the ear.
       ..lineTo(cx + width / 2, top + sideRadius)

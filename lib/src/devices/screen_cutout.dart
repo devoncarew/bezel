@@ -89,9 +89,9 @@ final class TeardropCutout extends ScreenCutout {
   const TeardropCutout({
     required this.width,
     required this.height,
-    double? bottomRadius,
-    this.sideRadius = 4,
-  }) : bottomRadius = bottomRadius ?? width / 2;
+    required this.bottomRadius,
+    required this.sideRadius,
+  });
 
   @override
   ScreenCutout rotatedForLandscape(Size portraitScreenSize) => SideCutout(

@@ -24,7 +24,7 @@ included — specs should be added when confirmed.*
 |------------------------------------|-----------------------|----------------|-----|---------------------------|
 | iPhone 16 / 16 Plus (2024)         | 393 × 852 / 430 × 932 | Dynamic Island | 3.0 | Moderate (growing)        |
 | iPhone 16 Pro (2024)               | 402 × 874             | Dynamic Island | 3.0 | Low–Moderate              |
-| iPhone 16 Pro Max (2024)           | 440 × 956             | Dynamic Island | 3.0 | Low–Moderate              |
+| iPhone 17 Pro Max (2025)           | 440 × 956             | Dynamic Island | 3.0 | Low–Moderate              |
 | iPhone 15 / 15 Pro (2023)          | 393 × 852             | Dynamic Island | 3.0 | High                      |
 | iPhone 15 Plus / 15 Pro Max (2023) | 430 × 932             | Dynamic Island | 3.0 | Moderate                  |
 | iPhone 14 (2022)                   | 390 × 844             | Notch          | 3.0 | High                      |
@@ -70,12 +70,14 @@ authoritative source.
 
 ### iOS phones
 
-| Device              | ID                  | Logical size | Corner r | Cutout          | DPR | Safe area portrait | Safe area landscape | Data source | Verified |
-|---------------------|---------------------|--------------|----------|-----------------|-----|--------------------|---------------------|-------------|----------|
-| iPhone SE (3rd gen) | `iphone_se_3`       | 375 × 667    | 0        | None            | 2.0 | T:20               | —                   | community   | yes      |
-| iPhone 15           | `iphone_15`         | 393 × 852    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community   | yes      |
-| iPhone 15 Pro       | `iphone_15_pro`     | 393 × 852    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community   | yes      |
-| iPhone 15 Pro Max   | `iphone_15_pro_max` | 430 × 932    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community   | yes      |
+| Device              | ID                   | Logical size | Corner r | Cutout          | DPR | Safe area portrait | Safe area landscape | Data source | Verified |
+|---------------------|----------------------|--------------|----------|-----------------|-----|--------------------|---------------------|-------------|----------|
+| iPhone SE (3rd gen) | `iphone_se_3`        | 375 × 667    | 0        | None            | 2.0 | T:20               | —                   | community   | yes      |
+| iPhone 14           | `iphone_14`          | 390 × 844    | 44       | TD w:160 h:36 r:20pt | 3.0 | T:47 B:34     | L:47 B:20           | visual approx. | yes   |
+| iPhone 15           | `iphone_15`          | 393 × 852    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community   | yes      |
+| iPhone 15 Pro       | `iphone_15_pro`      | 393 × 852    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community   | yes      |
+| iPhone 15 Pro Max   | `iphone_15_pro_max`  | 430 × 932    | 44       | DI 126×37 @11pt | 3.0 | T:59 B:34          | L:59 B:20           | community   | yes      |
+| iPhone 17 Pro Max   | `iphone_17_pro_max`  | 440 × 956    | 44       | DI 126×37 @11pt | 3.0 | T:62 B:34          | L:62 B:20           | community   | yes      |
 
 ### iOS tablets
 
@@ -88,8 +90,9 @@ authoritative source.
 
 | Device              | ID                   | Logical size | Corner r | Cutout        | DPR   | Safe area portrait | Safe area landscape | Data source               | Verified |
 |---------------------|----------------------|--------------|----------|---------------|-------|--------------------|---------------------|---------------------------|----------|
-| Samsung Galaxy S24  | `samsung_galaxy_s24` | 360 × 780    | 36       | PH d:10 @12pt | 3.0   | T:24 B:24          | B:24                | skin PNG (tool) / community | yes    |
-| Samsung Galaxy A15  | `samsung_galaxy_a15` | 411 × 892    | 42       | TD w:44 h:31pt | 2.625 | T:32 B:24         | L:32 B:24           | skin PNG (tool)           | yes      |
+| Samsung Galaxy S24  | `samsung_galaxy_s24` | 360 × 780    | 31       | PH d:18 @18pt | 3.0   | T:24 B:24          | B:24                | external tool             | yes      |
+| Samsung Galaxy A55  | `samsung_galaxy_a55` | 384 × 854    | 36       | PH d:21 @25pt | 2.625 | T:24 B:24          | B:24                | external tool             | —        |
+| Samsung Galaxy A15  | `samsung_galaxy_a15` | 411 × 892    | 38       | TD w:44 h:30 r:22pt | 2.625 | T:32 B:24    | L:32 B:24           | skin PNG (tool)           | yes      |
 | Google Pixel 7a     | `pixel_7a`           | 411 × 914    | 18       | PH d:25 @25pt | 2.625 | T:45 B:24          | L:45 T:28 B:24      | Android Emulator (adb)    | yes      |
 | Google Pixel 10     | `pixel_10`           | 411 × 923    | 74       | PH d:32 @33pt | 2.625 | T:66 B:24          | L:65 B:24           | AOSP (Pixel 9) + community (TensorG5-devs) | —        |
 | Google Pixel 10 Pro | `pixel_10_pro`       | 410 × 914    | 73       | PH d:31 @33pt | 3.125 | T:65 B:24          | L:64 B:24           | community (TensorG5-devs) | —        |
@@ -142,8 +145,8 @@ at the top-center of an ~411pt-wide display would be reasonably covered by this 
 ### What is well-covered
 
 - **Modern iPhone with Dynamic Island** — `iphone_15` / `iphone_15_pro` /
-  `iphone_15_pro_max` cover the current iPhone geometry and all Dynamic Island
-  rendering.
+  `iphone_15_pro_max` cover the 393 × 852 and 430 × 932 Dynamic Island sizes;
+  `iphone_17_pro_max` covers the largest iPhone screen at 440 × 956.
 - **iPhone SE / legacy small screen** — `iphone_se_3` covers the flat-edge, no-cutout,
   small-screen form factor.
 - **Mid-range Pixel punch hole (small)** — `pixel_7a` covers the small centered punch
@@ -158,21 +161,32 @@ at the top-center of an ~411pt-wide display would be reasonably covered by this 
 
 ### Gaps and candidates for addition
 
-- **iPhone 14 / 13 / 12 notch (390 × 844)** — These three generations share the same
-  logical size and a traditional top-center notch. They collectively represent a large
-  fraction of active iPhones. Adding one `iphone_14` entry (or `iphone_13`) would cover
-  this entire class. *Cutout type differs from Dynamic Island — not covered by existing
-  entries.*
-- **Samsung Galaxy A54 / A55 (mid-range, ~384 × 854)** — The Galaxy A-series mid-range
-  is probably the most widely used Android family by global unit count. Screen geometry
-  differs from both the S24 and A15 entries.
-- **iPhone 16 Pro / 16 Pro Max (402 × 874 / 440 × 956)** — These sizes are not
-  covered by any existing profile. iPhone 16 Pro Max (440 × 956) is the largest
-  screen Apple has shipped and may expose edge-case layout issues.
+- **iPhone 14 / 13 / 12 notch (390 × 844)** — Entry `iphone_14` exists with a
+  `TeardropCutout` approximation (w:160 h:36 bottomRadius:20 sideRadius:5) derived by
+  visual comparison against iOS Simulator. Not yet measured from device-tree data.
+- **Samsung Galaxy A54 / A55 (mid-range, ~384 × 854)** — Placeholder entry
+  `samsung_galaxy_a55` exists but geometry is unverified. The Galaxy A-series mid-range
+  is probably the most widely used Android family by global unit count.
+- **iPhone 16 Pro (402 × 874)** — This size is not covered by any existing profile.
+  The 440 × 956 size is covered by `iphone_17_pro_max`.
 - **Chinese OEM representation** — Devices from Xiaomi, OPPO, vivo, etc. are highly
   fragmented. Coverage here is genuinely difficult; consider adding one representative
   mid-range entry (e.g. a common Xiaomi device at ~393 × 852 or ~411 × 914) when a
   target market warrants it.
+
+---
+
+## Known limitations
+
+### Squircle notch corners
+
+Apple uses squircle (superellipse) curves for the corners of iPhone notches and the
+Dynamic Island, not circular arcs. The current `TeardropCutout` path builder uses
+circular arcs (`arcToPoint` / `arcTo`), which is a close approximation but not exact.
+The difference is subtle at small sizes but visible under close inspection. A future
+improvement would be a squircle-aware path builder for iPhone cutout shapes.
+
+Affected entries: `iphone_14` and any future notch entries.
 
 ---
 
