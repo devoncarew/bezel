@@ -18,7 +18,7 @@
 //   - `{sensorBarImage}.pdf` → notch / DI area path in logical points;
 //     empty for Dynamic Island devices
 //
-// See docs/cutout-geometry-research.md for background and a summary table
+// See docs/notch-research.md for background and a summary table
 // of extracted values.
 
 import 'dart:convert';

@@ -205,7 +205,7 @@ tests.
 **Android (Pixel):** Extract cutout geometry and screen corner radii from AOSP device tree
 configs (`config_mainBuiltInDisplayCutout`, `config_mainDisplayShape`). Convert physical
 pixel coordinates to logical pixels by dividing by the device's DPR. See
-`docs/cutout-geometry-research.md` for sources and conversion examples.
+`docs/notch-research.md` for sources and conversion examples.
 
 **Android (Samsung):** Keep community-approximated values. Annotate as approximate in
 source.
@@ -247,6 +247,6 @@ be satisfied on desktop; platform switch resets ephemeral widget state via reass
 + Add iPhone 17
 + Rename from 'Bezel' to 'Flight Check' / flight_check.
 + Change the device picker to use a tabbed UI.
-- Update our sizing logic so the emulator approximates the physical device?
-- Improve window position management.
-- Consdier a locale override.
++ Improve window position management.
+- Consider updating sizing logic so the emulator approximates a physical device.
+- Consider a locale override.

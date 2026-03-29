@@ -16,11 +16,19 @@ const ui.Size _kMinWindowSize = ui.Size(300.0, 400.0);
 /// Awaits [_ready] before making any `window_manager` calls, so it is safe to
 /// construct this service before [windowManager.ensureInitialized] resolves.
 class WindowManagerSizingService implements WindowSizingService {
-  const WindowManagerSizingService(this._ready);
+  WindowManagerSizingService(this._ready);
 
   /// A [Future] that resolves once [windowManager.ensureInitialized] has
   /// completed. Typically `PreviewBinding` creates and holds this future.
   final Future<void> _ready;
+
+  DeviceOrientation? _lastOrientation;
+
+  /// Saved window positions, keyed by orientation.
+  ///
+  /// Populated when the user switches orientation so that switching back
+  /// restores the window to where it was before.
+  final Map<DeviceOrientation, Offset> _savedPositions = {};
 
   @override
   Future<void> applyProfile(
@@ -49,19 +57,51 @@ class WindowManagerSizingService implements WindowSizingService {
       );
     }
 
+    // Capture position and size before resizing so we can detect docking and
+    // save position for orientation restore.
+    final pos = await windowManager.getPosition();
+    final oldSize = await windowManager.getSize();
+
+    final orientationChanged =
+        _lastOrientation != null && _lastOrientation != orientation;
+
+    // Before switching orientation, save the current position so we can
+    // restore it if the user switches back.
+    if (orientationChanged) {
+      _savedPositions[_lastOrientation!] = pos;
+    }
+
     await windowManager.setMinimumSize(_kMinWindowSize);
     await windowManager.setSize(actual);
 
-    // Reposition the window if it would extend off the right or bottom edge of
-    // the screen after the resize.
-    final pos = await windowManager.getPosition();
     final maxLeft = screen.width - actual.width;
     final maxTop = screen.height - actual.height;
-    if (pos.dx > maxLeft || pos.dy > maxTop) {
-      await windowManager.setPosition(
-        Offset(pos.dx.clamp(0.0, maxLeft), pos.dy.clamp(0.0, maxTop)),
+
+    final Offset newPos;
+    final savedPos = orientationChanged ? _savedPositions[orientation] : null;
+    if (savedPos != null) {
+      // Restore the saved position for this orientation, clamped to screen.
+      newPos = Offset(
+        savedPos.dx.clamp(0.0, maxLeft),
+        savedPos.dy.clamp(0.0, maxTop),
+      );
+    } else {
+      // If the window's right edge was flush with the screen's right edge
+      // (within a small tolerance), keep it docked there after the resize.
+      const kDockTolerance = 2.0;
+      final dockedRight =
+          (pos.dx + oldSize.width - screen.width).abs() <= kDockTolerance;
+      newPos = Offset(
+        dockedRight ? maxLeft : pos.dx.clamp(0.0, maxLeft),
+        pos.dy.clamp(0.0, maxTop),
       );
     }
+
+    if (newPos != pos) {
+      await windowManager.setPosition(newPos);
+    }
+
+    _lastOrientation = orientation;
   }
 
   /// Computes the ideal window size for [profile] at [orientation] before
