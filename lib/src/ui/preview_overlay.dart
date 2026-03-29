@@ -110,11 +110,13 @@ class PreviewOverlay extends StatelessWidget {
                         ],
                       ),
 
-                      // Device picker — covers the full overlay when open.
-                      if (controller.devicePickerVisible)
-                        Positioned.fill(
-                          child: DevicePicker(controller: controller),
-                        ),
+                      // Backdrop + picker — always mounted so the picker
+                      // can animate in and out. The backdrop covers the full
+                      // window (including toolbar) so all taps outside the
+                      // card dismiss the picker.
+                      Positioned.fill(
+                        child: DevicePicker(controller: controller),
+                      ),
                     ],
                   ),
                 ),

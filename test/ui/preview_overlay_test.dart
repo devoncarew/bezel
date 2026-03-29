@@ -151,20 +151,6 @@ void main() {
       expect(find.byType(PreviewToolbar), findsNothing);
     });
 
-    testWidgets('DevicePicker absent by default', (tester) async {
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: PreviewOverlay(
-            controller: controller,
-            child: const SizedBox.expand(),
-          ),
-        ),
-      );
-
-      expect(find.byType(DevicePicker), findsNothing);
-    });
-
     testWidgets('DevicePicker shown when devicePickerVisible is true', (
       tester,
     ) async {
