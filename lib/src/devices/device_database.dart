@@ -82,15 +82,12 @@ final iphone_se_3 = DeviceProfile(
 // from device-tree data.
 // Safe area portrait: status bar 47pt covers the full notch depth.
 // Safe area landscape: notch rotates to left edge; left = 47pt.
-// Corner radius: 44pt (community approximation; visually verified against
-// iOS Simulator). Corner radius: 53pt (squircle tangent point from Simulator
-// framebuffer PDF, Xcode 16). Circular-arc rendering with the tangent point
-// produces slightly larger corners than the real device — see Step 5.2 in
-// PLAN.md for the planned squircle rendering upgrade.
+// Corner border: 6-segment squircle Bézier from the Simulator framebuffer PDF
+// (Xcode 16, "iPhone 14", 1170×2532 px, 3× scale).
+//   Top tangent: 390 − 322.54 = 67.46 pt. Side tangent: 67.47 pt.
 //
-// TODO(#63): Apple uses squircle (superellipse) curves for the notch corners.
-// TeardropCutout approximates these with circular arcs. A PathCutout using
-// Bézier segments from the sensor bar PDF would improve fidelity (Step 5.5).
+// TODO(#63): Apple uses squircle curves for the notch corners too. A PathCutout
+// using Bézier segments from the sensor bar PDF would improve fidelity (step 5.5).
 final iphone_14 = DeviceProfile(
   id: 'iphone_14',
   name: 'iPhone 14',
@@ -98,7 +95,49 @@ final iphone_14 = DeviceProfile(
   logicalSize: const Size(390, 844),
   safeAreaPortrait: const EdgeInsets.only(top: 47, bottom: 34),
   safeAreaLandscape: const EdgeInsets.only(left: 47, bottom: 20),
-  screenBorder: const CircularBorder(53),
+  screenBorder: const SquircleBorder(
+    topTangentLength: 67.46,
+    // Segments are relative to the top-right corner (390, 0). Each row is one
+    // cubic: cp1x, cp1y, cp2x, cp2y, x, y.
+    segments: [
+      -63.04,
+      0.00,
+      -57.60,
+      0.02,
+      -53.22,
+      0.16,
+      -48.49,
+      0.32,
+      -43.71,
+      0.65,
+      -39.03,
+      1.48,
+      -29.42,
+      3.18,
+      -20.81,
+      6.90,
+      -13.85,
+      13.85,
+      -6.89,
+      20.81,
+      -3.17,
+      29.43,
+      -1.48,
+      39.03,
+      -0.65,
+      43.71,
+      -0.31,
+      48.50,
+      -0.16,
+      53.22,
+      -0.01,
+      57.60,
+      0.00,
+      63.04,
+      0.00,
+      67.47,
+    ],
+  ),
   cutout: const TeardropCutout(
     width: 160,
     height: 36,
@@ -109,13 +148,13 @@ final iphone_14 = DeviceProfile(
 );
 
 // iPhone 15: 6.1" Super Retina XDR, Dynamic Island.
-// Corner radius: 61pt (squircle tangent point from Simulator framebuffer PDF,
-// Xcode 16). Circular-arc rendering with the tangent point produces slightly
-// larger corners than the real device — see Step 5.2 in PLAN.md for the
-// planned squircle rendering upgrade.
 // Dynamic Island: ~126×37pt pill, ~11pt from screen top
 //   (community measurement; hardware cutout, not the expanded software UI).
 // Safe-area: useyourloaf.com iPhone 15 Screen Sizes
+// Corner border: 6-segment squircle Bézier from the Simulator framebuffer PDF
+// (Xcode 16, "iPhone 15", 1179×2556 px, 3× scale).
+//   Top tangent: 393 − 318.35 = 74.65 pt. Side tangent: 73.80 pt.
+//   Same corner shape as iPhone 14 Pro, 15 Pro, 16, 16e, and 17.
 final iphone_15 = DeviceProfile(
   id: 'iphone_15',
   name: 'iPhone 15',
@@ -123,14 +162,59 @@ final iphone_15 = DeviceProfile(
   logicalSize: const Size(393, 852),
   safeAreaPortrait: const EdgeInsets.only(top: 59, bottom: 34),
   safeAreaLandscape: const EdgeInsets.only(left: 59, bottom: 20),
-  screenBorder: const CircularBorder(61),
+  screenBorder: const SquircleBorder(
+    topTangentLength: 74.65,
+    // Segments relative to top-right corner (393, 0). Each row: cp1x, cp1y,
+    // cp2x, cp2y, x, y.
+    segments: [
+      -70.06,
+      0.00,
+      -65.48,
+      0.02,
+      -60.89,
+      0.19,
+      -55.47,
+      0.39,
+      -50.10,
+      0.80,
+      -44.74,
+      1.80,
+      -33.93,
+      3.82,
+      -24.09,
+      8.19,
+      -16.14,
+      16.14,
+      -8.19,
+      24.09,
+      -3.82,
+      33.92,
+      -1.80,
+      44.74,
+      -0.80,
+      50.10,
+      -0.39,
+      55.47,
+      -0.19,
+      60.90,
+      -0.03,
+      65.20,
+      0.00,
+      69.50,
+      0.00,
+      73.80,
+    ],
+  ),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
   description:
       'Dynamic Island, 393 × 852 — proxy for iPhone 14 Pro, 15 Pro, 16, 16e, 17',
 );
 
 // iPhone 15 Pro Max: 6.7" variant; same DI cutout geometry.
-// Corner radius: 61pt (same Simulator-measured tangent point as iphone_15).
+// Corner border: 6-segment squircle Bézier from the Simulator framebuffer PDF
+// (Xcode 16, "iPhone 15 Plus", 1290×2796 px, 3× scale).
+//   Top tangent: 430 − 355.35 = 74.65 pt. Side tangent: 75.90 pt.
+//   Same tangent length as the 393 pt wide family; corner shape is identical.
 // Source: useyourloaf.com, iosresolution.com
 final iphone_15_pro_max = DeviceProfile(
   id: 'iphone_15_pro_max',
@@ -139,7 +223,49 @@ final iphone_15_pro_max = DeviceProfile(
   logicalSize: const Size(430, 932),
   safeAreaPortrait: const EdgeInsets.only(top: 59, bottom: 34),
   safeAreaLandscape: const EdgeInsets.only(left: 59, bottom: 20),
-  screenBorder: const CircularBorder(61),
+  screenBorder: const SquircleBorder(
+    topTangentLength: 74.65,
+    // Segments relative to top-right corner (430, 0). Each row: cp1x, cp1y,
+    // cp2x, cp2y, x, y.
+    segments: [
+      -70.06,
+      0.00,
+      -65.48,
+      0.02,
+      -60.89,
+      0.19,
+      -55.47,
+      0.39,
+      -50.10,
+      0.80,
+      -44.74,
+      1.80,
+      -33.93,
+      3.82,
+      -24.09,
+      8.19,
+      -16.14,
+      16.14,
+      -8.19,
+      24.09,
+      -3.82,
+      33.92,
+      -1.80,
+      44.74,
+      -0.80,
+      50.10,
+      -0.39,
+      55.47,
+      -0.19,
+      60.90,
+      0.00,
+      65.90,
+      0.00,
+      70.90,
+      0.00,
+      75.90,
+    ],
+  ),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
   description: 'Dynamic Island, 430 × 932 — covers iPhone 15 Plus, 16 Plus',
 );
@@ -147,7 +273,7 @@ final iphone_15_pro_max = DeviceProfile(
 // iPhone 17: 6.1" display, same screen geometry as iPhone 16 and iPhone 15.
 // Apple has held the 393×852 logical size constant from iPhone 14 Pro through
 // iPhone 17; safe-area and DI cutout values are unchanged from iphone_15.
-// Corner radius: 61pt (same Simulator-measured tangent point as iphone_15).
+// Corner border: same Simulator-extracted squircle shape as iphone_15.
 // Listed separately so the current flagship appears in the device picker.
 // Source: iosresolution.com, useyourloaf.com
 final iphone_17 = DeviceProfile(
@@ -157,7 +283,48 @@ final iphone_17 = DeviceProfile(
   logicalSize: const Size(393, 852),
   safeAreaPortrait: const EdgeInsets.only(top: 59, bottom: 34),
   safeAreaLandscape: const EdgeInsets.only(left: 59, bottom: 20),
-  screenBorder: const CircularBorder(61),
+  screenBorder: const SquircleBorder(
+    topTangentLength: 74.65,
+    // Same corner shape as iphone_15 (393 pt wide, same Simulator PDF).
+    segments: [
+      -70.06,
+      0.00,
+      -65.48,
+      0.02,
+      -60.89,
+      0.19,
+      -55.47,
+      0.39,
+      -50.10,
+      0.80,
+      -44.74,
+      1.80,
+      -33.93,
+      3.82,
+      -24.09,
+      8.19,
+      -16.14,
+      16.14,
+      -8.19,
+      24.09,
+      -3.82,
+      33.92,
+      -1.80,
+      44.74,
+      -0.80,
+      50.10,
+      -0.39,
+      55.47,
+      -0.19,
+      60.90,
+      -0.03,
+      65.20,
+      0.00,
+      69.50,
+      0.00,
+      73.80,
+    ],
+  ),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
   description:
       'Current standard iPhone, 393 × 852 — same geometry as iPhone 15 and 16',
@@ -165,8 +332,9 @@ final iphone_17 = DeviceProfile(
 
 // iPhone 17 Pro Max: 6.9" display, largest screen Apple has shipped.
 // Logical size 440×956pt confirmed at launch (Sept 2025).
-// Corner radius: 69pt (squircle tangent point from Simulator framebuffer PDF).
-// See Step 5.2 in PLAN.md for the planned squircle rendering upgrade.
+// Corner border: 6-segment squircle Bézier from the Simulator framebuffer PDF
+// (Xcode 16, "iPhone 17 Pro Max", 1320×2868 px, 3× scale).
+//   Top tangent: 440 − 354.84 = 85.16 pt. Side tangent: 85.00 pt.
 // DI cutout and safe-area values extrapolated from the iPhone 15 Pro Max family.
 // Source: iosresolution.com, community measurements
 final iphone_17_pro_max = DeviceProfile(
@@ -176,7 +344,49 @@ final iphone_17_pro_max = DeviceProfile(
   logicalSize: const Size(440, 956),
   safeAreaPortrait: const EdgeInsets.only(top: 62, bottom: 34),
   safeAreaLandscape: const EdgeInsets.only(left: 62, bottom: 20),
-  screenBorder: const CircularBorder(69),
+  screenBorder: const SquircleBorder(
+    topTangentLength: 85.16,
+    // Segments relative to top-right corner (440, 0). Each row: cp1x, cp1y,
+    // cp2x, cp2y, x, y.
+    segments: [
+      -79.79,
+      0.00,
+      -74.41,
+      0.02,
+      -69.04,
+      0.22,
+      -62.88,
+      0.44,
+      -56.80,
+      0.91,
+      -50.73,
+      2.04,
+      -38.46,
+      4.33,
+      -27.30,
+      9.29,
+      -18.30,
+      18.30,
+      -9.29,
+      27.31,
+      -4.33,
+      38.46,
+      -2.04,
+      50.73,
+      -0.91,
+      56.80,
+      -0.44,
+      62.88,
+      -0.21,
+      69.03,
+      -0.02,
+      74.35,
+      0.00,
+      79.68,
+      0.00,
+      85.00,
+    ],
+  ),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
   description: 'Largest iPhone screen, 440 × 956',
 );

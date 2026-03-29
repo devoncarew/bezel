@@ -146,5 +146,8 @@ class PreviewOverlay extends StatelessWidget {
 double _cornerRadiusValue(ScreenBorder border) {
   return switch (border) {
     CircularBorder(:final radius) => radius,
+    // Use topTangentLength as an approximation for the outer shadow radius on
+    // the RaisedSurface — close enough for the cosmetic drop shadow.
+    SquircleBorder(:final topTangentLength) => topTangentLength,
   };
 }

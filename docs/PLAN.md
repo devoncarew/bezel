@@ -284,7 +284,7 @@ framebuffer PDF and print the Bézier control points for one corner (top-left),
 normalized to logical points. Also extract the iPhone 14 notch Bézier path from
 the sensor bar PDF.
 
-### Step 5.4 — Populate `SquircleBorder` for iOS devices; implement rendering
+### Step 5.4 — Populate `SquircleBorder` for iOS devices; implement rendering [done]
 
 With control points from step 5.3, populate `SquircleBorder` entries for each
 iPhone family. Implement path building in `ScreenClipPainter`: reflect/rotate
