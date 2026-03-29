@@ -19,5 +19,7 @@ coverage/
 
 # claude
 .claude/settings.local.json
+.claude/worktrees/
 
+# binary files
 tool/images/

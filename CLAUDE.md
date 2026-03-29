@@ -21,11 +21,6 @@ Read `DESIGN.md` for the full architecture. Read `docs/PLAN.md` for the current 
 
 - **Dart only.** No generated code, no build_runner, no macros.
 - Follow the [official Dart style guide](https://dart.dev/effective-dart/style).
-- Use `final` everywhere it's applicable. Prefer `const` constructors.
-- Use named parameters for anything with more than two parameters.
-- No `dynamic`. No unnecessary casts. Prefer sealed classes / exhaustive switches for
-  discriminated unions.
-- Doc comments (`///`) on all public API. Brief inline comments for non-obvious logic only.
 - Keep files focused. If a file is growing past ~200 lines, consider whether it should split.
 
 ---
@@ -62,7 +57,7 @@ For tree-shaking guarantees on the binding itself, use conditional imports:
 ```dart
 // flight_check.dart
 export 'src/preview_real.dart'
-  if (dart.library.html) 'src/preview_stub.dart';
+  if (dart.library.io) 'src/preview_stub.dart';
 ```
 
 ---
@@ -87,27 +82,6 @@ flutter test
 
 ## Common Patterns
 
-### Reading the active profile in a widget
-
-```dart
-class _MyWidget extends StatelessWidget {
-  const _MyWidget({required this.controller});
-
-  final PreviewController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: controller,
-      builder: (context, _) {
-        final profile = controller.activeProfile;
-        // ...
-      },
-    );
-  }
-}
-```
-
 ### Adding a new device profile
 
 Add an entry to `device_database.dart`. The `DeviceProfile` constructor is the only
@@ -115,16 +89,23 @@ thing that needs to change — no registration, no factory, no codegen. Include 
 noting the data source for cutout geometry and corner radius.
 
 ```dart
+// Pixel 7a (codename: lynx).
+// Cutout: verified against Android Emulator via `adb shell dumpsys display`.
+//   Cutout spec: M 507,66 a 33,33 0 1 0 66,0 33,33 0 1 0 -66,0 Z @left
+//   Circle: center (540, 66)px physical, radius 33px physical.
+//   Diameter: 66px / 2.625 DPR ≈ 25dp; center Y: 66px / 2.625 ≈ 25dp.
+// Corner radius: 47px / 2.625 ≈ 18dp (from roundedCorners in dumpsys output).
+// Safe areas: verified against Android Emulator.
 DeviceProfile(
-  id: 'pixel_8',
-  name: 'Pixel 8',
+  id: 'pixel_7a',
+  name: 'Google Pixel 7a',
   platform: DevicePlatform.android,
   logicalSize: const Size(411, 914),
-  devicePixelRatio: 2.625,
-  safeAreaPortrait: const EdgeInsets.only(top: 48, bottom: 24),
-  safeAreaLandscape: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
-  screenCornerRadius: 25,       // AOSP config_mainDisplayShape, converted from px
-  cutout: PunchHoleCutout(diameter: 11, topOffset: 13),
+  safeAreaPortrait: const EdgeInsets.only(top: 45, bottom: 24),
+  safeAreaLandscape: const EdgeInsets.only(left: 45, top: 28, bottom: 24),
+  screenCornerRadius: 18,
+  cutout: const PunchHoleCutout(diameter: 25, topOffset: 25),
+  description: 'Mid-range Pixel, small punch hole — covers Pixel 7a, 8, 8a',
 ),
 ```
 
@@ -135,8 +116,8 @@ delegate to `_real` for anything not being spoofed:
 
 ```dart
 @override
-double get devicePixelRatio =>
-    _controller.activeProfile?.devicePixelRatio ?? _real.devicePixelRatio;
+ui.Size get physicalSize =>
+    _controller.emulatedLogicalSize * _real.devicePixelRatio;
 ```
 
 ---
@@ -148,8 +129,6 @@ double get devicePixelRatio =>
 - Do not add a plugin/extension system. Keep the surface area small.
 - Do not use `BuildContext` in the binding layer. The binding exists below the widget tree.
 - Do not persist state across sessions (e.g. to shared_preferences). Session memory only.
-- Do not add screenshot functionality in Phase 1 or 2. It's out of scope.
-- Do not add locale / accessibility / text scale overrides. Those are out of scope.
 
 ---
 
@@ -176,19 +155,13 @@ cd example
 flutter run -d macos    # or linux / windows
 ```
 
-To run tests:
+Run these before every commit — all three must be clean:
+
 ```
+dart format .
+flutter analyze
 flutter test
 ```
 
-To check analysis:
-```
-flutter analyze
-```
-
-To check formatting:
-```
-dart format --set-exit-if-changed .
-```
-
-All three must be clean before a change is considered done.
+`dart format` is not optional. Unformatted code will fail CI. Run it even for
+single-line changes.
