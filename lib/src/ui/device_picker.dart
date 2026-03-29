@@ -27,8 +27,11 @@ class DevicePicker extends StatefulWidget {
 }
 
 class _DevicePickerState extends State<DevicePicker>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final TabController _tabController;
+  late final AnimationController _animController;
+  late final Animation<double> _fade;
+  late final Animation<double> _scale;
 
   @override
   void initState() {
@@ -45,12 +48,49 @@ class _DevicePickerState extends State<DevicePicker>
       vsync: this,
       initialIndex: initialIndex,
     );
+
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 220),
+      vsync: this,
+    );
+
+    _fade = CurvedAnimation(
+      parent: _animController,
+      curve: Curves.easeOut,
+      reverseCurve: Curves.easeIn,
+    );
+
+    // Scale from 0.85 → 1.0, anchored at bottom-center to feel grounded
+    // near the toolbar (matching showDialog's scale-up convention).
+    _scale = Tween<double>(begin: 0.85, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animController,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      ),
+    );
+
+    // If picker is already visible on mount, skip the intro animation.
+    if (widget.controller.devicePickerVisible) {
+      _animController.value = 1.0;
+    }
+
+    widget.controller.addListener(_onControllerChanged);
+  }
+
+  void _onControllerChanged() {
+    if (widget.controller.devicePickerVisible) {
+      _animController.forward();
+    } else {
+      _animController.reverse();
+    }
   }
 
   @override
   void dispose() {
+    widget.controller.removeListener(_onControllerChanged);
     _tabController.dispose();
-
+    _animController.dispose();
     super.dispose();
   }
 
@@ -64,78 +104,96 @@ class _DevicePickerState extends State<DevicePicker>
         .toList();
     final tablets = DeviceDatabase.all.where((d) => d.tablet).toList();
 
-    return GestureDetector(
-      // Tapping outside the card closes the picker.
-      // HitTestBehavior.opaque makes the detector fill its constraints even
-      // though its child (Center → card) is smaller.
-      behavior: HitTestBehavior.opaque,
-      onTap: widget.controller.toggleDevicePicker,
-      child: Center(
-        child: GestureDetector(
-          // Absorb taps inside the card so they don't propagate to the
-          // outer dismissal layer.
-          onTap: () {},
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 320, maxHeight: 560),
-            child: Material(
-              color: kPreviewBackground,
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
-                // TabBar requires MaterialLocalizations, which may not be
-                // present when the overlay sits outside the user's MaterialApp
-                // tree. Provide them explicitly here.
-                child: Localizations(
-                  locale: const Locale('en'),
-                  delegates: const [
-                    DefaultMaterialLocalizations.delegate,
-                    DefaultWidgetsLocalizations.delegate,
-                  ],
-                  child: Column(
-                    children: [
-                      TabBar(
-                        controller: _tabController,
-                        tabs: const [
-                          Tab(text: 'iOS'),
-                          Tab(text: 'Android'),
-                          Tab(text: 'Tablets'),
+    // The backdrop covers the full Positioned.fill area in the overlay and
+    // dismisses the picker on tap. The card sits above it.
+    return AnimatedBuilder(
+      animation: _animController,
+      builder: (context, child) =>
+          IgnorePointer(ignoring: _animController.isDismissed, child: child!),
+      child: Stack(
+        children: [
+          // Full-screen backdrop — tap anywhere outside the card to dismiss.
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: widget.controller.toggleDevicePicker,
+            ),
+          ),
+          // Animated card.
+          FadeTransition(
+            opacity: _fade,
+            child: ScaleTransition(
+              scale: _scale,
+              alignment: Alignment.bottomCenter,
+              child: Align(
+                alignment: const Alignment(0, 0.6),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 320,
+                    maxHeight: 560,
+                  ),
+                  child: Material(
+                    color: kPreviewBackground,
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
+                      // TabBar requires MaterialLocalizations, which may not
+                      // be present when the overlay sits outside the user's
+                      // MaterialApp tree. Provide them explicitly here.
+                      child: Localizations(
+                        locale: const Locale('en'),
+                        delegates: const [
+                          DefaultMaterialLocalizations.delegate,
+                          DefaultWidgetsLocalizations.delegate,
                         ],
-                        labelColor: kPreviewForegroundEmphasis,
-                        indicatorColor: kPreviewForegroundEmphasis,
-                        unselectedLabelColor: kPreviewForeground,
-                        dividerColor: Colors.transparent,
-                        tabAlignment: TabAlignment.fill,
-                      ),
-                      Expanded(
-                        child: TabBarView(
-                          controller: _tabController,
+                        child: Column(
                           children: [
-                            _DeviceList(
-                              profiles: iOS,
-                              controller: widget.controller,
+                            TabBar(
+                              controller: _tabController,
+                              tabs: const [
+                                Tab(text: 'iOS'),
+                                Tab(text: 'Android'),
+                                Tab(text: 'Tablets'),
+                              ],
+                              labelColor: kPreviewForegroundEmphasis,
+                              indicatorColor: kPreviewForegroundEmphasis,
+                              unselectedLabelColor: kPreviewForeground,
+                              dividerColor: Colors.transparent,
+                              tabAlignment: TabAlignment.fill,
                             ),
-                            _DeviceList(
-                              profiles: android,
-                              controller: widget.controller,
-                            ),
-                            _DeviceList(
-                              profiles: tablets,
-                              controller: widget.controller,
+                            Expanded(
+                              child: TabBarView(
+                                controller: _tabController,
+                                children: [
+                                  _DeviceList(
+                                    profiles: iOS,
+                                    controller: widget.controller,
+                                  ),
+                                  _DeviceList(
+                                    profiles: android,
+                                    controller: widget.controller,
+                                  ),
+                                  _DeviceList(
+                                    profiles: tablets,
+                                    controller: widget.controller,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
+                      ), // Localizations
+                    ),
                   ),
-                ), // Localizations
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
-}
+} // _DevicePickerState
 
 // ── Device list (one per tab) ─────────────────────────────────────────────────
 

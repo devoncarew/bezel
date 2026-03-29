@@ -19,7 +19,9 @@ void main() {
 
   group('DevicePicker', () {
     testWidgets('lists all iOS devices on the iOS tab', (tester) async {
+      controller.toggleDevicePicker();
       await tester.pumpWidget(_wrap(DevicePicker(controller: controller)));
+      await tester.pumpAndSettle();
 
       for (final profile in DeviceDatabase.forPlatform(DevicePlatform.iOS)) {
         if (!profile.tablet) expect(find.text(profile.name), findsOneWidget);
@@ -27,7 +29,9 @@ void main() {
     });
 
     testWidgets('lists all Android devices on the Android tab', (tester) async {
+      controller.toggleDevicePicker();
       await tester.pumpWidget(_wrap(DevicePicker(controller: controller)));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Android'));
       await tester.pumpAndSettle();
@@ -40,7 +44,9 @@ void main() {
     });
 
     testWidgets('shows a check next to the active device', (tester) async {
+      controller.toggleDevicePicker();
       await tester.pumpWidget(_wrap(DevicePicker(controller: controller)));
+      await tester.pumpAndSettle();
 
       // One check icon — for the currently active device.
       expect(find.byIcon(Icons.check), findsOneWidget);
@@ -51,8 +57,10 @@ void main() {
           .where((p) => !p.tablet && p.platform == DevicePlatform.iOS)
           .firstWhere((p) => p.id != controller.activeProfile.id);
       controller.setProfile(next);
+      controller.toggleDevicePicker();
 
       await tester.pumpWidget(_wrap(DevicePicker(controller: controller)));
+      await tester.pumpAndSettle();
 
       // Still exactly one check, next to the new active device.
       expect(find.byIcon(Icons.check), findsOneWidget);
