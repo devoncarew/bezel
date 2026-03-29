@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import '../devices/device_profile.dart';
+
 const _kDeviceKey = 'lastDevice';
+const _kOrientationKey = 'lastOrientation';
 
 /// Returns the settings file path.
 ///
@@ -41,36 +44,54 @@ Map<String, Object?> _readJson(File file) {
   return {};
 }
 
-/// Reads the last-selected device ID from `.dart_tool/flight_check.json`.
+/// Reads the last-selected device ID from the settings file.
 ///
 /// Returns `null` if the file does not exist, cannot be read, or contains no
 /// device entry. Silently swallows all errors.
 String? loadLastDeviceId() {
   try {
     final file = _settingsFile();
-    if (file == null) {
-      return null;
-    }
+    if (file == null) return null;
     return _readJson(file)[_kDeviceKey] as String?;
   } catch (_) {
     return null;
   }
 }
 
-/// Persists [id] as the last-selected device ID in `.dart_tool/flight_check.json`.
+/// Reads the last-used orientation from the settings file.
+///
+/// Returns `null` if absent or unreadable.
+DeviceOrientation? loadLastOrientation() {
+  try {
+    final file = _settingsFile();
+    if (file == null) return null;
+    final value = _readJson(file)[_kOrientationKey] as String?;
+    return switch (value) {
+      'landscape' => DeviceOrientation.landscape,
+      'portrait' => DeviceOrientation.portrait,
+      _ => null,
+    };
+  } catch (_) {
+    return null;
+  }
+}
+
+/// Persists [id] and [orientation] to the settings file.
 ///
 /// Reads the existing file before writing so that any other fields in the
 /// object are preserved. Silently swallows all errors — persistence failures
 /// should never surface to the user.
-void saveLastDeviceId(String id) {
+void saveSettings({
+  required String deviceId,
+  required DeviceOrientation orientation,
+}) {
   try {
     final file = _settingsFile();
-    if (file == null) {
-      return;
-    }
+    if (file == null) return;
 
     final settings = _readJson(file);
-    settings[_kDeviceKey] = id;
+    settings[_kDeviceKey] = deviceId;
+    settings[_kOrientationKey] = orientation.name;
 
     // The $HOME/.config directory might not exist in some situations (on MacOS,
     // flutter run -d macos is sandboxed into an app specific directory).

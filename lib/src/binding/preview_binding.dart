@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart' show Widget, WidgetsFlutterBinding;
 import 'package:window_manager/window_manager.dart';
 
 import '../devices/device_database.dart';
-import '../devices/device_profile.dart' show DevicePlatform;
+import '../devices/device_profile.dart' show DeviceOrientation, DevicePlatform;
 import '../persistence/device_persistence.dart';
 import '../preview_controller.dart';
 import '../ui/preview_overlay.dart';
@@ -61,11 +61,16 @@ class PreviewBinding extends WidgetsFlutterBinding {
       windowManager.ensureInitialized(),
     );
 
-    // Restore the last-selected device, if any.
+    // Restore the last-selected device and orientation, if any.
     final savedId = loadLastDeviceId();
     if (savedId != null) {
       final profile = DeviceDatabase.findById(savedId);
       if (profile != null) _controller.setProfile(profile);
+    }
+    final savedOrientation = loadLastOrientation();
+    if (savedOrientation != null &&
+        savedOrientation != _controller.orientation) {
+      _controller.toggleOrientation();
     }
 
     // Apply the platform override now, before runApp, so that ThemeData is
@@ -78,14 +83,17 @@ class PreviewBinding extends WidgetsFlutterBinding {
   }
 
   String? _lastSavedProfileId;
+  DeviceOrientation? _lastSavedOrientation;
   DevicePlatform? _lastEmulatedPlatform;
 
   void _onControllerChanged() {
-    // Persist device ID when it changes.
+    // Persist device ID and orientation when either changes.
     final id = _controller.activeProfile.id;
-    if (id != _lastSavedProfileId) {
+    final orientation = _controller.orientation;
+    if (id != _lastSavedProfileId || orientation != _lastSavedOrientation) {
       _lastSavedProfileId = id;
-      saveLastDeviceId(id);
+      _lastSavedOrientation = orientation;
+      saveSettings(deviceId: id, orientation: orientation);
     }
 
     // Update the platform override when the emulated platform changes (e.g.
