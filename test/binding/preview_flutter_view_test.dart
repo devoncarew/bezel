@@ -4,7 +4,8 @@ import 'dart:ui' as ui;
 import 'package:flight_check/src/binding/preview_flutter_view.dart';
 import 'package:flight_check/src/devices/device_database.dart';
 import 'package:flight_check/src/preview_controller.dart';
-import 'package:flight_check/src/theme.dart' show kPreviewPadding, kToolbarHeight;
+import 'package:flight_check/src/theme.dart'
+    show kPreviewPadding, kToolbarHeight;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
