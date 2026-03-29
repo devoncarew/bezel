@@ -277,7 +277,7 @@ type. Android and iPad devices use `CircularBorder(radius: ...)`. iOS devices
 remain on `CircularBorder` for now, ready to be upgraded to `SquircleBorder`
 once Bézier control points are extracted in step 5.4.
 
-### Step 5.3 — Enhance `extract_simdevicetype.dart` to output Bézier control points
+### Step 5.3 — Enhance `extract_simdevicetype.dart` to output Bézier control points [done]
 
 Extend the tool to parse `c` (curveto) commands in the corner region of the
 framebuffer PDF and print the Bézier control points for one corner (top-left),

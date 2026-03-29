@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 
-// Extracts screen corner radii and notch geometry from iOS Simulator
-// `.simdevicetype` bundles.
+// Extracts screen corner radii, corner Bézier control points, and notch
+// geometry from iOS Simulator `.simdevicetype` bundles.
 //
 // Usage:
 //   dart run tool/extract_simdevicetype.dart [filter]
@@ -14,7 +14,7 @@
 // For each matching bundle the tool reads:
 //   - `profile.plist` → physical dimensions, scale factor, PDF file names
 //   - `{framebufferMask}.pdf` → screen-outline path in physical pixels;
-//     used to derive the authoritative screen corner radius
+//     used to derive the screen corner radius and corner Bézier segments
 //   - `{sensorBarImage}.pdf` → notch / DI area path in logical points;
 //     empty for Dynamic Island devices
 //
@@ -87,7 +87,7 @@ Future<void> _processBundle(Directory bundle) async {
     '| Logical: $logW × $logH pt',
   );
 
-  // ── Corner radius from framebuffer mask ──────────────────────────────────
+  // ── Corner radius and Bézier from framebuffer mask ───────────────────────
 
   final fbId = profile['framebufferMask'] as String?;
   if (fbId != null) {
@@ -108,6 +108,12 @@ Future<void> _processBundle(Directory bundle) async {
       } else {
         print('   Corner radius: could not extract from $fbId.pdf');
       }
+      await _printCornerBezier(
+        fbPdf,
+        screenWidthPx: physW,
+        screenHeightPx: physH,
+        scale: scale,
+      );
     }
   }
 
@@ -124,9 +130,56 @@ Future<void> _processBundle(Directory bundle) async {
   print('');
 }
 
+// ── Path parsing ─────────────────────────────────────────────────────────────
+
+/// One logical step in a PDF path content stream.
+///
+/// - `m` / `l`:  args = `[x, y]`
+/// - `c`:        args = `[cp1x, cp1y, cp2x, cp2y, x, y]`
+/// - Other ops:  args = whatever numbers preceded the operator (may be empty)
+class _PathOp {
+  final String op;
+  final List<double> args;
+  const _PathOp(this.op, this.args);
+}
+
+/// Parses a PDF path content stream into a flat list of [_PathOp]s.
+///
+/// Multiple coordinate pairs before a single `l` or `m` produce one [_PathOp]
+/// per pair. Multiple 6-tuples before a `c` produce one [_PathOp] per tuple.
+List<_PathOp> _parsePathOperations(String stream) {
+  final result = <_PathOp>[];
+  final nums = <double>[];
+
+  for (final tok in _tokenize(stream)) {
+    final n = double.tryParse(tok);
+    if (n != null) {
+      nums.add(n);
+    } else {
+      switch (tok) {
+        case 'm':
+        case 'l':
+          for (var i = 0; i + 1 < nums.length; i += 2) {
+            result.add(_PathOp(tok, [nums[i], nums[i + 1]]));
+          }
+        case 'c':
+          for (var i = 0; i + 5 < nums.length; i += 6) {
+            result.add(_PathOp(tok, nums.sublist(i, i + 6)));
+          }
+        default:
+          result.add(_PathOp(tok, List.of(nums)));
+      }
+      nums.clear();
+    }
+  }
+  return result;
+}
+
+// ── Corner radius ─────────────────────────────────────────────────────────────
+
 /// Extracts the screen corner radius from a framebuffer mask PDF.
 ///
-/// The PDF path is in physical pixels. The algorithm finds all `l` (lineto)
+/// The PDF path is in physical pixels. The algorithm finds all `l` / `m`
 /// coordinates that lie on the top edge (y == [screenHeightPx]), takes the
 /// rightmost one as the corner tangent point, then computes:
 ///   corner_radius_px = screenWidthPx - tangent_x
@@ -140,30 +193,17 @@ Future<double?> _extractCornerRadius(
   final stream = await _extractPathStream(pdfFile);
   if (stream == null) return null;
 
-  // Walk the token stream collecting (x, y) pairs from 'm' and 'l' operators.
-  final tokens = _tokenize(stream);
+  final ops = _parsePathOperations(stream);
   final topEdgeX = <double>[];
-  final nums = <double>[];
-  String? lastOp;
 
-  for (final tok in tokens) {
-    final n = double.tryParse(tok);
-    if (n != null) {
-      nums.add(n);
-    } else {
-      // Operator: process pending numbers for previous operator.
-      if (lastOp == 'm' || lastOp == 'l') {
-        for (var i = 0; i + 1 < nums.length; i += 2) {
-          final x = nums[i];
-          final y = nums[i + 1];
-          // Accept points on the top edge within 1px tolerance.
-          if ((y - screenHeightPx).abs() < 1.0 && x < screenWidthPx - 1) {
-            topEdgeX.add(x);
-          }
-        }
+  for (final op in ops) {
+    if (op.op == 'm' || op.op == 'l') {
+      final x = op.args[0];
+      final y = op.args[1];
+      // Accept points on the top edge within 1px tolerance.
+      if ((y - screenHeightPx).abs() < 1.0 && x < screenWidthPx - 1) {
+        topEdgeX.add(x);
       }
-      nums.clear();
-      lastOp = tok;
     }
   }
 
@@ -173,10 +213,107 @@ Future<double?> _extractCornerRadius(
   return (screenWidthPx - tangentX) / scale;
 }
 
+// ── Corner Bézier ─────────────────────────────────────────────────────────────
+
+/// Extracts and prints the Bézier control points for the screen corner found
+/// in the framebuffer mask PDF.
+///
+/// Finds the rightmost `l`/`m` point on the top edge of the screen outline
+/// (the tangent where the straight top edge meets the corner curve), then
+/// collects the consecutive `c` operations that follow it. These `c` segments
+/// form one corner of the squircle.
+///
+/// Coordinates are converted from physical pixels (PDF convention: y=0 at
+/// bottom) to Flutter logical points (origin at top-left, y increases
+/// downward):
+///   flutter_x = pdf_x / scale
+///   flutter_y = logH − pdf_y / scale
+///
+/// The extracted corner is the top-right corner in user-facing coordinates
+/// (x ≈ logW, y ≈ 0). By symmetry all four corners are identical; step 5.4
+/// reflects/rotates this corner to construct the full squircle clip path.
+Future<void> _printCornerBezier(
+  File pdfFile, {
+  required double screenWidthPx,
+  required double screenHeightPx,
+  required double scale,
+}) async {
+  final stream = await _extractPathStream(pdfFile);
+  if (stream == null) return;
+
+  final ops = _parsePathOperations(stream);
+  final logH = screenHeightPx / scale;
+
+  // Find the rightmost l/m point on the top edge — the tangent where the
+  // straight top edge meets the corner curve.
+  double maxTangentX = -1;
+  int tangentIdx = -1;
+  for (var i = 0; i < ops.length; i++) {
+    final op = ops[i];
+    if (op.op == 'm' || op.op == 'l') {
+      final x = op.args[0];
+      final y = op.args[1];
+      if ((y - screenHeightPx).abs() < 1.0 &&
+          x > maxTangentX &&
+          x < screenWidthPx - 1) {
+        maxTangentX = x;
+        tangentIdx = i;
+      }
+    }
+  }
+  if (tangentIdx < 0) return;
+
+  // Collect consecutive 'c' operations immediately following the tangent.
+  // These are the Bézier segments that form the screen corner curve.
+  final segs = <List<double>>[];
+  for (var i = tangentIdx + 1; i < ops.length; i++) {
+    if (ops[i].op != 'c') break;
+    final raw = ops[i].args;
+    // Convert physical px (PDF y-up) → Flutter logical pts (y-down):
+    //   flutter_x = pdf_x / scale
+    //   flutter_y = logH - pdf_y / scale
+    segs.add([
+      raw[0] / scale,
+      logH - raw[1] / scale,
+      raw[2] / scale,
+      logH - raw[3] / scale,
+      raw[4] / scale,
+      logH - raw[5] / scale,
+    ]);
+  }
+  if (segs.isEmpty) return;
+
+  // Tangent on the top edge in Flutter coordinates (y = 0 because it's on the
+  // top edge: pdf_y = screenHeightPx → flutter_y = logH - logH = 0).
+  final fromX = maxTangentX / scale;
+  const fromY = 0.0;
+
+  // The end of the last segment is the tangent on the right edge.
+  final toX = segs.last[4];
+  final toY = segs.last[5];
+
+  String f(double v) => v.toStringAsFixed(2);
+  print(
+    '   Corner Bézier (top-right; Flutter logical pts — '
+    'origin top-left, y increases downward):',
+  );
+  print('      From (${f(fromX)}, ${f(fromY)}) [tangent on top edge]');
+  for (final seg in segs) {
+    print(
+      '      c  cp1=(${f(seg[0])}, ${f(seg[1])})'
+      '  cp2=(${f(seg[2])}, ${f(seg[3])})'
+      '  →(${f(seg[4])}, ${f(seg[5])})',
+    );
+  }
+  print('      To (${f(toX)}, ${f(toY)}) [tangent on right edge]');
+}
+
+// ── Sensor bar ────────────────────────────────────────────────────────────────
+
 /// Prints sensor-bar information from the PDF.
 ///
 /// Dynamic Island devices produce an empty path (`q Q`); pre-DI devices
-/// contain a Bezier notch path with MediaBox in logical points.
+/// contain a Bézier notch path with MediaBox in logical points.
 Future<void> _printSensorBar(
   File pdfFile, {
   required String sensorBarName,
@@ -199,7 +336,7 @@ Future<void> _printSensorBar(
     );
   }
 
-  // Compute bounding box of all numeric pairs in the path.
+  // Print bounding box as a quick summary.
   final bounds = _pathBounds(stream);
   if (bounds != null) {
     final w = bounds[2] - bounds[0];
@@ -212,12 +349,38 @@ Future<void> _printSensorBar(
     );
   }
 
-  // Print the raw path for further analysis.
-  final trimmed = stream.trim();
-  final preview = trimmed.length > 400
-      ? '${trimmed.substring(0, 400)} [... truncated]'
-      : trimmed;
-  print('   Raw path:\n      $preview');
+  // Print the structured Bézier path. The sensor bar PDF is already in logical
+  // points (MediaBox matches the notch area in pts). PDF y-axis: y=0 at the
+  // bottom of the MediaBox, y increases upward.
+  final ops = _parsePathOperations(stream);
+  final drawOps = ops.where((op) => op.op != 'q' && op.op != 'Q').toList();
+  if (drawOps.isNotEmpty) {
+    print('   Bézier path (logical pts, PDF y=0 at bottom of MediaBox):');
+    for (final op in drawOps) {
+      String f(double v) => v.toStringAsFixed(3);
+      switch (op.op) {
+        case 'm':
+          print('      m  (${f(op.args[0])}, ${f(op.args[1])})');
+        case 'l':
+          print('      l  (${f(op.args[0])}, ${f(op.args[1])})');
+        case 'c':
+          final a = op.args;
+          print(
+            '      c  cp1=(${f(a[0])}, ${f(a[1])})'
+            '  cp2=(${f(a[2])}, ${f(a[3])})'
+            '  →(${f(a[4])}, ${f(a[5])})',
+          );
+        case 'z':
+          print('      z');
+        default:
+          if (op.args.isNotEmpty) {
+            print('      ${op.op}  ${op.args.map(f).join(' ')}');
+          } else {
+            print('      ${op.op}');
+          }
+      }
+    }
+  }
 }
 
 /// Returns [xMin, yMin, xMax, yMax] for all numeric pairs in [pathData].
