@@ -65,46 +65,39 @@ class PreviewOverlay extends StatelessWidget {
                       // toolbar → padding.
                       Column(
                         children: [
-                          const SizedBox(height: kPreviewPadding),
-
                           Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: kPreviewPadding,
-                              ),
-                              child: LayoutBuilder(
-                                builder: (context, constraints) {
-                                  final emulated =
-                                      controller.emulatedLogicalSize;
-                                  final scale = computeScale(
-                                    constraints.biggest,
-                                    emulated,
-                                  );
-                                  return Center(
-                                    child: RaisedSurface(
-                                      borderRadius: BorderRadius.circular(
-                                        controller
-                                            .activeProfile
-                                            .screenCornerRadius,
-                                      ),
-                                      height: 6,
-                                      child: SizedBox(
-                                        width: emulated.width * scale,
-                                        height: emulated.height * scale,
-                                        child: ScreenClipWidget(
-                                          profile: controller.activeProfile,
-                                          orientation: controller.orientation,
-                                          child: child,
-                                        ),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final emulated = controller.emulatedLogicalSize;
+                                final scale = computeScale(
+                                  constraints.biggest,
+                                  emulated,
+                                );
+                                return Center(
+                                  child: RaisedSurface(
+                                    borderRadius: BorderRadius.circular(
+                                      controller
+                                          .activeProfile
+                                          .screenCornerRadius,
+                                    ),
+                                    height: 6,
+                                    child: SizedBox(
+                                      width: emulated.width * scale,
+                                      height: emulated.height * scale,
+                                      child: ScreenClipWidget(
+                                        profile: controller.activeProfile,
+                                        orientation: controller.orientation,
+                                        child: child,
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
+                                  ),
+                                );
+                              },
                             ),
                           ),
 
-                          const SizedBox(height: kPreviewPadding),
+                          const SizedBox(height: kPreviewSpacing),
+
                           SizedBox(
                             height: kToolbarHeight,
                             child: Align(

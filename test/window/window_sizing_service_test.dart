@@ -21,24 +21,48 @@ class _SpySizingService implements WindowSizingService {
 
 void main() {
   group('WindowManagerSizingService.computeTargetSize', () {
-    test('portrait target adds padding and toolbar to emulated size', () {
+    test('portrait target is scaled version of device logical size', () {
       final profile = DeviceDatabase.defaultProfile;
       final size = WindowManagerSizingService.computeTargetSize(
         profile,
         DeviceOrientation.portrait,
       );
-      expect(size.width, profile.logicalSize.width + 24); // 2 × 12pt padding
-      expect(size.height, profile.logicalSize.height + 68); // 3×12 + 32 toolbar
+      expect(
+        size.width,
+        inInclusiveRange(
+          profile.logicalSize.width * 0.88,
+          profile.logicalSize.width,
+        ),
+      );
+      expect(
+        size.height,
+        inInclusiveRange(
+          profile.logicalSize.height * 0.88,
+          profile.logicalSize.height,
+        ),
+      );
     });
 
-    test('landscape target uses swapped emulated dimensions plus padding', () {
+    test('landscape target uses swapped emulated dimensions', () {
       final profile = DeviceDatabase.defaultProfile;
       final landscape = WindowManagerSizingService.computeTargetSize(
         profile,
         DeviceOrientation.landscape,
       );
-      expect(landscape.width, profile.logicalSize.height + 24);
-      expect(landscape.height, profile.logicalSize.width + 68);
+      expect(
+        landscape.width,
+        inInclusiveRange(
+          profile.logicalSize.height * 0.88,
+          profile.logicalSize.height,
+        ),
+      );
+      expect(
+        landscape.height,
+        inInclusiveRange(
+          profile.logicalSize.width * 0.88,
+          profile.logicalSize.width,
+        ),
+      );
     });
   });
 
