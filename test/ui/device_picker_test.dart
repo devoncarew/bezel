@@ -18,21 +18,24 @@ void main() {
   tearDown(() => controller.dispose());
 
   group('DevicePicker', () {
-    testWidgets('lists all iOS devices', (tester) async {
+    testWidgets('lists all iOS devices on the iOS tab', (tester) async {
       await tester.pumpWidget(_wrap(DevicePicker(controller: controller)));
 
       for (final profile in DeviceDatabase.forPlatform(DevicePlatform.iOS)) {
-        expect(find.text(profile.name), findsOneWidget);
+        if (!profile.tablet) expect(find.text(profile.name), findsOneWidget);
       }
     });
 
-    testWidgets('lists all Android devices', (tester) async {
+    testWidgets('lists all Android devices on the Android tab', (tester) async {
       await tester.pumpWidget(_wrap(DevicePicker(controller: controller)));
+
+      await tester.tap(find.text('Android'));
+      await tester.pumpAndSettle();
 
       for (final profile in DeviceDatabase.forPlatform(
         DevicePlatform.android,
       )) {
-        expect(find.text(profile.name), findsOneWidget);
+        if (!profile.tablet) expect(find.text(profile.name), findsOneWidget);
       }
     });
 
@@ -44,9 +47,9 @@ void main() {
     });
 
     testWidgets('active device check moves after setProfile', (tester) async {
-      final next = DeviceDatabase.all.firstWhere(
-        (p) => p.id != controller.activeProfile.id,
-      );
+      final next = DeviceDatabase.all
+          .where((p) => !p.tablet && p.platform == DevicePlatform.iOS)
+          .firstWhere((p) => p.id != controller.activeProfile.id);
       controller.setProfile(next);
 
       await tester.pumpWidget(_wrap(DevicePicker(controller: controller)));
@@ -61,9 +64,10 @@ void main() {
       controller.toggleDevicePicker();
       await tester.pumpWidget(_wrap(DevicePicker(controller: controller)));
 
-      final target = DeviceDatabase.all.firstWhere(
-        (p) => p.id != controller.activeProfile.id,
-      );
+      // Pick a different iOS device so it's visible on the default tab.
+      final target = DeviceDatabase.all
+          .where((p) => !p.tablet && p.platform == DevicePlatform.iOS)
+          .firstWhere((p) => p.id != controller.activeProfile.id);
 
       await tester.tap(find.text(target.name));
 

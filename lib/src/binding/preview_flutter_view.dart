@@ -4,7 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/painting.dart' show EdgeInsets;
 
 import '../preview_controller.dart';
-import '../theme.dart' show kPreviewPadding, kToolbarHeight;
+import '../theme.dart' show kPreviewSpacing, kPreviewPadding, kToolbarHeight;
 
 /// A [ui.FlutterView] that reports spoofed metrics for the active device
 /// profile, delegating everything else to the real underlying view.
@@ -31,9 +31,9 @@ class PreviewFlutterView implements ui.FlutterView {
   double get devicePixelRatio {
     final realDpr = _real.devicePixelRatio;
     final available = ui.Size(
-      _real.physicalSize.width - 2 * kPreviewPadding * realDpr,
+      _real.physicalSize.width,
       _real.physicalSize.height -
-          (3 * kPreviewPadding + kToolbarHeight) * realDpr,
+          (kPreviewSpacing + kToolbarHeight + kPreviewPadding) * realDpr,
     );
     return math.min(
       available.width / _controller.emulatedLogicalSize.width,

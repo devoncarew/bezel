@@ -5,7 +5,7 @@ import '../theme.dart';
 import 'common.dart';
 
 /// Border radius applied to the pill-shaped toolbar container.
-const _kPillRadius = BorderRadius.all(Radius.circular(14.0));
+const BorderRadius _kPillRadius = BorderRadius.all(Radius.circular(14));
 
 /// Compact pill-shaped toolbar rendered at the bottom of the preview overlay.
 ///
@@ -71,7 +71,7 @@ class _DeviceNameButton extends StatelessWidget {
                 controller.activeProfile.name,
                 style: const TextStyle(
                   color: kPreviewForeground,
-                  fontSize: 11.0,
+                  fontSize: 12,
                   fontWeight: FontWeight.w500,
                 ),
                 overflow: TextOverflow.ellipsis,

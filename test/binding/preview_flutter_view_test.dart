@@ -5,7 +5,7 @@ import 'package:flight_check/src/binding/preview_flutter_view.dart';
 import 'package:flight_check/src/devices/device_database.dart';
 import 'package:flight_check/src/preview_controller.dart';
 import 'package:flight_check/src/theme.dart'
-    show kPreviewPadding, kToolbarHeight;
+    show kPreviewPadding, kPreviewSpacing, kToolbarHeight;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -31,9 +31,9 @@ void main() {
     final realView = binding.platformDispatcher.implicitView!;
     final realDpr = realView.devicePixelRatio;
     final available = ui.Size(
-      realView.physicalSize.width - 2 * kPreviewPadding * realDpr,
+      realView.physicalSize.width,
       realView.physicalSize.height -
-          (3 * kPreviewPadding + kToolbarHeight) * realDpr,
+          (kPreviewSpacing + kToolbarHeight + kPreviewPadding) * realDpr,
     );
     final emulated = controller.emulatedLogicalSize;
     final expected = math.min(
@@ -64,9 +64,9 @@ void main() {
     final realView = binding.platformDispatcher.implicitView!;
     final realDpr = realView.devicePixelRatio;
     final available = ui.Size(
-      realView.physicalSize.width - 2 * kPreviewPadding * realDpr,
+      realView.physicalSize.width,
       realView.physicalSize.height -
-          (3 * kPreviewPadding + kToolbarHeight) * realDpr,
+          (kPreviewSpacing + kToolbarHeight + kPreviewPadding) * realDpr,
     );
     controller.toggleOrientation();
     final emulated = controller.emulatedLogicalSize; // now landscape

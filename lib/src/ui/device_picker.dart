@@ -1,17 +1,9 @@
+import '../theme.dart';
 import 'package:flutter/material.dart';
 
 import '../devices/device_database.dart';
 import '../devices/device_profile.dart';
 import '../preview_controller.dart';
-
-/// Foreground colour for section headers and items.
-const _kForegroundColor = Color(0xFFFFFFFF);
-
-/// Muted colour used for section header labels.
-const _kHeaderColor = Color(0x99FFFFFF);
-
-/// Background colour of the picker card.
-const _kCardColor = Color(0xE61A1A1A);
 
 /// A floating device-picker card rendered directly in the preview overlay's
 /// [Stack].
@@ -25,10 +17,42 @@ const _kCardColor = Color(0xE61A1A1A);
 /// if (controller.devicePickerVisible)
 ///   DevicePicker(controller: controller),
 /// ```
-class DevicePicker extends StatelessWidget {
+class DevicePicker extends StatefulWidget {
   const DevicePicker({super.key, required this.controller});
 
   final PreviewController controller;
+
+  @override
+  State<DevicePicker> createState() => _DevicePickerState();
+}
+
+class _DevicePickerState extends State<DevicePicker>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final profile = widget.controller.activeProfile;
+    final initialIndex = profile.tablet
+        ? 2
+        : profile.platform == DevicePlatform.android
+        ? 1
+        : 0;
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: initialIndex,
+    );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +69,7 @@ class DevicePicker extends StatelessWidget {
       // HitTestBehavior.opaque makes the detector fill its constraints even
       // though its child (Center → card) is smaller.
       behavior: HitTestBehavior.opaque,
-      onTap: controller.toggleDevicePicker,
+      onTap: widget.controller.toggleDevicePicker,
       child: Center(
         child: GestureDetector(
           // Absorb taps inside the card so they don't propagate to the
@@ -54,49 +78,56 @@ class DevicePicker extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 320, maxHeight: 560),
             child: Material(
-              color: _kCardColor,
+              color: kPreviewBackground,
               borderRadius: const BorderRadius.all(Radius.circular(12)),
               child: ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                // TabBar requires MaterialLocalizations, which may not be
+                // present when the overlay sits outside the user's MaterialApp
+                // tree. Provide them explicitly here.
+                child: Localizations(
+                  locale: const Locale('en'),
+                  delegates: const [
+                    DefaultMaterialLocalizations.delegate,
+                    DefaultWidgetsLocalizations.delegate,
+                  ],
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const _SectionHeader(label: 'iOS'),
-                      for (final profile in iOS)
-                        _DeviceItem(
-                          profile: profile,
-                          isActive: profile.id == controller.activeProfile.id,
-                          onTap: () {
-                            controller.setProfile(profile);
-                            controller.toggleDevicePicker();
-                          },
+                      TabBar(
+                        controller: _tabController,
+                        tabs: const [
+                          Tab(text: 'iOS'),
+                          Tab(text: 'Android'),
+                          Tab(text: 'Tablets'),
+                        ],
+                        labelColor: kPreviewForegroundEmphasis,
+                        indicatorColor: kPreviewForegroundEmphasis,
+                        unselectedLabelColor: kPreviewForeground,
+                        dividerColor: Colors.transparent,
+                        tabAlignment: TabAlignment.fill,
+                      ),
+                      Expanded(
+                        child: TabBarView(
+                          controller: _tabController,
+                          children: [
+                            _DeviceList(
+                              profiles: iOS,
+                              controller: widget.controller,
+                            ),
+                            _DeviceList(
+                              profiles: android,
+                              controller: widget.controller,
+                            ),
+                            _DeviceList(
+                              profiles: tablets,
+                              controller: widget.controller,
+                            ),
+                          ],
                         ),
-                      const _SectionHeader(label: 'Android'),
-                      for (final profile in android)
-                        _DeviceItem(
-                          profile: profile,
-                          isActive: profile.id == controller.activeProfile.id,
-                          onTap: () {
-                            controller.setProfile(profile);
-                            controller.toggleDevicePicker();
-                          },
-                        ),
-                      const _SectionHeader(label: 'Tablets'),
-                      for (final profile in tablets)
-                        _DeviceItem(
-                          profile: profile,
-                          isActive: profile.id == controller.activeProfile.id,
-                          onTap: () {
-                            controller.setProfile(profile);
-                            controller.toggleDevicePicker();
-                          },
-                        ),
+                      ),
                     ],
                   ),
-                ),
+                ), // Localizations
               ),
             ),
           ),
@@ -106,26 +137,34 @@ class DevicePicker extends StatelessWidget {
   }
 }
 
-// ── Section header ────────────────────────────────────────────────────────────
+// ── Device list (one per tab) ─────────────────────────────────────────────────
 
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.label});
+class _DeviceList extends StatelessWidget {
+  const _DeviceList({required this.profiles, required this.controller});
 
-  final String label;
+  final List<DeviceProfile> profiles;
+  final PreviewController controller;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: _kHeaderColor,
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.8,
-        ),
-      ),
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        return ListView(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          children: [
+            for (final profile in profiles)
+              _DeviceItem(
+                profile: profile,
+                isActive: profile.id == controller.activeProfile.id,
+                onTap: () {
+                  controller.setProfile(profile);
+                  controller.toggleDevicePicker();
+                },
+              ),
+          ],
+        );
+      },
     );
   }
 }
@@ -162,22 +201,25 @@ class _DeviceItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
                     children: [
                       Flexible(
                         child: Text(
                           profile.name,
                           style: const TextStyle(
-                            color: _kForegroundColor,
+                            color: kPreviewForegroundEmphasis,
                             fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6),
                       Text(
                         '${w}x$h',
                         style: const TextStyle(
-                          color: _kHeaderColor,
+                          color: kPreviewForeground,
                           fontSize: 10,
                         ),
                       ),
@@ -188,8 +230,8 @@ class _DeviceItem extends StatelessWidget {
                     Text(
                       profile.description!,
                       style: const TextStyle(
-                        color: _kHeaderColor,
-                        fontSize: 11,
+                        color: kPreviewForeground,
+                        fontSize: 12,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
@@ -200,7 +242,11 @@ class _DeviceItem extends StatelessWidget {
             ),
             if (isActive) ...[
               const SizedBox(width: 8),
-              const Icon(Icons.check, color: _kForegroundColor, size: 16),
+              const Icon(
+                Icons.check,
+                color: kPreviewForegroundEmphasis,
+                size: 16,
+              ),
             ],
           ],
         ),

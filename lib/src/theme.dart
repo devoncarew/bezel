@@ -4,7 +4,11 @@ import 'package:flutter/widgets.dart';
 const Color kPreviewBackground = Color(0xFF606068);
 
 /// Foreground (icon / text) colour for preview UI controls.
-const Color kPreviewForeground = Color(0xFFCCCCCC);
+const Color kPreviewForeground = Color(0xFFDDDDDD);
+
+/// Foreground (icon / text) colour for preview UI controls; used for titles or
+/// emphasis.
+const Color kPreviewForegroundEmphasis = Color(0xFFFFFFFF);
 
 /// Dark shadow colour for neumorphic raised surfaces (bottom-right offset).
 const Color kPreviewShadowDark = Color(0xFF46464E);
@@ -13,14 +17,13 @@ const Color kPreviewShadowDark = Color(0xFF46464E);
 const Color kPreviewShadowLight = Color(0xFF7A7A84);
 
 /// Border colour drawn between the surface contents and the drop shadow.
-const Color kPreviewBorder = Color(0xFF636374);
+const Color kPreviewBorder = Color.fromARGB(255, 122, 122, 140);
 
-/// Uniform padding (logical pixels) around the device frame and between the
-/// frame and the toolbar row.
-///
-/// Shared between [PreviewOverlay] and [WindowManagerSizingService] so the
-/// window is sized to match the overlay layout exactly.
-const double kPreviewPadding = 12.0;
+/// Padding (logical pixels) between the device previs and the toolbar row.
+const double kPreviewSpacing = 12;
 
 /// Reserved height for the toolbar row below the device frame.
-const double kToolbarHeight = 32.0;
+const double kToolbarHeight = 32;
+
+/// Padding (logical pixels) below the toolbar row.
+const double kPreviewPadding = 10;

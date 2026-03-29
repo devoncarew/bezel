@@ -233,7 +233,8 @@ be satisfied on desktop; platform switch resets ephemeral widget state via reass
 
 ### Step 4.8 - General cleanup
 
-+ Find a list of the most commonly used mobile devices and compare that to the devices we ship with (done — see findings below)
++ Find a list of the most commonly used mobile devices and compare that to the
+  devices we ship with
 + Remove DeviceProfile.devicePixelRatio.
 + Experiment with a neumorphic design and fixed padding around the emulation
   area.
@@ -244,6 +245,7 @@ be satisfied on desktop; platform switch resets ephemeral widget state via reass
 + Update the code to generate the device list in the readme.
 + Finish valdating the devices.
 + Add iPhone 17
-- Renamed from 'Bezel' to 'Flight Check' / flight_check. [done]
-- Update our sizing logic so the emulator approximates the physical device.
-- Change the device picker to use a tabbed UI.
++ Rename from 'Bezel' to 'Flight Check' / flight_check.
++ Change the device picker to use a tabbed UI.
+- Update our sizing logic so the emulator approximates the physical device?
+- Improve window position management.
