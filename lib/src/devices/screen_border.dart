@@ -37,13 +37,13 @@ final class SquircleBorder extends ScreenBorder {
   /// (logical pixels, portrait). Equals screenWidth − tangentX.
   final double topTangentLength;
 
-  /// Cubic Bézier segments for the top-right corner, as a flat list of
-  /// 6 × N doubles. Each group of 6 is: cp1x, cp1y, cp2x, cp2y, x, y,
-  /// all relative to the corner position (logW, 0) in logical pixels.
+  /// Cubic Bézier segments for the top-right corner, as a list of lists of 6
+  /// doubles. Each group of 6 is: cp1x, cp1y, cp2x, cp2y, x, y, all relative to
+  /// the corner position (logW, 0) in logical pixels.
   ///
   /// The path begins at (−[topTangentLength], 0) and ends at
   /// (0, [sideTangentLength]).
-  final List<double> segments;
+  final List<List<double>> segments;
 
   const SquircleBorder({
     required this.topTangentLength,
@@ -53,5 +53,8 @@ final class SquircleBorder extends ScreenBorder {
   /// Distance from the top-right corner to the tangent point on the right
   /// edge (logical pixels, portrait). Derived from the last y value in
   /// [segments].
-  double get sideTangentLength => segments[segments.length - 1];
+  double get sideTangentLength {
+    final last = segments[segments.length - 1];
+    return last[last.length - 1];
+  }
 }

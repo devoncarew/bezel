@@ -172,20 +172,20 @@ Path _buildSquirclePath(Size size, SquircleBorder border) {
 /// double-axis reflection preserves path orientation.
 void _addCornerSegments(
   Path path,
-  List<double> segs, {
+  List<List<double>> segs, {
   required double ox,
   required double oy,
   required double sx,
   required double sy,
 }) {
-  for (var i = 0; i + 5 < segs.length; i += 6) {
+  for (final seg in segs) {
     path.cubicTo(
-      ox + sx * segs[i],
-      oy + sy * segs[i + 1],
-      ox + sx * segs[i + 2],
-      oy + sy * segs[i + 3],
-      ox + sx * segs[i + 4],
-      oy + sy * segs[i + 5],
+      ox + sx * seg[0],
+      oy + sy * seg[1],
+      ox + sx * seg[2],
+      oy + sy * seg[3],
+      ox + sx * seg[4],
+      oy + sy * seg[5],
     );
   }
 }
@@ -199,32 +199,32 @@ void _addCornerSegments(
 /// corner's natural start point `(ox + sx * (−topT), oy)`.
 void _addCornerSegmentsReversed(
   Path path,
-  List<double> segs, {
+  List<List<double>> segs, {
   required double ox,
   required double oy,
   required double sx,
   required double sy,
   required double topT,
 }) {
-  final n = segs.length ~/ 6;
-  for (var i = n - 1; i >= 0; i--) {
-    final base = i * 6;
+  for (var i = segs.length - 1; i >= 0; i--) {
+    final seg = segs[i];
+
     // Reversed cubic: cp1 ↔ cp2 swapped; endpoint is the previous seg's endpoint
     // (or the corner's natural start for the very last reversed segment).
     final double rendx;
     final double rendy;
     if (i > 0) {
-      rendx = ox + sx * segs[(i - 1) * 6 + 4];
-      rendy = oy + sy * segs[(i - 1) * 6 + 5];
+      rendx = ox + sx * segs[i - 1][4];
+      rendy = oy + sy * segs[i - 1][5];
     } else {
       rendx = ox + sx * (-topT);
       rendy = oy; // sy * 0 == 0
     }
     path.cubicTo(
-      ox + sx * segs[base + 2],
-      oy + sy * segs[base + 3],
-      ox + sx * segs[base + 0],
-      oy + sy * segs[base + 1],
+      ox + sx * seg[2],
+      oy + sy * seg[3],
+      ox + sx * seg[0],
+      oy + sy * seg[1],
       rendx,
       rendy,
     );
