@@ -239,3 +239,8 @@ verification:
 
 Update the **Verified** column in the tables above once a device passes this check.
 Record any discrepancies as follow-up issues.
+
+## Additional sources
+
+"The complete guide to iPhone screen resolutions and sizes (Updated 2025)":
+https://blog.appmysite.com/the-complete-guide-to-iphone-screen-resolutions-and-sizes/

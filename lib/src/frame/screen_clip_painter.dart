@@ -321,7 +321,7 @@ Path _buildPathCutoutPath(
   Rect screenRect, {
   required double mediaBoxWidth,
   required double mediaBoxHeight,
-  required List<double> ops,
+  required List<PathOp> ops,
 }) {
   // Horizontal offset to centre the MediaBox on the screen.
   final offsetX = screenRect.left + (screenRect.width - mediaBoxWidth) / 2;
@@ -333,24 +333,24 @@ Path _buildPathCutoutPath(
   double fy(double pdfY) => offsetY + mediaBoxHeight - pdfY;
 
   final path = Path();
-  var i = 0;
-  while (i < ops.length) {
-    final op = ops[i++];
-    if (op == PathCutout.kMoveTo) {
-      path.moveTo(fx(ops[i++]), fy(ops[i++]));
-    } else if (op == PathCutout.kLineTo) {
-      path.lineTo(fx(ops[i++]), fy(ops[i++]));
-    } else if (op == PathCutout.kCubicTo) {
-      path.cubicTo(
-        fx(ops[i++]),
-        fy(ops[i++]),
-        fx(ops[i++]),
-        fy(ops[i++]),
-        fx(ops[i++]),
-        fy(ops[i++]),
-      );
-    } else if (op == PathCutout.kClose) {
-      path.close();
+
+  for (final op in ops) {
+    switch (op) {
+      case PathOpMoveTo():
+        path.moveTo(fx(op.x), fy(op.y));
+      case PathOpLineTo():
+        path.lineTo(fx(op.x), fy(op.y));
+      case PathOpCurveTo():
+        path.cubicTo(
+          fx(op.cp1x),
+          fy(op.cp1y),
+          fx(op.cp2x),
+          fy(op.cp2y),
+          fx(op.x),
+          fy(op.y),
+        );
+      case PathOpClose():
+        path.close();
     }
   }
   return path;
