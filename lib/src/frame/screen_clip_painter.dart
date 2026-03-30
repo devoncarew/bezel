@@ -90,15 +90,24 @@ Path _buildScreenPath(Size size, ScreenBorder border) {
 ///
 /// [SquircleBorder.segments] describe the top-right corner going from the
 /// tangent on the top edge to the tangent on the right edge, in coordinates
-/// relative to the top-right corner position (logW, 0). The painter reflects
-/// and rotates this corner to trace all four corners and close the path.
+/// relative to the top-right corner position (logW, 0). The painter reuses
+/// this corner for all four corners via sign-flip transforms.
+///
+/// Reflecting across **both** axes (sx=−1, sy=−1: bottom-left) or **neither**
+/// (sx=1, sy=1: top-right) preserves path orientation, so the segments can be
+/// applied in forward order. Reflecting across **one** axis (bottom-right:
+/// sy=−1; top-left: sx=−1) reverses orientation, so those two corners must
+/// apply the segments in reverse order (see [_addCornerSegmentsReversed]).
 ///
 /// Corner construction:
-///   - Top edge runs from top-left tangent (tTL) to top-right tangent (tTR).
-///   - Top-right squircle arc: segments as-is, starting at tTR.
-///   - Right edge runs from bottom of top-right arc to top of bottom-right arc.
-///   - Bottom-right squircle arc: top-right reflected vertically (y → h−y).
-///   - Bottom edge and remaining corners follow the same pattern.
+///   - Top edge: top-left tangent → top-right tangent.
+///   - Top-right: forward segments, ox=(w,0), sx=1,  sy=1.
+///   - Right edge: down to bottom-right tangent.
+///   - Bottom-right: reversed segments, ox=(w,h), sx=1,  sy=−1.
+///   - Bottom edge: right tangent → left tangent.
+///   - Bottom-left: forward segments, ox=(0,h), sx=−1, sy=−1.
+///   - Left edge: up to top-left tangent.
+///   - Top-left: reversed segments, ox=(0,0), sx=−1, sy=1.
 Path _buildSquirclePath(Size size, SquircleBorder border) {
   final w = size.width;
   final h = size.height;
@@ -109,46 +118,58 @@ Path _buildSquirclePath(Size size, SquircleBorder border) {
   final path = Path();
 
   // ── Top edge ────────────────────────────────────────────────────────────
-  // Start at the top-left tangent point and draw across to the top-right.
   path.moveTo(topT, 0); // top-left tangent (mirror of top-right)
   path.lineTo(w - topT, 0); // top-right tangent
 
   // ── Top-right corner ────────────────────────────────────────────────────
-  // Segments are relative to corner (w, 0): offset_x = seg_x + w, offset_y = seg_y.
   _addCornerSegments(path, segs, ox: w, oy: 0, sx: 1, sy: 1);
 
   // ── Right edge ──────────────────────────────────────────────────────────
   path.lineTo(w, h - sideT);
 
   // ── Bottom-right corner ─────────────────────────────────────────────────
-  // Reflect top-right vertically: x stays the same, y → h − y.
-  // Corner origin is (w, h); sy = −1 reflects y, then shift by oy = h.
-  _addCornerSegments(path, segs, ox: w, oy: h, sx: 1, sy: -1);
+  // Single-axis reflection (sy=−1) reverses orientation → use reversed order.
+  _addCornerSegmentsReversed(
+    path,
+    segs,
+    ox: w,
+    oy: h,
+    sx: 1,
+    sy: -1,
+    topT: topT,
+  );
 
   // ── Bottom edge ─────────────────────────────────────────────────────────
   path.lineTo(topT, h);
 
   // ── Bottom-left corner ───────────────────────────────────────────────────
-  // Reflect both axes from top-right. Corner origin is (0, h).
+  // Double-axis reflection preserves orientation → forward order is correct.
   _addCornerSegments(path, segs, ox: 0, oy: h, sx: -1, sy: -1);
 
   // ── Left edge ───────────────────────────────────────────────────────────
   path.lineTo(0, sideT);
 
   // ── Top-left corner ──────────────────────────────────────────────────────
-  // Reflect top-right horizontally. Corner origin is (0, 0).
-  _addCornerSegments(path, segs, ox: 0, oy: 0, sx: -1, sy: 1);
+  // Single-axis reflection (sx=−1) reverses orientation → use reversed order.
+  _addCornerSegmentsReversed(
+    path,
+    segs,
+    ox: 0,
+    oy: 0,
+    sx: -1,
+    sy: 1,
+    topT: topT,
+  );
 
   path.close();
   return path;
 }
 
-/// Appends the squircle corner [segs] to [path], transforming each point by:
-///   x_out = ox + sx * seg_x
-///   y_out = oy + sy * seg_y
+/// Appends the squircle corner [segs] to [path] in forward order, transforming
+/// each point by `x_out = ox + sx * seg_x`, `y_out = oy + sy * seg_y`.
 ///
-/// This lets us reuse the top-right corner segments for all four corners by
-/// changing the sign of sx / sy and the corner origin (ox, oy).
+/// Used for top-right (sx=1, sy=1) and bottom-left (sx=−1, sy=−1), where the
+/// double-axis reflection preserves path orientation.
 void _addCornerSegments(
   Path path,
   List<double> segs, {
@@ -165,6 +186,47 @@ void _addCornerSegments(
       oy + sy * segs[i + 3],
       ox + sx * segs[i + 4],
       oy + sy * segs[i + 5],
+    );
+  }
+}
+
+/// Appends the squircle corner [segs] to [path] in **reverse** order.
+///
+/// Used for bottom-right (sx=1, sy=−1) and top-left (sx=−1, sy=1), where a
+/// single-axis reflection reverses the winding direction. Reversing each cubic
+/// means swapping its two control points and using the previous segment's
+/// endpoint as the new destination. The last reversed segment lands at the
+/// corner's natural start point `(ox + sx * (−topT), oy)`.
+void _addCornerSegmentsReversed(
+  Path path,
+  List<double> segs, {
+  required double ox,
+  required double oy,
+  required double sx,
+  required double sy,
+  required double topT,
+}) {
+  final n = segs.length ~/ 6;
+  for (var i = n - 1; i >= 0; i--) {
+    final base = i * 6;
+    // Reversed cubic: cp1 ↔ cp2 swapped; endpoint is the previous seg's endpoint
+    // (or the corner's natural start for the very last reversed segment).
+    final double rendx;
+    final double rendy;
+    if (i > 0) {
+      rendx = ox + sx * segs[(i - 1) * 6 + 4];
+      rendy = oy + sy * segs[(i - 1) * 6 + 5];
+    } else {
+      rendx = ox + sx * (-topT);
+      rendy = oy; // sy * 0 == 0
+    }
+    path.cubicTo(
+      ox + sx * segs[base + 2],
+      oy + sy * segs[base + 3],
+      ox + sx * segs[base + 0],
+      oy + sy * segs[base + 1],
+      rendx,
+      rendy,
     );
   }
 }
