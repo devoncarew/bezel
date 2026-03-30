@@ -301,3 +301,4 @@ the `TeardropCutout` on `iphone_14` with a `PathCutout`.
 - Add Samsung Galaxy S25 device profile (devoncarew/flight_check#62)
 - Add Samsung Galaxy A55 device profile (devoncarew/flight_check#61)
 - Consider a locale override.
+- Fix the tall device window sizing bug.

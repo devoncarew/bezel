@@ -140,15 +140,14 @@ final class PunchHoleCutout extends ScreenCutout {
 /// A notch cutout described by Bézier path data from the iOS Simulator
 /// sensor-bar PDF.
 ///
-/// The path is encoded as a flat list of doubles in [ops]. Each operation
-/// begins with an opcode followed by its arguments:
+/// The path is encoded as a list of PathOps in [ops].
 ///
-/// | Opcode | Args | Meaning |
+/// | PathOp | Args | Meaning |
 /// |--------|------|---------|
-/// | [kMoveTo]  | x, y | PDF moveto |
-/// | [kLineTo]  | x, y | PDF lineto |
-/// | [kCubicTo] | cp1x, cp1y, cp2x, cp2y, x, y | PDF curveto |
-/// | [kClose]   | — | close path |
+/// | [PathOpMoveTo]  | x, y | PDF moveto |
+/// | [PathOpLineTo]  | x, y | PDF lineto |
+/// | [PathOpCubicTo] | cp1x, cp1y, cp2x, cp2y, x, y | PDF curveto |
+/// | [PathOpClose]   | — | close path |
 ///
 /// Coordinates are in **PDF convention**: y = 0 at the bottom of the
 /// MediaBox, y increases upward. The path is horizontally centered on the
@@ -164,22 +163,14 @@ final class PathCutout extends ScreenCutout {
   /// top to the bottom of the cutout shape).
   final double mediaBoxHeight;
 
-  /// Flat list of path operations. Each entry is either an opcode constant
-  /// ([kMoveTo], [kLineTo], [kCubicTo], [kClose]) or a coordinate argument
-  /// following the preceding opcode.
-  final List<double> ops;
+  /// Flat list of path operations.
+  final List<PathOp> ops;
 
   const PathCutout({
     required this.mediaBoxWidth,
     required this.mediaBoxHeight,
     required this.ops,
   });
-
-  // Opcode constants used in [ops].
-  static const double kMoveTo = 1;
-  static const double kLineTo = 2;
-  static const double kCubicTo = 3;
-  static const double kClose = 4;
 
   @override
   ScreenCutout rotatedForLandscape(Size portraitScreenSize) => SideCutout(
@@ -226,3 +217,51 @@ final class SideCutout extends ScreenCutout {
     this.cornerRadius = 4,
   });
 }
+
+sealed class PathOp {
+  static PathOp moveTo(double x, double y) => PathOpMoveTo(x, y);
+
+  static PathOp lineTo(double x, double y) => PathOpLineTo(x, y);
+
+  static PathOp curveTo(
+    double cp1x,
+    double cp1y,
+    double cp2x,
+    double cp2y,
+    double x,
+    double y,
+  ) => PathOpCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+
+  static PathOp close() => PathOpClose();
+}
+
+/// Represents a PDF moveto operation.
+class PathOpMoveTo extends PathOp {
+  final double x;
+  final double y;
+
+  PathOpMoveTo(this.x, this.y);
+}
+
+/// Represents a PDF lineto operation.
+class PathOpLineTo extends PathOp {
+  final double x;
+  final double y;
+
+  PathOpLineTo(this.x, this.y);
+}
+
+/// Represents a PDF curveto operation.
+class PathOpCurveTo extends PathOp {
+  final double cp1x;
+  final double cp1y;
+  final double cp2x;
+  final double cp2y;
+  final double x;
+  final double y;
+
+  PathOpCurveTo(this.cp1x, this.cp1y, this.cp2x, this.cp2y, this.x, this.y);
+}
+
+/// Represents a close path operation.
+class PathOpClose extends PathOp {}
