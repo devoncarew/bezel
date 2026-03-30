@@ -296,8 +296,8 @@ the `TeardropCutout` on `iphone_14` with a `PathCutout`.
 
 ## Phase 5 — General polish
 
++ Add iPhone 17 Pro device profile (402 × 874) (devoncarew/flight_check#59)
++ Add iPhone 17 Air device profile (420 × 912) (devoncarew/flight_check#60)
 - Add Samsung Galaxy S25 device profile (devoncarew/flight_check#62)
 - Add Samsung Galaxy A55 device profile (devoncarew/flight_check#61)
-- Add iPhone 17 Air device profile (420 × 912) (devoncarew/flight_check#60)
-- Add iPhone 17 Pro device profile (402 × 874) (devoncarew/flight_check#59)
 - Consider a locale override.

@@ -72,12 +72,6 @@ If your app calls `WidgetsFlutterBinding.ensureInitialized()`, place the call to
 | iPad mini (A17 Pro) | 744 × 1133 | Compact iPad, 744 × 1133 |
 | iPad (A16) | 820 × 1180 | Standard iPad, 820 × 1180 |
 
-## Keyboard shortcuts
-
-| Action             | macOS | Linux / Windows |
-| ------------------ | ----- | --------------- |
-| Toggle orientation | ⌘L    | Ctrl+L          |
-
 ## Known limitations
 
 - Font hinting and sub-pixel rendering match the host display, not the emulated

@@ -1,16 +1,13 @@
-import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, TargetPlatform;
-import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 
 import '../preview_controller.dart';
 
 // ── Intents ───────────────────────────────────────────────────────────────────
 
-/// Fired by `Ctrl+L` / `Cmd+L` — toggles portrait ↔ landscape.
-class ToggleOrientationIntent extends Intent {
-  const ToggleOrientationIntent();
-}
+// /// Fired by `Ctrl+L` / `Cmd+L` — toggles portrait ↔ landscape.
+// class ToggleOrientationIntent extends Intent {
+//   const ToggleOrientationIntent();
+// }
 
 // /// Fired by `Ctrl+R` / `Cmd+R` — reassembles the application.
 // class ReloadIntent extends Intent {
@@ -35,15 +32,15 @@ class PreviewShortcuts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final useMeta = defaultTargetPlatform == TargetPlatform.macOS;
+    // final useMeta = defaultTargetPlatform == TargetPlatform.macOS;
 
     return Shortcuts(
       shortcuts: {
-        SingleActivator(
-          LogicalKeyboardKey.keyL,
-          meta: useMeta,
-          control: !useMeta,
-        ): const ToggleOrientationIntent(),
+        // SingleActivator(
+        //   LogicalKeyboardKey.keyL,
+        //   meta: useMeta,
+        //   control: !useMeta,
+        // ): const ToggleOrientationIntent(),
         // SingleActivator(
         //   LogicalKeyboardKey.keyR,
         //   meta: useMeta,
@@ -52,9 +49,9 @@ class PreviewShortcuts extends StatelessWidget {
       },
       child: Actions(
         actions: {
-          ToggleOrientationIntent: CallbackAction<ToggleOrientationIntent>(
-            onInvoke: (_) => controller.toggleOrientation(),
-          ),
+          // ToggleOrientationIntent: CallbackAction<ToggleOrientationIntent>(
+          //   onInvoke: (_) => controller.toggleOrientation(),
+          // ),
           // ReloadIntent: CallbackAction<ReloadIntent>(
           //   onInvoke: (_) => WidgetsBinding.instance.reassembleApplication(),
           // ),
