@@ -231,7 +231,7 @@ slide vs Material zoom), haptic feedback patterns, text-selection toolbar items,
 the host OS and emulated platform differ; back-navigation platform assumptions cannot
 be satisfied on desktop; platform switch resets ephemeral widget state via reassemble.
 
-### Step 4.8 — General cleanup
+### Step 4.8 — General cleanup [done]
 
 + Find a list of the most commonly used mobile devices and compare that to the
   devices we ship with
@@ -248,8 +248,6 @@ be satisfied on desktop; platform switch resets ephemeral widget state via reass
 + Rename from 'Bezel' to 'Flight Check' / flight_check.
 + Change the device picker to use a tabbed UI.
 + Improve window position management.
-- Consider updating sizing logic so the emulator approximates a physical device.
-- Consider a locale override.
 
 ---
 
@@ -295,3 +293,11 @@ one corner's Bézier points to all four corners.
 Add a `PathCutout` variant to `ScreenCutout` that stores raw Bézier segments
 from the sensor bar PDF. Implement rendering in `ScreenClipPainter`. Replace
 the `TeardropCutout` on `iphone_14` with a `PathCutout`.
+
+## Phase 5 — General polish
+
+- Add Samsung Galaxy S25 device profile (devoncarew/flight_check#62)
+- Add Samsung Galaxy A55 device profile (devoncarew/flight_check#61)
+- Add iPhone 17 Air device profile (420 × 912) (devoncarew/flight_check#60)
+- Add iPhone 17 Pro device profile (402 × 874) (devoncarew/flight_check#59)
+- Consider a locale override.

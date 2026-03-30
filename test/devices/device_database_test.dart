@@ -1,10 +1,9 @@
 // ignore_for_file: avoid_print
 
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:flight_check/src/devices/device_database.dart';
 import 'package:flight_check/src/devices/device_profile.dart';
 import 'package:flight_check/src/devices/screen_cutout.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('DeviceDatabase.all', () {
@@ -33,20 +32,26 @@ void main() {
       String size(DeviceProfile d) =>
           '${d.logicalSize.width.toInt()} × ${d.logicalSize.height.toInt()}';
 
-      String platform(DeviceProfile d) =>
-          d.platform.label + (d.tablet ? ' / tablet' : '');
+      final iOS = DeviceDatabase.all.where(
+        (d) => d.platform == DevicePlatform.iOS && !d.tablet,
+      );
+      final android = DeviceDatabase.all.where(
+        (d) => d.platform == DevicePlatform.android && !d.tablet,
+      );
+      final tablets = DeviceDatabase.all.where((d) => d.tablet);
 
       print('## Supported devices');
-      print('');
 
-      print('| Device | Size | Platform | Device category |');
-      print('| --- | --- | --- | --- |');
+      for (final devices in [iOS, android, tablets]) {
+        print('');
+        print('| Device | Size | Device category |');
+        print('| --- | --- | --- |');
 
-      for (final device in DeviceDatabase.all) {
-        print(
-          '| ${device.name} | ${size(device)} | '
-          '${platform(device)} | ${device.description ?? ''} |',
-        );
+        for (final device in devices) {
+          print(
+            '| ${device.name} | ${size(device)} | ${device.description ?? ''} |',
+          );
+        }
       }
 
       print('');

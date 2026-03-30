@@ -1,12 +1,11 @@
 # Flight Check
 
-Flight Check is a Flutter tool for previewing your app against popular mobile
-devices. It lets you know what your app will look like at different screen sizes
-without guesswork.
+Flight Check is a Flutter tool for previewing your app across different mobile
+device profiles — so you know what it looks like without guesswork.
 
-Binding layer emulation means `MediaQuery` and safe areas report what a real
-device would. And Flight Check's architecture means that it's tree-shaken out in
-release mode.
+`MediaQuery` and safe areas report what a real device would report, thanks to
+binding-layer emulation. And Flight Check is tree-shaken out in release mode, so
+you don't ship any unnecessary code.
 
 | iPhone 17 | Pixel 10 | Galaxy S24 |
 |:---------:|:--------:|:----------:|
@@ -32,7 +31,7 @@ void main() {
 }
 ```
 
-Run your app on MacOS, Linux, or Windows and the preview UI appears
+Run your app on macOS, Linux, or Windows and the preview UI appears
 automatically. The call is a no-op in several situations, so you can leave it
 in unconditionally:
 
@@ -43,32 +42,37 @@ in unconditionally:
 
 ## WidgetsFlutterBinding.ensureInitialized()
 
-If your app is already calling `WidgetsFlutterBinding.ensureInitialized()`,
-place the call to `FlightCheck.configure()` before the `WidgetsFlutterBinding`
-call; you'll want to initialize Flight Check first.
+If your app calls `WidgetsFlutterBinding.ensureInitialized()`, place the call to
+`FlightCheck.configure()` before the `WidgetsFlutterBinding` call.
 
 ## Supported devices
 
-| Device | Size | Platform | Device category |
-| --- | --- | --- | --- |
-| iPhone SE (3rd gen) | 375 × 667 | iOS | Flat-edge, no cutout, small screen — budget / upgrade path |
-| iPhone 14 | 390 × 844 | iOS | Notch, 390 × 844 — covers iPhone 12, 13, 14 |
-| iPhone 15 | 393 × 852 | iOS | Dynamic Island, 393 × 852 — proxy for iPhone 14 Pro, 15 Pro, 16, 16e, 17 |
-| iPhone 15 Pro Max | 430 × 932 | iOS | Dynamic Island, 430 × 932 — covers iPhone 15 Plus, 16 Plus |
-| iPhone 17 | 393 × 852 | iOS | Current standard iPhone, 393 × 852 — same geometry as iPhone 15 and 16 |
-| iPhone 17 Pro Max | 440 × 956 | iOS | Largest iPhone screen, 440 × 956 |
-| Samsung Galaxy A15 | 411 × 892 | Android | Budget Samsung Infinity-U notch, 411 × 892 — covers A15, A25 |
-| Samsung Galaxy A55 | 384 × 854 | Android | Mid-range Samsung A-series, ~384 × 854 — covers A54, A55 |
-| Samsung Galaxy S24 | 360 × 780 | Android | Flagship Samsung, 360 × 780 — covers S23, S24 |
-| Google Pixel 7a | 411 × 914 | Android | Mid-range Pixel, small punch hole — covers Pixel 7a, 8, 8a |
-| Google Pixel 10 | 411 × 923 | Android | Large punch hole, 411 × 923 — covers Pixel 9 and 10 |
-| Google Pixel 10 Pro | 410 × 914 | Android | High-DPR Pixel (3.125), 410 × 914 |
-| iPad mini (A17 Pro) | 744 × 1133 | iOS / tablet | Compact iPad, 744 × 1133 |
-| iPad (A16) | 820 × 1180 | iOS / tablet | Standard iPad, 820 × 1180 |
+| Device | Size | Device category |
+| --- | --- | --- |
+| iPhone SE (3rd gen) | 375 × 667 | Flat-edge, no cutout, small screen — budget / upgrade path |
+| iPhone 14 | 390 × 844 | Notch, 390 × 844 — covers iPhone 12, 13, 14 |
+| iPhone 15 | 393 × 852 | Dynamic Island, 393 × 852 — proxy for iPhone 14 Pro, 15 Pro, 16, 16e, 17 |
+| iPhone 15 Pro Max | 430 × 932 | Dynamic Island, 430 × 932 — covers iPhone 15 Plus, 16 Plus |
+| iPhone 17 | 393 × 852 | Current standard iPhone, 393 × 852 — same geometry as iPhone 15 and 16 |
+| iPhone 17 Pro Max | 440 × 956 | Largest iPhone screen, 440 × 956 |
+
+| Device | Size | Device category |
+| --- | --- | --- |
+| Samsung Galaxy A15 | 411 × 892 | Budget Samsung Infinity-U notch, 411 × 892 — covers A15, A25 |
+| Samsung Galaxy A55 | 384 × 854 | Mid-range Samsung A-series, ~384 × 854 — covers A54, A55 |
+| Samsung Galaxy S24 | 360 × 780 | Flagship Samsung, 360 × 780 — covers S23, S24 |
+| Google Pixel 7a | 411 × 914 | Mid-range Pixel, small punch hole — covers Pixel 7a, 8, 8a |
+| Google Pixel 10 | 411 × 923 | Large punch hole, 411 × 923 — covers Pixel 9 and 10 |
+| Google Pixel 10 Pro | 410 × 914 | High-DPR Pixel (3.125), 410 × 914 |
+
+| Device | Size | Device category |
+| --- | --- | --- |
+| iPad mini (A17 Pro) | 744 × 1133 | Compact iPad, 744 × 1133 |
+| iPad (A16) | 820 × 1180 | Standard iPad, 820 × 1180 |
 
 ## Keyboard shortcuts
 
-| Action             | MacOS | Linux / Windows |
+| Action             | macOS | Linux / Windows |
 | ------------------ | ----- | --------------- |
 | Toggle orientation | ⌘L    | Ctrl+L          |
 
@@ -80,23 +84,16 @@ call; you'll want to initialize Flight Check first.
   metrics but their native rendering surfaces are unaffected.
 - Safe area insets are static per profile; dynamic changes such as keyboard
   appearance are not emulated.
-- Cutout dimensions are approximate values sourced from manufacturer
-  specifications; they may be off by a few points.
 - `MediaQuery.devicePixelRatio` reflects the derived window DPR rather than the
   device's nominal DPR; apps that branch on this value may behave differently
   than on a real device.
-- Flutter Web is not supported.
-
-`defaultTargetPlatform` is overridden to match the emulated device's platform,
-giving correct scroll physics, page transitions, and haptic feedback patterns.
-Some known limitations:
-
-- text-field keyboard shortcuts may not match the host keyboard when the host OS
-  and emulated platform differ (e.g. Android on macOS)
+- `defaultTargetPlatform` is overridden to match the emulated device's platform,
+  giving correct scroll physics, page transitions, and haptic feedback patterns;
+  however, text-field keyboard shortcuts may not match the host keyboard when
+  the host OS and emulated platform differ (e.g. Android on macOS)
 - back-navigation assumptions (system back button on Android, swipe-back on iOS)
   cannot be satisfied on desktop
-- switching emulator devices will trigger a framework reassemble, resetting
-  ephemeral widget state
+- Flutter Web is not supported.
 
 ## License
 
