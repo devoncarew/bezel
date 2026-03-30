@@ -1,9 +1,16 @@
 # Flight Check
 
-A Flutter debug-mode tool for previewing your app against popular mobile device
-profiles while running on desktop. It spoofs device metrics at the binding layer
-— no widget injection — so `MediaQuery`, safe areas, and pixel ratios all report
-what a real device would report.
+Flight Check is a Flutter tool for previewing your app against popular mobile
+devices. It lets you know what your app will look like at different screen sizes
+without guesswork.
+
+Binding layer emulation means `MediaQuery` and safe areas report what a real
+device would. And Flight Check's architecture means that it's tree-shaken out in
+release mode.
+
+| iPhone 17 | Pixel 10 | Galaxy S24 |
+|:---------:|:--------:|:----------:|
+| ![iPhone 17](docs/images/iphone_17.png) | ![Pixel 10](docs/images/pixel_10.png) | ![Galaxy S24](docs/images/galaxy_s24.png) |
 
 ## Getting started
 
@@ -13,7 +20,7 @@ Add `flight_check` as a regular dependency:
 flutter pub add flight_check
 ```
 
-In your `main.dart`, call `FlightCheck.configure()` **before** `runApp`:
+In your `main.dart`, call `FlightCheck.configure()` (**before** `runApp`):
 
 ```dart
 import 'package:flight_check/flight_check.dart';
@@ -29,10 +36,10 @@ Run your app on MacOS, Linux, or Windows and the preview UI appears
 automatically. The call is a no-op in several situations, so you can leave it
 in unconditionally:
 
-- **Release / profile builds** — tree-shaken out at compile time.
+- **Release / profile builds** — tree-shaken out at compile time
 - **iOS / Android** — skipped at runtime so real-device debug sessions are
-  unaffected.
-- **Flutter Web** — excluded via a conditional import.
+  unaffected
+- **Flutter Web** — excluded via a conditional import
 
 ## WidgetsFlutterBinding.ensureInitialized()
 
@@ -82,13 +89,14 @@ call; you'll want to initialize Flight Check first.
 
 `defaultTargetPlatform` is overridden to match the emulated device's platform,
 giving correct scroll physics, page transitions, and haptic feedback patterns.
-Known limitations:
+Some known limitations:
 
 - text-field keyboard shortcuts may not match the host keyboard when the host OS
   and emulated platform differ (e.g. Android on macOS)
 - back-navigation assumptions (system back button on Android, swipe-back on iOS)
   cannot be satisfied on desktop
-- switching platforms triggers a reassemble that resets ephemeral widget state
+- switching emulator devices will trigger a framework reassemble, resetting
+  ephemeral widget state
 
 ## License
 
