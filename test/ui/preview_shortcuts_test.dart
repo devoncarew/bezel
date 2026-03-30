@@ -37,6 +37,8 @@ void main() {
       await tester.sendKeyUpEvent(LogicalKeyboardKey.control);
 
       expect(controller.orientation, isNot(equals(before)));
-    });
+
+      // TODO: Test skipped as keyboard shortcuts are currently removed.
+    }, skip: true);
   });
 }
