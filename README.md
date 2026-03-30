@@ -1,15 +1,15 @@
 # Flight Check
 
-Flight Check is a Flutter tool for previewing your app across different mobile
-device profiles — so you know what it looks like without guesswork.
+Flight Check is a development time tool for Flutter that lets you preview your
+app across different mobile device profiles — so you'll know what it looks like
+without guesswork.
 
-`MediaQuery` and safe areas report what a real device would report, thanks to
-binding-layer emulation. And Flight Check is tree-shaken out in release mode, so
-you don't ship any unnecessary code.
+We support a broad range of device profiles covering common screen sizes, device
+types, and notch type and safe areas sizes.
 
-| iPhone 17 | Pixel 10 | Galaxy S24 |
-|:---------:|:--------:|:----------:|
-| ![iPhone 17](docs/images/iphone_17.png) | ![Pixel 10](docs/images/pixel_10.png) | ![Galaxy S24](docs/images/galaxy_s24.png) |
+We use binding-layer emulation, so `MediaQuery` and safe areas report what a
+real device would. And Flight Check is tree-shaken out in release mode, so you
+don't ship any unnecessary code.
 
 ## Getting started
 
@@ -31,19 +31,15 @@ void main() {
 }
 ```
 
-Run your app on macOS, Linux, or Windows and the preview UI appears
-automatically. The call is a no-op in several situations, so you can leave it
-in unconditionally:
+Then run your app as Flutter Desktop app on macOS, Linux, or Windows; the
+preview UI appears automatically. You can even leave the call in
+unconditionally; Flight Check is tree-shaken out at compile time for release
+builds.
 
 - **Release / profile builds** — tree-shaken out at compile time
-- **iOS / Android** — skipped at runtime so real-device debug sessions are
-  unaffected
+- **iOS / Android devices** — skipped at runtime so real-device debug sessions
+  are unaffected
 - **Flutter Web** — excluded via a conditional import
-
-## WidgetsFlutterBinding.ensureInitialized()
-
-If your app calls `WidgetsFlutterBinding.ensureInitialized()`, place the call to
-`FlightCheck.configure()` before the `WidgetsFlutterBinding` call.
 
 ## Supported devices
 
@@ -71,6 +67,17 @@ If your app calls `WidgetsFlutterBinding.ensureInitialized()`, place the call to
 | --- | --- | --- |
 | iPad mini (A17 Pro) | 744 × 1133 | Compact iPad, 744 × 1133 |
 | iPad (A16) | 820 × 1180 | Standard iPad, 820 × 1180 |
+
+### Screenshots
+
+| iPhone 17 | Pixel 10 | Galaxy S24 |
+|:---------:|:--------:|:----------:|
+| ![iPhone 17](docs/images/iphone_17.png) | ![Pixel 10](docs/images/pixel_10.png) | ![Galaxy S24](docs/images/galaxy_s24.png) |
+
+## Calling WidgetsFlutterBinding.ensureInitialized()?
+
+If your app calls `WidgetsFlutterBinding.ensureInitialized()`, place the call to
+`FlightCheck.configure()` before the `WidgetsFlutterBinding` call.
 
 ## Known limitations
 
