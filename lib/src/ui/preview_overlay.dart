@@ -3,26 +3,21 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart' show Theme, ThemeData, Brightness;
 import 'package:flutter/widgets.dart';
 
-import '../devices/screen_border.dart';
 import '../frame/screen_clip_widget.dart';
 import '../preview_controller.dart';
 import '../theme.dart';
-import 'common.dart';
 import 'control_badge.dart';
 import 'control_panel.dart';
 import 'preview_shortcuts.dart';
-import 'preview_toolbar.dart';
 
 /// Wraps the app in a device-frame preview UI.
 ///
-/// Layout (top to bottom):
-///   [kPreviewPadding] — [device area, kPreviewPadding left/right] —
-///   [kPreviewPadding] — [toolbar] — [kPreviewPadding]
+/// The emulator area is edge-to-edge with the window content area. The
+/// [ControlBadge] and [ControlPanel] are overlaid in the top-right corner.
 ///
 /// [ListenableBuilder] rebuilds on [PreviewController] changes. The device
 /// area uses an inner [LayoutBuilder] so [computeScale] operates on the actual
-/// available device space (already accounting for padding) rather than the
-/// full window size.
+/// available space.
 ///
 /// Installed automatically by [PreviewBinding.wrapWithDefaultView]. Should not
 /// need to be used directly.
@@ -80,56 +75,26 @@ class PreviewOverlay extends StatelessWidget {
                       color: kPreviewBackground,
                       child: Stack(
                         children: [
-                          // Main column: padding → device area → padding →
-                          // toolbar → padding.
-                          Column(
-                            children: [
-                              Expanded(
-                                child: LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    final emulated =
-                                        controller.emulatedLogicalSize;
-                                    final scale = computeScale(
-                                      constraints.biggest,
-                                      emulated,
-                                    );
-                                    return Center(
-                                      child: RaisedSurface(
-                                        borderRadius: BorderRadius.circular(
-                                          _cornerRadiusValue(
-                                            controller
-                                                .activeProfile
-                                                .screenBorder,
-                                          ),
-                                        ),
-                                        height: 6,
-                                        child: SizedBox(
-                                          width: emulated.width * scale,
-                                          height: emulated.height * scale,
-                                          child: ScreenClipWidget(
-                                            profile: controller.activeProfile,
-                                            orientation: controller.orientation,
-                                            child: child,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
+                          // Emulator area fills the full content area.
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final emulated = controller.emulatedLogicalSize;
+                              final scale = computeScale(
+                                constraints.biggest,
+                                emulated,
+                              );
+                              return Center(
+                                child: SizedBox(
+                                  width: emulated.width * scale,
+                                  height: emulated.height * scale,
+                                  child: ScreenClipWidget(
+                                    profile: controller.activeProfile,
+                                    orientation: controller.orientation,
+                                    child: child,
+                                  ),
                                 ),
-                              ),
-
-                              const SizedBox(height: kPreviewSpacing),
-
-                              SizedBox(
-                                height: kToolbarHeight,
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: PreviewToolbar(controller: controller),
-                                ),
-                              ),
-
-                              const SizedBox(height: kPreviewPadding),
-                            ],
+                              );
+                            },
                           ),
 
                           // Control panel — always mounted so it can
@@ -171,13 +136,4 @@ class PreviewOverlay extends StatelessWidget {
         )
         .clamp(0.0, 1.0);
   }
-}
-
-double _cornerRadiusValue(ScreenBorder border) {
-  return switch (border) {
-    CircularBorder(:final radius) => radius,
-    // Use topTangentLength as an approximation for the outer shadow radius on
-    // the RaisedSurface — close enough for the cosmetic drop shadow.
-    SquircleBorder(:final topTangentLength) => topTangentLength,
-  };
 }

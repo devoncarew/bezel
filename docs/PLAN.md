@@ -347,7 +347,7 @@ in. Reverse to dismiss. Tap-outside-to-dismiss backdrop stays.
 The panel shares the same semi-transparent background as the badge so they read
 as one connected surface.
 
-### Step 6.4 — Remove old toolbar and neumorphic surface; edge-to-edge layout
+### Step 6.4 — Remove old toolbar and neumorphic surface; edge-to-edge layout [done]
 
 - Delete `PreviewToolbar` (`lib/src/ui/preview_toolbar.dart`).
 - Delete `RaisedSurface` (`lib/src/ui/common.dart`) or hollow it out if other
@@ -363,7 +363,7 @@ as one connected surface.
   from `theme.dart`. If any of these constants are still referenced elsewhere,
   remove those references first.
 
-### Step 6.5 — Simplify window sizing and DPR calculation
+### Step 6.5 — Simplify window sizing and DPR calculation [done]
 
 With no bottom chrome, both formulas collapse:
 

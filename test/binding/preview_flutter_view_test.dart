@@ -1,11 +1,6 @@
-import 'dart:math' as math;
-import 'dart:ui' as ui;
-
 import 'package:flight_check/src/binding/preview_flutter_view.dart';
 import 'package:flight_check/src/devices/device_database.dart';
 import 'package:flight_check/src/preview_controller.dart';
-import 'package:flight_check/src/theme.dart'
-    show kPreviewPadding, kPreviewSpacing, kToolbarHeight;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -27,21 +22,17 @@ void main() {
     controller.dispose();
   });
 
-  test('devicePixelRatio uses available area minus overlay chrome', () {
-    final realView = binding.platformDispatcher.implicitView!;
-    final realDpr = realView.devicePixelRatio;
-    final available = ui.Size(
-      realView.physicalSize.width,
-      realView.physicalSize.height -
-          (kPreviewSpacing + kToolbarHeight + kPreviewPadding) * realDpr,
-    );
-    final emulated = controller.emulatedLogicalSize;
-    final expected = math.min(
-      available.width / emulated.width,
-      available.height / emulated.height,
-    );
-    expect(view.devicePixelRatio, closeTo(expected, 0.001));
-  });
+  test(
+    'devicePixelRatio derived from physical size / emulated logical size',
+    () {
+      final realView = binding.platformDispatcher.implicitView!;
+      final emulated = controller.emulatedLogicalSize;
+      final dprW = realView.physicalSize.width / emulated.width;
+      final dprH = realView.physicalSize.height / emulated.height;
+      final expected = dprW < dprH ? dprW : dprH;
+      expect(view.devicePixelRatio, closeTo(expected, 0.001));
+    },
+  );
 
   test('physicalSize reflects emulated dimensions at current DPR', () {
     final dpr = view.devicePixelRatio;
@@ -62,18 +53,11 @@ void main() {
 
   test('devicePixelRatio updates when orientation toggles', () {
     final realView = binding.platformDispatcher.implicitView!;
-    final realDpr = realView.devicePixelRatio;
-    final available = ui.Size(
-      realView.physicalSize.width,
-      realView.physicalSize.height -
-          (kPreviewSpacing + kToolbarHeight + kPreviewPadding) * realDpr,
-    );
     controller.toggleOrientation();
     final emulated = controller.emulatedLogicalSize; // now landscape
-    final expected = math.min(
-      available.width / emulated.width,
-      available.height / emulated.height,
-    );
+    final dprW = realView.physicalSize.width / emulated.width;
+    final dprH = realView.physicalSize.height / emulated.height;
+    final expected = dprW < dprH ? dprW : dprH;
     expect(view.devicePixelRatio, closeTo(expected, 0.001));
   });
 
