@@ -1,11 +1,13 @@
 /// Flight Check — Flutter debug-mode device preview tool.
 ///
 /// Add two lines to your `main.dart`:
+///
 /// ```dart
 /// import 'package:flight_check/flight_check.dart';
 ///
 /// void main() {
 ///   FlightCheck.configure();
+///
 ///   runApp(const MyApp());
 /// }
 /// ```
