@@ -328,7 +328,7 @@ Wire it into `PreviewOverlay` as a `Positioned` widget in the existing `Stack`.
 At this point both the old toolbar and the new badge are visible — that is
 intentional so the overlay remains fully functional during the transition.
 
-### Step 6.3 — Anchored picker panel and action bar
+### Step 6.3 — Anchored picker panel and action bar [done]
 
 Redesign the device picker to slide down from the top-right corner, physically
 connected to the control badge.

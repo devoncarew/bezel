@@ -9,7 +9,7 @@ import '../preview_controller.dart';
 import '../theme.dart';
 import 'common.dart';
 import 'control_badge.dart';
-import 'device_picker.dart';
+import 'control_panel.dart';
 import 'preview_shortcuts.dart';
 import 'preview_toolbar.dart';
 
@@ -121,12 +121,12 @@ class PreviewOverlay extends StatelessWidget {
                       ],
                     ),
 
-                    // Backdrop + picker — always mounted so the picker
-                    // can animate in and out. The backdrop covers the full
-                    // window (including toolbar) so all taps outside the
-                    // card dismiss the picker.
+                    // Control panel — always mounted so it can animate in
+                    // and out. The panel is anchored to the top-right corner
+                    // (below the badge) and includes its own full-window
+                    // backdrop to dismiss on tap-outside.
                     Positioned.fill(
-                      child: DevicePicker(controller: controller),
+                      child: ControlPanel(controller: controller),
                     ),
 
                     // Control badge — anchored to top-right corner.

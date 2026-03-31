@@ -19,6 +19,12 @@ const Color kPreviewShadowLight = Color(0xFF7A7A84);
 /// Border colour drawn between the surface contents and the drop shadow.
 const Color kPreviewBorder = Color.fromARGB(255, 122, 122, 140);
 
+/// Height of the [ControlBadge] widget (logical pixels).
+///
+/// Used to position the [ControlPanel] immediately below the badge so they
+/// read as one connected surface.
+const double kControlBadgeHeight = 25.0;
+
 /// Padding (logical pixels) between the device previs and the toolbar row.
 const double kPreviewSpacing = 10;
 

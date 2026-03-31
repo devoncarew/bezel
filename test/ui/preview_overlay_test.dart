@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show MaterialApp;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -6,9 +7,13 @@ import 'package:flight_check/src/devices/device_profile.dart';
 import 'package:flight_check/src/frame/screen_clip_widget.dart';
 import 'package:flight_check/src/preview_controller.dart';
 import 'package:flight_check/src/ui/control_badge.dart';
-import 'package:flight_check/src/ui/device_picker.dart';
+import 'package:flight_check/src/ui/control_panel.dart';
 import 'package:flight_check/src/ui/preview_overlay.dart';
 import 'package:flight_check/src/ui/preview_toolbar.dart';
+
+/// Wraps [child] in a [MaterialApp] so that [Tooltip] and other widgets that
+/// require an [Overlay] ancestor work inside widget tests.
+Widget _wrap(Widget child) => MaterialApp(home: child);
 
 void main() {
   group('PreviewOverlay', () {
@@ -19,9 +24,8 @@ void main() {
 
     testWidgets('renders ScreenClipWidget', (tester) async {
       await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: PreviewOverlay(
+        _wrap(
+          PreviewOverlay(
             controller: controller,
             child: const SizedBox.expand(),
           ),
@@ -35,9 +39,8 @@ void main() {
       const key = ValueKey('app-child');
 
       await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: PreviewOverlay(
+        _wrap(
+          PreviewOverlay(
             controller: controller,
             child: const SizedBox(key: key),
           ),
@@ -49,9 +52,8 @@ void main() {
 
     testWidgets('rebuilds when controller changes profile', (tester) async {
       await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: PreviewOverlay(
+        _wrap(
+          PreviewOverlay(
             controller: controller,
             child: const SizedBox.expand(),
           ),
@@ -76,9 +78,8 @@ void main() {
 
     testWidgets('rebuilds when controller toggles orientation', (tester) async {
       await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: PreviewOverlay(
+        _wrap(
+          PreviewOverlay(
             controller: controller,
             child: const SizedBox.expand(),
           ),
@@ -101,9 +102,8 @@ void main() {
 
     testWidgets('shows ControlBadge with device name', (tester) async {
       await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: PreviewOverlay(
+        _wrap(
+          PreviewOverlay(
             controller: controller,
             child: const SizedBox.expand(),
           ),
@@ -118,9 +118,8 @@ void main() {
       controller.togglePassthrough();
 
       await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: PreviewOverlay(
+        _wrap(
+          PreviewOverlay(
             controller: controller,
             child: const SizedBox.expand(),
           ),
@@ -132,9 +131,8 @@ void main() {
 
     testWidgets('shows PreviewToolbar by default', (tester) async {
       await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: PreviewOverlay(
+        _wrap(
+          PreviewOverlay(
             controller: controller,
             child: const SizedBox.expand(),
           ),
@@ -151,9 +149,8 @@ void main() {
       controller.togglePassthrough();
 
       await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: PreviewOverlay(
+        _wrap(
+          PreviewOverlay(
             controller: controller,
             child: const SizedBox(key: key),
           ),
@@ -170,9 +167,8 @@ void main() {
       controller.togglePassthrough();
 
       await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: PreviewOverlay(
+        _wrap(
+          PreviewOverlay(
             controller: controller,
             child: const SizedBox.expand(),
           ),
@@ -183,22 +179,21 @@ void main() {
       expect(find.byType(PreviewToolbar), findsNothing);
     });
 
-    testWidgets('DevicePicker shown when devicePickerVisible is true', (
+    testWidgets('ControlPanel shown when devicePickerVisible is true', (
       tester,
     ) async {
       controller.toggleDevicePicker();
 
       await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: PreviewOverlay(
+        _wrap(
+          PreviewOverlay(
             controller: controller,
             child: const SizedBox.expand(),
           ),
         ),
       );
 
-      expect(find.byType(DevicePicker), findsOneWidget);
+      expect(find.byType(ControlPanel), findsOneWidget);
     });
   });
 
