@@ -207,21 +207,21 @@ class _ControlPanelState extends State<ControlPanel>
                   children: [
                     _ShortcutButton(
                       icon: Icons.devices,
-                      binding: '${Platform.isMacOS ? '⌘' : 'Ctrl-'}D',
+                      binding: '${Platform.isMacOS ? '⌘' : '^'}D',
                       tooltip: 'Toggle device picker',
                       onTap: widget.controller.toggleDevicePicker,
                     ),
                     const Expanded(child: SizedBox(width: 16)),
                     _ShortcutButton(
                       icon: Icons.skip_previous,
-                      binding: '${Platform.isMacOS ? '⌘' : 'Ctrl-'}[',
+                      binding: '${Platform.isMacOS ? '⌘' : '^'}[',
                       tooltip: 'Previous device',
                       onTap: () => widget.controller.cycleDevice(-1),
                     ),
                     const SizedBox(width: 8),
                     _ShortcutButton(
                       icon: Icons.skip_next,
-                      binding: '${Platform.isMacOS ? '⌘' : 'Ctrl-'}]',
+                      binding: '${Platform.isMacOS ? '⌘' : '^'}]',
                       tooltip: 'Next device',
                       onTap: () => widget.controller.cycleDevice(1),
                     ),
@@ -305,7 +305,7 @@ class _ActionRow extends StatelessWidget {
           ),
           _ShortcutButton(
             icon: Icons.screen_rotation,
-            binding: '${Platform.isMacOS ? '⌘' : 'Ctrl-'}L',
+            binding: '${Platform.isMacOS ? '⌘' : '^'}L',
             tooltip: 'Toggle orientation',
             onTap: controller.toggleOrientation,
           ),
