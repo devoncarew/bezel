@@ -118,19 +118,18 @@ class _ControlPanelState extends State<ControlPanel>
           ),
 
           // Panel card anchored below the badge, slides in from the right.
+          // ClipRect prevents the card from being visible while off-screen.
           Positioned(
             top: kControlBadgeHeight,
             right: 0,
-            child: AnimatedBuilder(
-              animation: _slideAnim,
-              builder: (context, child) => ClipRect(
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  widthFactor: _slideAnim.value,
-                  child: child,
-                ),
+            child: ClipRect(
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(1, 0),
+                  end: Offset.zero,
+                ).animate(_slideAnim),
+                child: _buildCard(),
               ),
-              child: _buildCard(),
             ),
           ),
         ],
