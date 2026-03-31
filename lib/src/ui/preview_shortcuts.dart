@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, TargetPlatform;
+import 'dart:io' show Platform;
+
 import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 
@@ -45,7 +45,7 @@ class PreviewShortcuts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final useMeta = defaultTargetPlatform == TargetPlatform.macOS;
+    final useMeta = Platform.isMacOS;
 
     return Shortcuts(
       shortcuts: {

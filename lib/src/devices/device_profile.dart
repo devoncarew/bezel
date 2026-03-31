@@ -1,4 +1,4 @@
-import 'package:flutter/painting.dart' show EdgeInsets, Size;
+import 'package:flutter/material.dart';
 
 import 'screen_border.dart';
 import 'screen_cutout.dart';
@@ -81,6 +81,14 @@ class DeviceProfile {
     this.tablet = false,
     this.description,
   });
+
+  IconData get icon {
+    return switch (platform) {
+      DevicePlatform.iOS => tablet ? Icons.tablet_mac : Icons.phone_iphone,
+      DevicePlatform.android =>
+        tablet ? Icons.tablet_android : Icons.phone_android,
+    };
+  }
 
   /// Returns the logical screen size for [orientation].
   ///

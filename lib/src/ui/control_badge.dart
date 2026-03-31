@@ -47,7 +47,13 @@ class ControlBadge extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.flight_takeoff, size: 12),
+                  Icon(
+                    controller.activeProfile.icon,
+                    size: 12,
+                    color: kPreviewForeground.withValues(
+                      alpha: dimmed ? 0.5 : 1.0,
+                    ),
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     controller.activeProfile.name,

@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, TargetPlatform;
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
 
 import '../devices/device_database.dart';
@@ -8,13 +8,13 @@ import '../preview_controller.dart';
 import '../theme.dart';
 
 /// Width of the control panel card.
-const double _kPanelWidth = 280.0;
+const double _kPanelWidth = 290;
 
 /// Height reserved for the tabbed device list inside the panel.
-const double _kDeviceListHeight = 360.0;
+const double _kDeviceListHeight = 420;
 
 /// Corner radius used for all non-flush panel corners.
-const double _kPanelRadius = 10.0;
+const double _kPanelRadius = 10;
 
 /// Shape for the panel: top-right corner is flush with the window edge (same
 /// as the badge), all other corners are rounded.
@@ -149,7 +149,7 @@ class _ControlPanelState extends State<ControlPanel>
     return SizedBox(
       width: _kPanelWidth,
       child: Material(
-        color: kPreviewBackground.withValues(alpha: 0.92),
+        color: kPreviewBackground,
         borderRadius: _kPanelBorderRadius,
         child: ClipRRect(
           borderRadius: _kPanelBorderRadius,
@@ -180,7 +180,7 @@ class _ControlPanelState extends State<ControlPanel>
                 const Divider(
                   height: 1,
                   thickness: 1,
-                  color: Color(0x33FFFFFF),
+                  color: kPreviewForeground,
                 ),
                 SizedBox(
                   height: _kDeviceListHeight,
@@ -196,7 +196,7 @@ class _ControlPanelState extends State<ControlPanel>
                         labelColor: kPreviewForegroundEmphasis,
                         indicatorColor: kPreviewForegroundEmphasis,
                         unselectedLabelColor: kPreviewForeground,
-                        dividerColor: Colors.transparent,
+                        dividerColor: const Color(0x22FFFFFF),
                         tabAlignment: TabAlignment.fill,
                       ),
                       Expanded(
@@ -248,28 +248,9 @@ class _ActionRow extends StatelessWidget {
     return ListenableBuilder(
       listenable: controller,
       builder: (context, _) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Row(
           children: [
-            IconButton(
-              icon: const Icon(Icons.screen_rotation),
-              color: kPreviewForeground,
-              iconSize: 16,
-              onPressed: controller.toggleOrientation,
-            ),
-            IconButton(
-              icon: Icon(
-                controller.passthroughMode
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
-              ),
-              color: controller.passthroughMode
-                  ? kPreviewForegroundEmphasis
-                  : kPreviewForeground,
-              iconSize: 16,
-              onPressed: controller.togglePassthrough,
-            ),
-            const Spacer(),
             IconButton(
               icon: const Icon(Icons.keyboard_outlined),
               color: shortcutsExpanded
@@ -277,6 +258,25 @@ class _ActionRow extends StatelessWidget {
                   : kPreviewForeground,
               iconSize: 16,
               onPressed: onToggleShortcuts,
+            ),
+            const Spacer(),
+            // IconButton(
+            //   icon: Icon(
+            //     controller.passthroughMode
+            //         ? Icons.visibility_off_outlined
+            //         : Icons.visibility_outlined,
+            //   ),
+            //   color: controller.passthroughMode
+            //       ? kPreviewForegroundEmphasis
+            //       : kPreviewForeground,
+            //   iconSize: 16,
+            //   onPressed: controller.togglePassthrough,
+            // ),
+            IconButton(
+              icon: const Icon(Icons.screen_rotation),
+              color: kPreviewForeground,
+              iconSize: 16,
+              onPressed: controller.toggleOrientation,
             ),
           ],
         ),
@@ -292,9 +292,7 @@ class _ShortcutsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final modifier = defaultTargetPlatform == TargetPlatform.macOS
-        ? '⌘'
-        : 'Ctrl+';
+    final modifier = Platform.isMacOS ? '⌘' : 'Ctrl-';
     final shortcuts = [
       ('Toggle device picker', '${modifier}D'),
       ('Toggle orientation', '${modifier}L'),
@@ -331,7 +329,11 @@ class _ShortcutsSection extends StatelessWidget {
                         style: const TextStyle(
                           color: kPreviewForeground,
                           fontSize: 12,
-                          fontFamily: 'monospace',
+                          fontFamilyFallback: [
+                            'Menlo',
+                            'Consolas',
+                            'Courier New',
+                          ],
                         ),
                       ),
                     ],

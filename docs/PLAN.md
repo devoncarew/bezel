@@ -344,4 +344,5 @@ device) and added `cycleDevice(int delta)` to `PreviewController`.
 + Add iPhone 17 Air device profile (420 × 912) (devoncarew/flight_check#60)
 - Add Samsung Galaxy S25 device profile (devoncarew/flight_check#62)
 - Add Samsung Galaxy A55 device profile (devoncarew/flight_check#61)
-- Consider a locale override.
+- Consider supporting a locale override.
+- Determine whether we need the pass-through mode.
