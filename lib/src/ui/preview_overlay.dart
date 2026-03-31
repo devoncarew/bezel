@@ -9,7 +9,6 @@ import '../preview_controller.dart';
 import '../theme.dart';
 import 'common.dart';
 import 'device_picker.dart';
-import 'macos_menu.dart';
 import 'preview_shortcuts.dart';
 import 'preview_toolbar.dart';
 
@@ -41,91 +40,88 @@ class PreviewOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MacosPreviewMenu(
-      controller: controller,
-      child: ListenableBuilder(
-        listenable: controller,
-        builder: (context, _) {
-          if (controller.passthroughMode) {
-            return child;
-          }
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        if (controller.passthroughMode) {
+          return child;
+        }
 
-          // Directionality + Theme are provided here because the overlay
-          // sits above the user's MaterialApp and has no such ancestors.
-          return Directionality(
-            textDirection: TextDirection.ltr,
-            child: Theme(
-              data: ThemeData(brightness: Brightness.dark),
-              child: PreviewShortcuts(
-                controller: controller,
-                child: ColoredBox(
-                  color: kPreviewBackground,
-                  child: Stack(
-                    children: [
-                      // Main column: padding → device area → padding →
-                      // toolbar → padding.
-                      Column(
-                        children: [
-                          Expanded(
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                final emulated = controller.emulatedLogicalSize;
-                                final scale = computeScale(
-                                  constraints.biggest,
-                                  emulated,
-                                );
-                                return Center(
-                                  child: RaisedSurface(
-                                    borderRadius: BorderRadius.circular(
-                                      _cornerRadiusValue(
-                                        controller.activeProfile.screenBorder,
-                                      ),
-                                    ),
-                                    height: 6,
-                                    child: SizedBox(
-                                      width: emulated.width * scale,
-                                      height: emulated.height * scale,
-                                      child: ScreenClipWidget(
-                                        profile: controller.activeProfile,
-                                        orientation: controller.orientation,
-                                        child: child,
-                                      ),
+        // Directionality + Theme are provided here because the overlay
+        // sits above the user's MaterialApp and has no such ancestors.
+        return Directionality(
+          textDirection: TextDirection.ltr,
+          child: Theme(
+            data: ThemeData(brightness: Brightness.dark),
+            child: PreviewShortcuts(
+              controller: controller,
+              child: ColoredBox(
+                color: kPreviewBackground,
+                child: Stack(
+                  children: [
+                    // Main column: padding → device area → padding →
+                    // toolbar → padding.
+                    Column(
+                      children: [
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final emulated = controller.emulatedLogicalSize;
+                              final scale = computeScale(
+                                constraints.biggest,
+                                emulated,
+                              );
+                              return Center(
+                                child: RaisedSurface(
+                                  borderRadius: BorderRadius.circular(
+                                    _cornerRadiusValue(
+                                      controller.activeProfile.screenBorder,
                                     ),
                                   ),
-                                );
-                              },
-                            ),
+                                  height: 6,
+                                  child: SizedBox(
+                                    width: emulated.width * scale,
+                                    height: emulated.height * scale,
+                                    child: ScreenClipWidget(
+                                      profile: controller.activeProfile,
+                                      orientation: controller.orientation,
+                                      child: child,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
+                        ),
 
-                          const SizedBox(height: kPreviewSpacing),
+                        const SizedBox(height: kPreviewSpacing),
 
-                          SizedBox(
-                            height: kToolbarHeight,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: PreviewToolbar(controller: controller),
-                            ),
+                        SizedBox(
+                          height: kToolbarHeight,
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: PreviewToolbar(controller: controller),
                           ),
+                        ),
 
-                          const SizedBox(height: kPreviewPadding),
-                        ],
-                      ),
+                        const SizedBox(height: kPreviewPadding),
+                      ],
+                    ),
 
-                      // Backdrop + picker — always mounted so the picker
-                      // can animate in and out. The backdrop covers the full
-                      // window (including toolbar) so all taps outside the
-                      // card dismiss the picker.
-                      Positioned.fill(
-                        child: DevicePicker(controller: controller),
-                      ),
-                    ],
-                  ),
+                    // Backdrop + picker — always mounted so the picker
+                    // can animate in and out. The backdrop covers the full
+                    // window (including toolbar) so all taps outside the
+                    // card dismiss the picker.
+                    Positioned.fill(
+                      child: DevicePicker(controller: controller),
+                    ),
+                  ],
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 

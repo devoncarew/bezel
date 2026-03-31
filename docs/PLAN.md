@@ -303,7 +303,7 @@ area. The primary motivation is to remove the bottom chrome from the window
 sizing and DPR calculations — a persistent source of subtle bugs where two
 independent formulas must stay in sync.
 
-### Step 6.1 — Remove macOS menu bar integration
+### Step 6.1 — Remove macOS menu bar integration [done]
 
 Delete `MacosPreviewMenu` and its file (`lib/src/ui/macos_menu.dart`). Remove
 the `MacosPreviewMenu` wrapper from `PreviewOverlay.build`. The native menu bar
