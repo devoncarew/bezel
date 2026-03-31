@@ -14,4 +14,4 @@ const Color kPreviewForegroundEmphasis = Color(0xFFFFFFFF);
 ///
 /// Used to position the [ControlPanel] immediately below the badge so they
 /// read as one connected surface.
-const double kControlBadgeHeight = 25;
+const double kControlBadgeHeight = 24 + 4;

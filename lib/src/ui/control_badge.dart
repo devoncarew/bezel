@@ -90,7 +90,7 @@ class _ControlBadgeState extends State<ControlBadge>
                       left: 8,
                       right: 6,
                       top: 4,
-                      bottom: 5,
+                      bottom: 6,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
