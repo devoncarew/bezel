@@ -28,16 +28,16 @@ font hinting fidelity are out of scope.
 possible. Spoofing happens below the framework via a custom binding, not by injecting wrapper
 widgets that can subtly affect layout.
 
-**2. Minimal chrome.** The UI surface is a small floating toolbar at the bottom of the
-window. No device case rendering, no drawers, no settings panels, no plugin slots. Everything
-non-essential is behind a keyboard shortcut or omitted entirely.
+**2. Minimal chrome.** The UI surface is a small badge and slide-out panel anchored to the
+top-right corner. No device case rendering, no plugin slots. Everything non-essential is
+behind a keyboard shortcut or omitted entirely.
 
 **3. Sensible defaults, no configuration required.** Drop in two lines — a binding initializer
 and a `runApp` wrapper call — and get a working preview. Device selection, window sizing, and
 orientation are all interactive at runtime.
 
-**4. Desktop-native feel.** On macOS, controls live in the menu bar. Keyboard shortcuts follow
-platform conventions. Window management uses the OS window APIs properly.
+**4. Desktop-native feel.** Keyboard shortcuts follow platform conventions. Window management
+uses the OS window APIs properly.
 
 ---
 
@@ -124,10 +124,8 @@ When the user selects a device or toggles orientation, the window is resized to 
 emulated device at 90% of its logical pixel dimensions:
 
 1. Compute the target emulated area: `emulatedLogicalSize × 0.9`.
-2. Compute the full window height: emulated height + toolbar area
-   (`kPreviewSpacing + kToolbarHeight + kPreviewPadding`).
-3. If the window height would exceed 90% of the screen height, scale down proportionally
-   to fit.
+2. Window size = emulated size + title bar height (no bottom chrome).
+3. If the window would exceed 90% of the screen height, scale down proportionally to fit.
 4. If the computed window position would place part of it off the right edge or bottom of
    the screen, reposition the window to stay fully visible.
 
@@ -136,7 +134,7 @@ emulated device at 90% of its logical pixel dimensions:
 ```
 [device selected or orientation toggled]
         ↓
-compute target window size (emulated logical size × 0.9 + toolbar height)
+compute target window size (emulated logical size × 0.9 + title bar height)
         ↓
 windowManager.setSize(targetLogicalSize)
         ↓                                     ← also fires on manual resize
@@ -152,9 +150,9 @@ Flutter re-lays out app at emulatedLogicalSize with updated DPR
 **Manual resize behavior:** when the user drags the window to a different size, the emulated
 logical dimensions remain fixed. The emulated content scales uniformly to fill as much of
 the available space as possible while maintaining the correct aspect ratio. Letterboxing
-(the background color) appears on the dimension that doesn't fill. The toolbar remains at
-the bottom of the window. The preview does **not** reflow the app into the new window
-dimensions — that would break the "I'm emulating this specific device" premise.
+(the background color) appears on the dimension that doesn't fill. The preview does **not**
+reflow the app into the new window dimensions — that would break the "I'm emulating this
+specific device" premise.
 
 ### Device Profile Database
 
@@ -177,8 +175,8 @@ class DeviceProfile {
   final Size logicalSize;             // portrait logical pixels
   final EdgeInsets safeAreaPortrait;
   final EdgeInsets safeAreaLandscape;
-  final double screenCornerRadius;    // logical pixels; 0 = square corners
-  final ScreenCutout cutout;          // camera cutout geometry
+  final ScreenBorder screenBorder;    // screen corner shape (circular or squircle)
+  final ScreenCutout cutout;          // camera cutout geometry (portrait)
   final bool tablet;
   final String? description;          // short proxy-group description
 }
@@ -202,7 +200,9 @@ top-left corner of the screen area (not the outer device frame). This makes the 
 directly comparable to widget positions in the app.
 
 ```dart
-sealed class ScreenCutout { ... }
+sealed class ScreenCutout {
+  Path buildPath(Rect screenRect);   // portrait clip path
+}
 
 final class NoCutout extends ScreenCutout { ... }
   // Large-bezel devices: iPhone SE, iPads.
@@ -211,7 +211,7 @@ final class NotchCutout extends ScreenCutout {
   final Size size;
   final double topOffset;   // Usually 0 (flush to top edge).
 }
-  // Wide notch: iPhone X–14, some Androids.
+  // Wide notch: some Androids.
 
 final class DynamicIslandCutout extends ScreenCutout {
   final Size size;
@@ -226,24 +226,35 @@ final class PunchHoleCutout extends ScreenCutout {
 }
   // Small circular hole: Pixel, Galaxy S series.
 
-final class SideCutout extends ScreenCutout {
-  final Size size;
-  final double centerOffset;
-  final double edgeOffset;
+final class TeardropCutout extends ScreenCutout {
+  final double width, height;
+  final double bottomRadius, sideRadius;
 }
-  // Left-edge cutout produced by landscape rotation; not set directly.
+  // Teardrop / Infinity-U notch: Samsung Galaxy A-series.
+
+final class PathCutout extends ScreenCutout {
+  final double mediaBoxWidth, mediaBoxHeight;
+  final List<PathOp> ops;
+}
+  // Bézier path from iOS Simulator sensor-bar PDF: iPhone 14 notch.
 ```
+
+Each cutout subclass implements `buildPath()` to produce its portrait clip path. The
+screen clip painter handles landscape by applying a single 90-degree rotation transform
+to the portrait path — so cutout subclasses only need to know about their portrait
+geometry. This preserves full shape fidelity (Bézier curves, teardrop ears, etc.) in
+both orientations.
 
 The screen clip painter uses the cutout geometry in two ways:
 
 1. **Clip path** — the cutout shape is subtracted from the screen rect using
-   `canvas.clipPath`, so the app's own content is physically obscured by the cutout area
-   rather than just overlaid. This ensures background colors and images interact with the
-   cutout shape honestly.
+   `Path.combine(PathOperation.difference, ...)`, so the app's own content is physically
+   obscured by the cutout area rather than just overlaid. This ensures background colors
+   and images interact with the cutout shape honestly.
 2. **Black fill** — the cutout region is filled with black, giving it the appearance of a
    physical camera housing or sensor bar.
 
-The screen is also clipped at rounded corners using the profile's `screenCornerRadius`,
+The screen is also clipped at rounded corners using the profile's `screenBorder`,
 so the background color shows through where a real device's screen would end.
 
 Cutout dimensions are approximate logical-pixel values. For Android (Pixel) devices,
@@ -255,26 +266,22 @@ profile in `device_database.dart`.
 ### UI Components
 
 **Screen Clip Widget** — clips the app content to the device's screen shape: rounded
-corners (using `screenCornerRadius`) and cutout regions. Cutouts are filled with black.
+corners (using `screenBorder`) and cutout regions. Cutouts are filled with black.
 No decorative device body or bezels are rendered — the emulated content fills the available
 area directly, with the preview background color visible through clipped corners.
 
-**Preview Toolbar** — a compact floating pill widget anchored to the bottom-center of the
-window, below the emulated content area. Contains:
+**Control Badge** — a semi-transparent inverted-tab widget anchored flush to the top-right
+corner, displaying the active device name and a chevron. Tapping toggles the control panel.
+Stays visible (dimmed) in passthrough mode so users can return to preview without a
+keyboard shortcut.
 
-- Device name + chevron → opens device picker
-- Orientation toggle icon button
-- Passthrough mode toggle (hides the device frame entirely)
+**Control Panel** — a constant-width drawer that slides in from the right beneath the badge.
+Contains an action row (title + orientation toggle), a segmented button for platform tabs
+(iOS / Android / Tablets), a scrollable device list, and a footer with keyboard shortcut
+buttons. Tapping outside the card dismisses it.
 
-The toolbar is toggled with `Ctrl+\` (or `Cmd+\` on macOS). When hidden, only the
-keyboard shortcut remains.
-
-**Device Picker** — a lightweight overlay card with three tabs (iOS, Android, Tablets)
-listing available profiles. Opens to the tab of the currently active device. Tapping
-outside the card or selecting a device closes it.
-
-**macOS Menu Bar** — on macOS, a `PlatformMenuBar` exposes device selection and orientation
-toggle as native menu items, making the floating toolbar optional.
+Keyboard shortcuts: `Cmd/Ctrl+D` toggle picker, `Cmd/Ctrl+L` toggle orientation,
+`Cmd/Ctrl+]` next device, `Cmd/Ctrl+[` previous device.
 
 ### Persistence
 
@@ -286,13 +293,6 @@ launch:
 
 Persistence failures are silently ignored — it is a convenience feature, not a correctness
 requirement.
-
-### Hot Reassemble
-
-A keyboard shortcut (`Ctrl+R` / `Cmd+R`) calls `BindingBase.reassembleApplication()`. This
-is the in-process rebuild — equivalent to the widget rebuild phase of hot reload. It picks
-up changes to `StatelessWidget.build`, theme data, and similar, without requiring Dart
-source recompilation.
 
 ---
 
@@ -326,6 +326,7 @@ lib/
       preview_flutter_view.dart
     devices/
       device_profile.dart
+      screen_border.dart    # ScreenBorder sealed class (circular / squircle)
       screen_cutout.dart    # ScreenCutout sealed class hierarchy
       device_database.dart
     frame/
@@ -334,12 +335,10 @@ lib/
     persistence/
       device_persistence.dart   # saves/loads last-selected device ID
     ui/
-      common.dart               # shared widgets (RaisedSurface neumorphic container)
-      preview_overlay.dart      # orchestrates device clip + toolbar + picker
-      preview_toolbar.dart
-      device_picker.dart
+      control_badge.dart        # top-right badge showing active device name
+      control_panel.dart        # slide-out device picker and shortcuts panel
+      preview_overlay.dart      # orchestrates device clip + badge + panel
       preview_shortcuts.dart    # keyboard shortcut bindings
-      macos_menu.dart           # PlatformMenuBar for macOS
     window/
       window_sizing_service.dart
       window_manager_sizing_service.dart

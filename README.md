@@ -19,7 +19,7 @@ Add `flight_check` as a regular dependency:
 flutter pub add flight_check
 ```
 
-In your `main.dart`, call `FlightCheck.configure()` (__before__ `runApp`):
+In your `main.dart`, call `FlightCheck.configure()` (_before_ `runApp`):
 
 ```dart
 import 'package:flight_check/flight_check.dart';

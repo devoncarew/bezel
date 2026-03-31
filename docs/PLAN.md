@@ -342,8 +342,10 @@ device) and added `cycleDevice(int delta)` to `PreviewController`.
 
 + Add iPhone 17 Pro device profile (402 × 874) (devoncarew/flight_check#59)
 + Add iPhone 17 Air device profile (420 × 912) (devoncarew/flight_check#60)
-+ The notch for the iPhone 14 doesn't render correctly in landscape mode.
-+ The notch for the Samsung A15 doesn't render correctly in landscape mode.
++ Refactored landscape cutout rendering: each `ScreenCutout` now owns its
+  portrait `buildPath()`, and the painter applies a single rotation transform
+  for landscape — fixing iPhone 14 and Samsung A15 landscape notch rendering
+  and eliminating the lossy `SideCutout` conversion.
 - Add Samsung Galaxy S25 device profile (devoncarew/flight_check#62)
 - Add Samsung Galaxy A55 device profile (devoncarew/flight_check#61)
 - Consider supporting a locale override.
