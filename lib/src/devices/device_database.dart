@@ -47,6 +47,7 @@ final List<DeviceProfile> kDeviceProfiles = [
   pixel_10,
   pixel_10_pro,
   samsung_galaxy_a15,
+  samsung_galaxy_a16,
   samsung_galaxy_a55,
   samsung_galaxy_a56,
   samsung_galaxy_s25,
@@ -424,6 +425,33 @@ final samsung_galaxy_a15 = DeviceProfile(
     sideRadius: 13,
   ),
   description: 'Budget Samsung Infinity-U notch, 411 × 892 — covers A15, A25',
+);
+
+// Samsung Galaxy A16 (SM-A165F/SM-A166B, released late 2024).
+// Same 1080×2340px panel as A15; DPR 2.625. Logical size: 411×892dp.
+// Corner radius: ~38dp — same panel as A15 (community approximation).
+// Notch: Infinity-U teardrop, slightly shallower than A15.
+//   width 44dp, height 28dp (1-2dp less than A15), bottomRadius 22dp,
+//   sideRadius 13dp (community approximation).
+// Safe area portrait: ~30dp (slightly lower than A15's 32dp to match shallower notch).
+// Safe area landscape: teardrop rotates to left edge; left ≈ 30dp.
+// Note: A16 receives 6 years of OS updates — a long-lived testing target.
+final samsung_galaxy_a16 = DeviceProfile(
+  id: 'samsung_galaxy_a16',
+  name: 'Samsung Galaxy A16',
+  platform: DevicePlatform.android,
+  logicalSize: const Size(411, 892),
+  safeAreaPortrait: const EdgeInsets.only(top: 30, bottom: 24),
+  safeAreaLandscape: const EdgeInsets.only(left: 30, bottom: 24),
+  screenBorder: const CircularBorder(38),
+  cutout: const TeardropCutout(
+    width: 44,
+    height: 28,
+    bottomRadius: 22,
+    sideRadius: 13,
+  ),
+  description:
+      'Budget Samsung Infinity-U notch, 411 × 892 — covers A06, A16, M16',
 );
 
 // Samsung Galaxy A55 (SM-A556B, released Mar 2024).
