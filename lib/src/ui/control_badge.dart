@@ -75,54 +75,71 @@ class _ControlBadgeState extends State<ControlBadge>
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
             onTap: widget.controller.toggleDevicePicker,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(10),
-              ),
-              child: AnimatedBuilder(
-                animation: _anim,
-                builder: (context, _) => ColoredBox(
+            child: AnimatedBuilder(
+              animation: _anim,
+              builder: (context, _) => Container(
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
                   color: kPreviewBackground.withValues(
                     alpha: dimmed ? 0.4 : _bgAlpha.value,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      left: 8,
-                      right: 6,
-                      top: 4,
-                      bottom: 6,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          widget.controller.activeProfile.name,
-                          style: TextStyle(
-                            color: kPreviewForeground.withValues(
-                              alpha: foregroundAlpha,
-                            ),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            decoration: TextDecoration.none,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        RotationTransition(
-                          turns: Tween<double>(
-                            begin: 0.0,
-                            end: 0.5,
-                          ).animate(_chevron),
-                          child: Icon(
-                            Icons.expand_more,
-                            size: 14,
-                            color: kPreviewForeground.withValues(
-                              alpha: foregroundAlpha,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
                   ),
+                  border: Border.all(
+                    color: kPreviewForeground.withValues(alpha: 0.15),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.35),
+                      blurRadius: 8,
+                      offset: const Offset(-2, 3),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.only(
+                  left: 8,
+                  right: 6,
+                  top: 5,
+                  bottom: 7,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.phone_android,
+                      size: 13,
+                      color: kPreviewForeground.withValues(
+                        alpha: foregroundAlpha,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      widget.controller.activeProfile.name,
+                      style: TextStyle(
+                        color: kPreviewForeground.withValues(
+                          alpha: foregroundAlpha,
+                        ),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    RotationTransition(
+                      turns: Tween<double>(
+                        begin: 0.0,
+                        end: 0.5,
+                      ).animate(_chevron),
+                      child: Icon(
+                        Icons.expand_more,
+                        size: 14,
+                        color: kPreviewForeground.withValues(
+                          alpha: foregroundAlpha,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -115,20 +115,20 @@ class _ControlPanelState extends State<ControlPanel>
           ),
 
           // Panel card anchored below the badge, slides in from the right.
-          // ClipRect prevents the card from being visible while off-screen.
+          // No ClipRect needed — the Stack fills the window so the panel is
+          // naturally clipped at the window edge during the slide animation,
+          // and removing ClipRect allows the drop shadow to render correctly.
           Positioned(
             top: kControlBadgeHeight,
             right: 0,
-            child: ClipRect(
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: const Offset(1, 0),
-                  end: Offset.zero,
-                ).animate(_slideAnim),
-                child: SizedBox(
-                  height: math.min(maxHeight, _kPanelHeight),
-                  child: _buildContents(context),
-                ),
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1, 0),
+                end: Offset.zero,
+              ).animate(_slideAnim),
+              child: SizedBox(
+                height: math.min(maxHeight, _kPanelHeight),
+                child: _buildContents(context),
               ),
             ),
           ),
@@ -156,79 +156,109 @@ class _ControlPanelState extends State<ControlPanel>
           DefaultMaterialLocalizations.delegate,
           DefaultWidgetsLocalizations.delegate,
         ],
-        child: Material(
-          color: kPreviewBackground,
-          borderRadius: _kPanelBorderRadius,
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              _ActionRow(controller: widget.controller),
-              const Divider(height: 1, thickness: 1, color: Color(0x33FFFFFF)),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _createSegmentedButton(),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: _kPanelBorderRadius,
+            border: Border.all(
+              color: kPreviewForeground.withValues(alpha: 0.15),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.35),
+                blurRadius: 8,
+                offset: const Offset(-2, 3),
               ),
-              const SizedBox(height: 4),
-              const Divider(height: 1, thickness: 1, color: Color(0x33FFFFFF)),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
+            ],
+          ),
+          child: Material(
+            color: kPreviewBackground,
+            borderRadius: _kPanelBorderRadius,
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: [
+                _ActionRow(controller: widget.controller),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Color(0x33FFFFFF),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _createSegmentedButton(),
+                ),
+                const SizedBox(height: 4),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Color(0x33FFFFFF),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    child: IndexedStack(
+                      index: _selectedTab,
+                      alignment: AlignmentDirectional.topStart,
+                      children: [
+                        _DeviceList(
+                          profiles: iOS,
+                          controller: widget.controller,
+                        ),
+                        _DeviceList(
+                          profiles: android,
+                          controller: widget.controller,
+                        ),
+                        _DeviceList(
+                          profiles: tablets,
+                          controller: widget.controller,
+                        ),
+                      ],
+                    ),
                   ),
-                  child: IndexedStack(
-                    index: _selectedTab,
-                    alignment: AlignmentDirectional.topStart,
+                ),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Color(0x33FFFFFF),
+                ),
+                // Footer area.
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 8,
+                    bottom: 12,
+                    left: 8,
+                    right: 8,
+                  ),
+                  child: Row(
                     children: [
-                      _DeviceList(profiles: iOS, controller: widget.controller),
-                      _DeviceList(
-                        profiles: android,
-                        controller: widget.controller,
+                      _ShortcutButton(
+                        icon: Icons.devices,
+                        binding: '${Platform.isMacOS ? '⌘' : '^'}D',
+                        tooltip: 'Toggle device picker',
+                        onTap: widget.controller.toggleDevicePicker,
                       ),
-                      _DeviceList(
-                        profiles: tablets,
-                        controller: widget.controller,
+                      const Expanded(child: SizedBox(width: 16)),
+                      _ShortcutButton(
+                        icon: Icons.skip_previous,
+                        binding: '${Platform.isMacOS ? '⌘' : '^'}[',
+                        tooltip: 'Previous device',
+                        onTap: () => widget.controller.cycleDevice(-1),
+                      ),
+                      const SizedBox(width: 8),
+                      _ShortcutButton(
+                        icon: Icons.skip_next,
+                        binding: '${Platform.isMacOS ? '⌘' : '^'}]',
+                        tooltip: 'Next device',
+                        onTap: () => widget.controller.cycleDevice(1),
                       ),
                     ],
                   ),
                 ),
-              ),
-              const Divider(height: 1, thickness: 1, color: Color(0x33FFFFFF)),
-              // Footer area.
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 8,
-                  bottom: 12,
-                  left: 8,
-                  right: 8,
-                ),
-                child: Row(
-                  children: [
-                    _ShortcutButton(
-                      icon: Icons.devices,
-                      binding: '${Platform.isMacOS ? '⌘' : '^'}D',
-                      tooltip: 'Toggle device picker',
-                      onTap: widget.controller.toggleDevicePicker,
-                    ),
-                    const Expanded(child: SizedBox(width: 16)),
-                    _ShortcutButton(
-                      icon: Icons.skip_previous,
-                      binding: '${Platform.isMacOS ? '⌘' : '^'}[',
-                      tooltip: 'Previous device',
-                      onTap: () => widget.controller.cycleDevice(-1),
-                    ),
-                    const SizedBox(width: 8),
-                    _ShortcutButton(
-                      icon: Icons.skip_next,
-                      binding: '${Platform.isMacOS ? '⌘' : '^'}]',
-                      tooltip: 'Next device',
-                      onTap: () => widget.controller.cycleDevice(1),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
