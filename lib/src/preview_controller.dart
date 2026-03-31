@@ -90,4 +90,13 @@ class PreviewController extends ChangeNotifier {
     _devicePickerVisible = !_devicePickerVisible;
     notifyListeners();
   }
+
+  /// Advances the active profile by [delta] steps through [DeviceDatabase.all],
+  /// wrapping around at both ends.
+  void cycleDevice(int delta) {
+    final all = DeviceDatabase.all;
+    final current = all.indexOf(_activeProfile);
+    final next = (current + delta) % all.length;
+    setProfile(all[next]);
+  }
 }

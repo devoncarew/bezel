@@ -1,22 +1,35 @@
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, TargetPlatform;
+import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter/widgets.dart';
 
 import '../preview_controller.dart';
 
 // ── Intents ───────────────────────────────────────────────────────────────────
 
-// /// Fired by `Ctrl+L` / `Cmd+L` — toggles portrait ↔ landscape.
-// class ToggleOrientationIntent extends Intent {
-//   const ToggleOrientationIntent();
-// }
+/// Fired by `Cmd+D` / `Ctrl+D` — toggles the device picker panel.
+class ToggleDevicePickerIntent extends Intent {
+  const ToggleDevicePickerIntent();
+}
 
-// /// Fired by `Ctrl+R` / `Cmd+R` — reassembles the application.
-// class ReloadIntent extends Intent {
-//   const ReloadIntent();
-// }
+/// Fired by `Cmd+L` / `Ctrl+L` — toggles portrait ↔ landscape.
+class ToggleOrientationIntent extends Intent {
+  const ToggleOrientationIntent();
+}
+
+/// Fired by `Cmd+]` / `Ctrl+]` — advances to the next device.
+class NextDeviceIntent extends Intent {
+  const NextDeviceIntent();
+}
+
+/// Fired by `Cmd+[` / `Ctrl+[` — goes back to the previous device.
+class PreviousDeviceIntent extends Intent {
+  const PreviousDeviceIntent();
+}
 
 // ── Widget ────────────────────────────────────────────────────────────────────
 
-/// Wraps [child] in a [Shortcuts] + [Actions] pair that handles the three
+/// Wraps [child] in a [Shortcuts] + [Actions] pair that handles the four
 /// preview keyboard shortcuts.
 ///
 /// Uses `meta` (⌘) on macOS and `control` on all other platforms.
@@ -32,29 +45,45 @@ class PreviewShortcuts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final useMeta = defaultTargetPlatform == TargetPlatform.macOS;
+    final useMeta = defaultTargetPlatform == TargetPlatform.macOS;
 
     return Shortcuts(
       shortcuts: {
-        // SingleActivator(
-        //   LogicalKeyboardKey.keyL,
-        //   meta: useMeta,
-        //   control: !useMeta,
-        // ): const ToggleOrientationIntent(),
-        // SingleActivator(
-        //   LogicalKeyboardKey.keyR,
-        //   meta: useMeta,
-        //   control: !useMeta,
-        // ): const ReloadIntent(),
+        SingleActivator(
+          LogicalKeyboardKey.keyD,
+          meta: useMeta,
+          control: !useMeta,
+        ): const ToggleDevicePickerIntent(),
+        SingleActivator(
+          LogicalKeyboardKey.keyL,
+          meta: useMeta,
+          control: !useMeta,
+        ): const ToggleOrientationIntent(),
+        SingleActivator(
+          LogicalKeyboardKey.bracketRight,
+          meta: useMeta,
+          control: !useMeta,
+        ): const NextDeviceIntent(),
+        SingleActivator(
+          LogicalKeyboardKey.bracketLeft,
+          meta: useMeta,
+          control: !useMeta,
+        ): const PreviousDeviceIntent(),
       },
       child: Actions(
         actions: {
-          // ToggleOrientationIntent: CallbackAction<ToggleOrientationIntent>(
-          //   onInvoke: (_) => controller.toggleOrientation(),
-          // ),
-          // ReloadIntent: CallbackAction<ReloadIntent>(
-          //   onInvoke: (_) => WidgetsBinding.instance.reassembleApplication(),
-          // ),
+          ToggleDevicePickerIntent: CallbackAction<ToggleDevicePickerIntent>(
+            onInvoke: (_) => controller.toggleDevicePicker(),
+          ),
+          ToggleOrientationIntent: CallbackAction<ToggleOrientationIntent>(
+            onInvoke: (_) => controller.toggleOrientation(),
+          ),
+          NextDeviceIntent: CallbackAction<NextDeviceIntent>(
+            onInvoke: (_) => controller.cycleDevice(1),
+          ),
+          PreviousDeviceIntent: CallbackAction<PreviousDeviceIntent>(
+            onInvoke: (_) => controller.cycleDevice(-1),
+          ),
         },
         child: child,
       ),

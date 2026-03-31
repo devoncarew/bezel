@@ -305,96 +305,38 @@ independent formulas must stay in sync.
 
 ### Step 6.1 — Remove macOS menu bar integration [done]
 
-Delete `MacosPreviewMenu` and its file (`lib/src/ui/macos_menu.dart`). Remove
-the `MacosPreviewMenu` wrapper from `PreviewOverlay.build`. The native menu bar
-is not discoverable and will be replaced by in-app controls.
+Deleted `MacosPreviewMenu` and its file, removing the native macOS menu bar
+integration that was not discoverable and added maintenance complexity.
 
 ### Step 6.2 — Control badge widget [done]
 
-Create `lib/src/ui/control_badge.dart` — a small semi-transparent widget
-anchored to the top-right corner of the window.
-
-**Visual design:**
-- Extends down from the top edge and in from the right edge — an "inverted tab"
-  with one rounded corner (bottom-left). No other rounded corners.
-- Semi-transparent background (same hue as `kPreviewBackground`, ~70% opacity).
-- Displays the current device name (e.g. "iPhone 17") in a compact label.
-- Tap toggles the device picker panel open/closed.
-
-**Passthrough mode:** badge stays visible but dims slightly (lower opacity or
-smaller font) so users can return to preview mode without knowing a shortcut.
-
-Wire it into `PreviewOverlay` as a `Positioned` widget in the existing `Stack`.
-At this point both the old toolbar and the new badge are visible — that is
-intentional so the overlay remains fully functional during the transition.
+Created `ControlBadge` — a semi-transparent inverted-tab widget anchored
+flush to the top-right corner displaying the active device name; stays visible
+(dimmed) in passthrough mode so users can return to preview without a shortcut.
 
 ### Step 6.3 — Anchored picker panel and action bar [done]
 
-Redesign the device picker to slide down from the top-right corner, physically
-connected to the control badge.
-
-**Panel contents (top to bottom):**
-1. **Action icon row** — orientation toggle, passthrough toggle, keyboard
-   shortcuts icon. Compact row of `IconButton`s with tooltips.
-2. **Keyboard shortcuts popover** — tapping the keyboard icon reveals a list of
-   active key bindings (inline expand or small overlay). Aids discoverability.
-3. **Tabbed device list** — reuse the existing iOS / Android / Tablets tab
-   structure and `_DeviceList` / `_DeviceItem` widgets.
-
-**Animation:** slides down from beneath the badge (origin at top-right), fading
-in. Reverse to dismiss. Tap-outside-to-dismiss backdrop stays.
-
-The panel shares the same semi-transparent background as the badge so they read
-as one connected surface.
+Created `ControlPanel` — a constant-width drawer that slides in from the right
+beneath the badge, containing an action icon row (orientation, passthrough,
+keyboard shortcuts) and a tabbed device list (iOS / Android / Tablets).
 
 ### Step 6.4 — Remove old toolbar and neumorphic surface; edge-to-edge layout [done]
 
-- Delete `PreviewToolbar` (`lib/src/ui/preview_toolbar.dart`).
-- Delete `RaisedSurface` (`lib/src/ui/common.dart`) or hollow it out if other
-  code still references it.
-- In `PreviewOverlay`: remove the bottom `Column` children (`kPreviewSpacing`
-  spacer, `SizedBox(height: kToolbarHeight)`, `kPreviewPadding` spacer). The
-  `Expanded` child with the `LayoutBuilder` becomes the only column child —
-  the emulator area fills the full content area.
-- Drop the `RaisedSurface` wrapper around the emulated device `SizedBox`.
-- Keep `kPreviewBackground` as the window background (visible behind rounded
-  device corners and cutout regions).
-- Remove or zero-out `kPreviewSpacing`, `kToolbarHeight`, `kPreviewPadding`
-  from `theme.dart`. If any of these constants are still referenced elsewhere,
-  remove those references first.
+Deleted `PreviewToolbar` and `RaisedSurface`; the emulator area now fills the
+full window content area with no bottom chrome, and unused theme constants were
+removed from `theme.dart`.
 
 ### Step 6.5 — Simplify window sizing and DPR calculation [done]
 
-With no bottom chrome, both formulas collapse:
+With no bottom chrome, window height reduces to `target.height + titleBarHeight`
+and DPR to `min(physW/emW, physH/emH)`, eliminating the shared `bottomControlsHeight`
+constant that had to stay in sync between the two formulas.
 
-**`WindowManagerSizingService.applyProfile`:**
-- Window height = `target.height + titleBarHeight` (no `bottomControlsHeight`).
-- Clamping: if window exceeds screen, scale down proportionally; window height
-  = `clampedDeviceHeight + titleBarHeight`.
-- Remove all references to `bottomControlsHeight`.
+### Step 6.6 — Keyboard shortcuts [done]
 
-**`PreviewFlutterView.devicePixelRatio`:**
-- `DPR = min(physicalWidth / emulatedWidth, physicalHeight / emulatedHeight)`.
-- No chrome subtraction — the real physical size *is* the emulator area.
-
-Update `computeTargetSize` and its tests. The two formulas are now trivially
-consistent because there is no shared constant that must match.
-
-### Step 6.6 — Keyboard shortcuts
-
-Re-populate `PreviewShortcuts` with:
-
-| Shortcut | Action |
-|---|---|
-| `Cmd+D` / `Ctrl+D` | Toggle device picker |
-| `Cmd+L` / `Ctrl+L` | Toggle orientation |
-| `Cmd+]` / `Ctrl+]` | Next device |
-| `Cmd+[` / `Ctrl+[` | Previous device |
-
-Add `cycleDevice(int delta)` to `PreviewController` — advances through
-`DeviceDatabase.all` by `delta` (+1 or −1), wrapping around.
-
-Surface the shortcut list in the keyboard shortcuts popover from step 6.3.
+Re-populated `PreviewShortcuts` with four shortcuts (`Cmd/Ctrl+D` toggle picker,
+`Cmd/Ctrl+L` toggle orientation, `Cmd/Ctrl+]` next device, `Cmd/Ctrl+[` previous
+device) and added `cycleDevice(int delta)` to `PreviewController`.
 
 ## Phase 7 — General polish
 
