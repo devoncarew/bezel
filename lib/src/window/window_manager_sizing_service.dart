@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart' show Offset, WidgetsBinding;
 import 'package:window_manager/window_manager.dart';
 
 import '../devices/device_profile.dart';
-import '../theme.dart';
 import 'window_sizing_service.dart';
 
 /// Minimum window dimensions — prevents the window from shrinking to a
@@ -37,23 +36,21 @@ class WindowManagerSizingService implements WindowSizingService {
   ) async {
     await _ready;
 
+    // window_manager.setSize sets the full window height (title bar + content).
+    // The emulator area is now edge-to-edge with the content area, so only the
+    // title bar needs to be added.
     final titleBarHeight = await windowManager.getTitleBarHeight();
-    final bottomControlsHeight =
-        kPreviewSpacing + kToolbarHeight + kPreviewPadding;
-    // The window size includes the title bar; account for it and the bottom
-    // toolbar area.
-    final heightAdjust = titleBarHeight + bottomControlsHeight;
 
     final target = computeTargetSize(profile, orientation);
     final screen = _screenLogicalSize();
     final maxHeight = screen.height * 0.9;
 
-    var actual = ui.Size(target.width, target.height + heightAdjust);
+    var actual = ui.Size(target.width, target.height + titleBarHeight);
     if (actual.height > maxHeight) {
-      final availableDeviceHeight = maxHeight.truncateToDouble() - heightAdjust;
+      final availableDeviceHeight = maxHeight - titleBarHeight;
       actual = ui.Size(
         target.width * availableDeviceHeight / target.height,
-        availableDeviceHeight + heightAdjust,
+        availableDeviceHeight + titleBarHeight,
       );
     }
 

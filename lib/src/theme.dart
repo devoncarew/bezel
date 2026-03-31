@@ -10,26 +10,8 @@ const Color kPreviewForeground = Color(0xFFDDDDDD);
 /// emphasis.
 const Color kPreviewForegroundEmphasis = Color(0xFFFFFFFF);
 
-/// Dark shadow colour for neumorphic raised surfaces (bottom-right offset).
-const Color kPreviewShadowDark = Color(0xFF46464E);
-
-/// Light shadow colour for neumorphic raised surfaces (top-left offset).
-const Color kPreviewShadowLight = Color(0xFF7A7A84);
-
-/// Border colour drawn between the surface contents and the drop shadow.
-const Color kPreviewBorder = Color.fromARGB(255, 122, 122, 140);
-
 /// Height of the [ControlBadge] widget (logical pixels).
 ///
 /// Used to position the [ControlPanel] immediately below the badge so they
 /// read as one connected surface.
 const double kControlBadgeHeight = 25.0;
-
-/// Padding (logical pixels) between the device previs and the toolbar row.
-const double kPreviewSpacing = 10;
-
-/// Reserved height for the toolbar row below the device frame.
-const double kToolbarHeight = 32;
-
-/// Padding (logical pixels) below the toolbar row.
-const double kPreviewPadding = 10;

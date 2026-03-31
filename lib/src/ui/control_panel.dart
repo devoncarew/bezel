@@ -255,7 +255,6 @@ class _ActionRow extends StatelessWidget {
               icon: const Icon(Icons.screen_rotation),
               color: kPreviewForeground,
               iconSize: 16,
-              tooltip: 'Toggle orientation',
               onPressed: controller.toggleOrientation,
             ),
             IconButton(
@@ -268,9 +267,6 @@ class _ActionRow extends StatelessWidget {
                   ? kPreviewForegroundEmphasis
                   : kPreviewForeground,
               iconSize: 16,
-              tooltip: controller.passthroughMode
-                  ? 'Exit passthrough mode'
-                  : 'Enter passthrough mode',
               onPressed: controller.togglePassthrough,
             ),
             const Spacer(),
@@ -280,7 +276,6 @@ class _ActionRow extends StatelessWidget {
                   ? kPreviewForegroundEmphasis
                   : kPreviewForeground,
               iconSize: 16,
-              tooltip: 'Keyboard shortcuts',
               onPressed: onToggleShortcuts,
             ),
           ],
@@ -372,7 +367,6 @@ class _DeviceList extends StatelessWidget {
                 isActive: profile.id == controller.activeProfile.id,
                 onTap: () {
                   controller.setProfile(profile);
-                  controller.toggleDevicePicker();
                 },
               ),
           ],

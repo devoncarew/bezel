@@ -9,7 +9,6 @@ import 'package:flight_check/src/preview_controller.dart';
 import 'package:flight_check/src/ui/control_badge.dart';
 import 'package:flight_check/src/ui/control_panel.dart';
 import 'package:flight_check/src/ui/preview_overlay.dart';
-import 'package:flight_check/src/ui/preview_toolbar.dart';
 
 /// Wraps [child] in a [MaterialApp] so that [Tooltip] and other widgets that
 /// require an [Overlay] ancestor work inside widget tests.
@@ -129,7 +128,7 @@ void main() {
       expect(find.byType(ControlBadge), findsOneWidget);
     });
 
-    testWidgets('shows PreviewToolbar by default', (tester) async {
+    testWidgets('shows ScreenClipWidget in normal mode', (tester) async {
       await tester.pumpWidget(
         _wrap(
           PreviewOverlay(
@@ -139,7 +138,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(PreviewToolbar), findsOneWidget);
+      expect(find.byType(ScreenClipWidget), findsOneWidget);
     });
 
     testWidgets('passthrough mode shows child without device frame', (
@@ -161,9 +160,7 @@ void main() {
       expect(find.byType(ScreenClipWidget), findsNothing);
     });
 
-    testWidgets('passthrough mode shows the orientation icon as active', (
-      tester,
-    ) async {
+    testWidgets('passthrough mode hides ScreenClipWidget', (tester) async {
       controller.togglePassthrough();
 
       await tester.pumpWidget(
@@ -175,8 +172,7 @@ void main() {
         ),
       );
 
-      // In passthrough mode the overlay renders just the raw child — no toolbar.
-      expect(find.byType(PreviewToolbar), findsNothing);
+      expect(find.byType(ScreenClipWidget), findsNothing);
     });
 
     testWidgets('ControlPanel shown when devicePickerVisible is true', (
