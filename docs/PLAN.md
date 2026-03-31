@@ -342,8 +342,9 @@ device) and added `cycleDevice(int delta)` to `PreviewController`.
 
 + Add iPhone 17 Pro device profile (402 × 874) (devoncarew/flight_check#59)
 + Add iPhone 17 Air device profile (420 × 912) (devoncarew/flight_check#60)
++ The notch for the iPhone 14 doesn't render correctly in landscape mode.
++ The notch for the Samsung A15 doesn't render correctly in landscape mode.
 - Add Samsung Galaxy S25 device profile (devoncarew/flight_check#62)
 - Add Samsung Galaxy A55 device profile (devoncarew/flight_check#61)
-- Address the landscape issue with the iPhone 14 / Samsung A15.
 - Consider supporting a locale override.
 - Determine whether we need the pass-through mode.

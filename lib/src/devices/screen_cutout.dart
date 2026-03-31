@@ -1,25 +1,34 @@
-import 'dart:ui' show Size;
+import 'dart:ui' show Offset, Path, Radius, Rect, RRect, Size;
 
 /// Models the physical camera cutout geometry for a device screen.
 ///
 /// Cutout coordinates are expressed in logical pixels from the top-left corner
-/// of the screen area. Used by [ScreenClipPainter] to clip the camera housing
-/// region from the canvas.
+/// of the screen area in **portrait** orientation. Used by [ScreenClipPainter]
+/// to clip the camera housing region from the canvas.
+///
+/// Each subclass implements [buildPath] to produce the portrait clip path.
+/// Landscape rendering is handled by the painter, which applies a rotation
+/// transform to the portrait path — so cutout subclasses only need to know
+/// about their portrait geometry.
 sealed class ScreenCutout {
   const ScreenCutout();
 
-  /// Returns the cutout geometry appropriate for landscape orientation.
+  /// Builds the clip [Path] for this cutout in portrait orientation.
   ///
-  /// [portraitScreenSize] is the portrait logical screen size, used to compute
-  /// the cutout position after the screen is rotated. The default
-  /// implementation returns [this], which is correct for [NoCutout] and
-  /// [_SideCutout].
-  ScreenCutout rotatedForLandscape(Size portraitScreenSize) => this;
+  /// [screenRect] is the portrait screen rectangle (typically
+  /// `Offset.zero & portraitSize`). The returned path describes the region
+  /// that should be *subtracted* from the visible screen area.
+  ///
+  /// Returns an empty path for [NoCutout].
+  Path buildPath(Rect screenRect);
 }
 
 /// No cutout — large-bezel devices such as iPhone SE and iPads.
 final class NoCutout extends ScreenCutout {
   const NoCutout();
+
+  @override
+  Path buildPath(Rect screenRect) => Path();
 }
 
 /// Wide notch at the top center — older iPhones (X–14) and some Androids.
@@ -33,14 +42,19 @@ final class NotchCutout extends ScreenCutout {
   const NotchCutout({required this.size, this.topOffset = 0});
 
   @override
-  ScreenCutout rotatedForLandscape(Size portraitScreenSize) => SideCutout(
-    size: Size(size.height, size.width),
-    // The notch is horizontally centered in portrait; after rotation its
-    // portrait x-center (portrait width / 2) becomes the landscape y-center.
-    centerOffset: portraitScreenSize.width / 2,
-    edgeOffset: topOffset,
-    cornerRadius: 4,
-  );
+  Path buildPath(Rect screenRect) {
+    return Path()..addRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          screenRect.left + (screenRect.width - size.width) / 2,
+          screenRect.top + topOffset,
+          size.width,
+          size.height,
+        ),
+        const Radius.circular(4),
+      ),
+    );
+  }
 }
 
 /// Dynamic Island pill cutout — iPhone 15 and later.
@@ -54,15 +68,20 @@ final class DynamicIslandCutout extends ScreenCutout {
   const DynamicIslandCutout({required this.size, required this.topOffset});
 
   @override
-  ScreenCutout rotatedForLandscape(Size portraitScreenSize) => SideCutout(
-    size: Size(size.height, size.width),
-    // The DI is horizontally centered in portrait; after rotation its
-    // portrait x-center (portrait width / 2) becomes the landscape y-center.
-    centerOffset: portraitScreenSize.width / 2,
-    edgeOffset: topOffset,
-    // Rotated pill: short axis is now the width (size.height from portrait).
-    cornerRadius: size.height / 2,
-  );
+  Path buildPath(Rect screenRect) {
+    return Path()..addRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+          screenRect.left + (screenRect.width - size.width) / 2,
+          screenRect.top + topOffset,
+          size.width,
+          size.height,
+        ),
+        // Pill shape — fully rounded on the short axis.
+        Radius.circular(size.height / 2),
+      ),
+    );
+  }
 }
 
 /// Teardrop / Infinity-U notch — Samsung Galaxy A-series and similar Androids.
@@ -94,14 +113,44 @@ final class TeardropCutout extends ScreenCutout {
   });
 
   @override
-  ScreenCutout rotatedForLandscape(Size portraitScreenSize) => SideCutout(
-    // Portrait width ↔ landscape height, portrait height ↔ landscape width.
-    size: Size(height, width),
-    // The notch is centered on the portrait width; after rotation that
-    // x-centre becomes the landscape y-centre.
-    centerOffset: portraitScreenSize.width / 2,
-    cornerRadius: bottomRadius,
-  );
+  Path buildPath(Rect screenRect) {
+    final cx = screenRect.left + screenRect.width / 2;
+    final top = screenRect.top;
+    return Path()
+      // Left ear: concave arc from the outer top edge into the left wall.
+      ..moveTo(cx - width / 2 - sideRadius, top)
+      ..arcToPoint(
+        Offset(cx - width / 2, top + sideRadius),
+        radius: Radius.circular(sideRadius),
+        clockwise: true,
+      )
+      // Left straight side, down to where the bottom arc begins.
+      ..lineTo(cx - width / 2, top + height - bottomRadius)
+      // Bottom left corner.
+      ..arcToPoint(
+        Offset(cx - width / 2 + bottomRadius, top + height),
+        radius: Radius.circular(bottomRadius),
+        clockwise: false,
+      )
+      // Line across the bottom.
+      ..lineTo(cx + width / 2 - bottomRadius, top + height)
+      // Bottom right corner.
+      ..arcToPoint(
+        Offset(cx + width / 2, top + height - bottomRadius),
+        radius: Radius.circular(bottomRadius),
+        clockwise: false,
+      )
+      // Right straight side, back up to the ear.
+      ..lineTo(cx + width / 2, top + sideRadius)
+      // Right ear: symmetric concave arc back to the top edge.
+      ..arcToPoint(
+        Offset(cx + width / 2 + sideRadius, top),
+        radius: Radius.circular(sideRadius),
+        clockwise: true,
+      )
+      // Close across the top edge back to the start.
+      ..close();
+  }
 }
 
 /// Small circular punch-hole camera — Pixel, Galaxy S series.
@@ -124,20 +173,21 @@ final class PunchHoleCutout extends ScreenCutout {
   });
 
   @override
-  ScreenCutout rotatedForLandscape(Size portraitScreenSize) {
-    // When null, the hole is centered on the portrait width, which becomes the
-    // landscape height's center after rotation.
-    final cx = centerX ?? portraitScreenSize.width / 2;
-    return SideCutout(
-      size: Size(diameter, diameter),
-      centerOffset: cx,
-      edgeOffset: topOffset,
-      cornerRadius: diameter / 2,
+  Path buildPath(Rect screenRect) {
+    return Path()..addOval(
+      Rect.fromCenter(
+        center: Offset(
+          centerX != null ? screenRect.left + centerX! : screenRect.center.dx,
+          screenRect.top + topOffset,
+        ),
+        width: diameter,
+        height: diameter,
+      ),
     );
   }
 }
 
-/// A notch cutout described by Bézier path data from the iOS Simulator
+/// A notch cutout described by Bezier path data from the iOS Simulator
 /// sensor-bar PDF.
 ///
 /// The path is encoded as a list of PathOps in [ops].
@@ -151,7 +201,7 @@ final class PunchHoleCutout extends ScreenCutout {
 ///
 /// Coordinates are in **PDF convention**: y = 0 at the bottom of the
 /// MediaBox, y increases upward. The path is horizontally centered on the
-/// screen when rendered. [mediaBoxWidth] × [mediaBoxHeight] gives the
+/// screen when rendered. [mediaBoxWidth] x [mediaBoxHeight] gives the
 /// bounding area.
 ///
 /// See `tool/extract_simdevicetype.dart` for how this data is extracted.
@@ -173,49 +223,39 @@ final class PathCutout extends ScreenCutout {
   });
 
   @override
-  ScreenCutout rotatedForLandscape(Size portraitScreenSize) => SideCutout(
-    // The notch depth (mediaBoxHeight) becomes the side-cutout width;
-    // the notch width (mediaBoxWidth) becomes the side-cutout height.
-    size: Size(mediaBoxHeight, mediaBoxWidth),
-    // The notch is centered on the portrait width; after rotation that
-    // x-centre becomes the landscape y-centre.
-    centerOffset: portraitScreenSize.width / 2,
-    edgeOffset: 0,
-    // Use half of the notch depth as a circular approximation for the
-    // squircle corners of the rotated notch.
-    cornerRadius: mediaBoxHeight / 2,
-  );
-}
+  Path buildPath(Rect screenRect) {
+    // Horizontal offset to centre the MediaBox on the screen.
+    final offsetX = screenRect.left + (screenRect.width - mediaBoxWidth) / 2;
+    final offsetY = screenRect.top;
 
-/// A cutout on the left edge, produced by landscape rotation of a portrait
-/// cutout via [ScreenCutout.rotatedForLandscape].
-///
-/// Not typically instantiated directly — use [ScreenCutout.rotatedForLandscape]
-/// to obtain one.
-final class SideCutout extends ScreenCutout {
-  /// Width and height of the cutout bounding box, in logical pixels.
-  final Size size;
+    // Convert a PDF x coordinate to Flutter screen x.
+    double fx(double pdfX) => offsetX + pdfX;
+    // Convert a PDF y coordinate to Flutter screen y (flip axis).
+    double fy(double pdfY) => offsetY + mediaBoxHeight - pdfY;
 
-  /// Distance from the top of the screen to the center of the cutout,
-  /// in logical pixels.
-  final double centerOffset;
+    final path = Path();
 
-  /// Distance from the left edge of the screen area to the near side of the
-  /// cutout, in logical pixels.
-  final double edgeOffset;
-
-  /// Corner radius of the cutout shape, in logical pixels.
-  ///
-  /// Defaults to 4, which suits a notch. A Dynamic Island rotated to landscape
-  /// should use [size.width] / 2 to preserve the pill shape.
-  final double cornerRadius;
-
-  const SideCutout({
-    required this.size,
-    required this.centerOffset,
-    this.edgeOffset = 0,
-    this.cornerRadius = 4,
-  });
+    for (final op in ops) {
+      switch (op) {
+        case PathOpMoveTo():
+          path.moveTo(fx(op.x), fy(op.y));
+        case PathOpLineTo():
+          path.lineTo(fx(op.x), fy(op.y));
+        case PathOpCurveTo():
+          path.cubicTo(
+            fx(op.cp1x),
+            fy(op.cp1y),
+            fx(op.cp2x),
+            fy(op.cp2y),
+            fx(op.x),
+            fy(op.y),
+          );
+        case PathOpClose():
+          path.close();
+      }
+    }
+    return path;
+  }
 }
 
 sealed class PathOp {
