@@ -70,9 +70,9 @@ builds.
 
 ### Screenshots
 
-| iPhone 17 | Pixel 10 | Galaxy S24 |
+| Galaxy S24 | iPhone 17 | Pixel 10 |
 |:---------:|:--------:|:----------:|
-| ![iPhone 17](docs/images/iphone_17.png) | ![Pixel 10](docs/images/pixel_10.png) | ![Galaxy S24](docs/images/galaxy_s24.png) |
+| ![Galaxy S24](docs/images/galaxy_s24.png) | ![iPhone 17](docs/images/iphone_17.png) | ![Pixel 10](docs/images/pixel_10.png) |
 
 ## Calling WidgetsFlutterBinding.ensureInitialized()?
 
