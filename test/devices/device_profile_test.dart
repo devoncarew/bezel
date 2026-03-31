@@ -59,103 +59,63 @@ void main() {
     });
   });
 
-  group('DeviceProfile.cutoutForOrientation — NoCutout', () {
-    final profile = makeProfile(cutout: const NoCutout());
+  group('ScreenCutout.buildPath', () {
+    final screenRect = Offset.zero & portraitSize;
 
-    test('portrait returns NoCutout', () {
-      expect(
-        profile.cutoutForOrientation(DeviceOrientation.portrait),
-        isA<NoCutout>(),
-      );
+    test('NoCutout returns an empty path', () {
+      final path = const NoCutout().buildPath(screenRect);
+      expect(path.getBounds(), Rect.zero);
     });
 
-    test(
-      'landscape returns NoCutout unchanged (rotatedForLandscape is a no-op)',
-      () {
-        expect(
-          profile.cutoutForOrientation(DeviceOrientation.landscape),
-          isA<NoCutout>(),
-        );
-      },
-    );
-  });
-
-  group('DeviceProfile.cutoutForOrientation — PunchHoleCutout', () {
-    test('portrait returns the original PunchHoleCutout', () {
-      final profile = makeProfile(
-        cutout: const PunchHoleCutout(diameter: 11, topOffset: 13),
-      );
-      expect(
-        profile.cutoutForOrientation(DeviceOrientation.portrait),
-        isA<PunchHoleCutout>(),
-      );
+    test('PunchHoleCutout returns a non-empty circular path', () {
+      const cutout = PunchHoleCutout(diameter: 11, topOffset: 13);
+      final path = cutout.buildPath(screenRect);
+      final bounds = path.getBounds();
+      expect(bounds.width, closeTo(11, 0.1));
+      expect(bounds.height, closeTo(11, 0.1));
+      // Centered horizontally on the screen.
+      expect(bounds.center.dx, closeTo(portraitSize.width / 2, 0.1));
     });
 
-    test('landscape produces a different (rotated) cutout type', () {
-      final profile = makeProfile(
-        cutout: const PunchHoleCutout(diameter: 11, topOffset: 13),
-      );
-      final landscape = profile.cutoutForOrientation(
-        DeviceOrientation.landscape,
-      );
-      // The landscape result is an internal _SideCutout, not a PunchHoleCutout.
-      expect(landscape, isNot(isA<PunchHoleCutout>()));
-      expect(landscape, isA<ScreenCutout>());
+    test('DynamicIslandCutout returns a pill-shaped path', () {
+      const cutout = DynamicIslandCutout(size: Size(126, 37), topOffset: 11);
+      final path = cutout.buildPath(screenRect);
+      final bounds = path.getBounds();
+      expect(bounds.width, closeTo(126, 0.1));
+      expect(bounds.height, closeTo(37, 0.1));
+      // Centered horizontally.
+      expect(bounds.center.dx, closeTo(portraitSize.width / 2, 0.1));
     });
 
-    test(
-      'centered punch-hole uses portraitSize.width/2 as landscape centerOffset',
-      () {
-        // When centerX is null, rotatedForLandscape uses portraitScreenSize.width/2.
-        // We verify indirectly: a PunchHoleCutout with explicit centerX equal to
-        // width/2 must produce the same result as one with null centerX.
-        final halfWidth = portraitSize.width / 2;
-        final profileNull = makeProfile(
-          cutout: const PunchHoleCutout(diameter: 11, topOffset: 13),
-        );
-        final profileExplicit = makeProfile(
-          cutout: PunchHoleCutout(
-            diameter: 11,
-            topOffset: 13,
-            centerX: halfWidth,
-          ),
-        );
-
-        // Both should produce the same landscape result since the explicit centerX
-        // matches the computed default.
-        final nullResult = profileNull.cutoutForOrientation(
-          DeviceOrientation.landscape,
-        );
-        final explicitResult = profileExplicit.cutoutForOrientation(
-          DeviceOrientation.landscape,
-        );
-        // Both are rotated cutouts (not PunchHoleCutout) — same type, same behavior.
-        expect(nullResult, isNot(isA<PunchHoleCutout>()));
-        expect(explicitResult, isNot(isA<PunchHoleCutout>()));
-      },
-    );
-  });
-
-  group('DeviceProfile.cutoutForOrientation — DynamicIslandCutout', () {
-    test('portrait returns the original DynamicIslandCutout', () {
-      final profile = makeProfile(
-        cutout: const DynamicIslandCutout(size: Size(37, 12), topOffset: 14),
-      );
-      expect(
-        profile.cutoutForOrientation(DeviceOrientation.portrait),
-        isA<DynamicIslandCutout>(),
-      );
+    test('NotchCutout returns a non-empty path at top center', () {
+      const cutout = NotchCutout(size: Size(200, 30));
+      final path = cutout.buildPath(screenRect);
+      final bounds = path.getBounds();
+      expect(bounds.width, closeTo(200, 0.1));
+      expect(bounds.height, closeTo(30, 0.1));
+      expect(bounds.center.dx, closeTo(portraitSize.width / 2, 0.1));
     });
 
-    test('landscape produces a different (rotated) cutout type', () {
-      final profile = makeProfile(
-        cutout: const DynamicIslandCutout(size: Size(37, 12), topOffset: 14),
+    test('TeardropCutout returns a non-empty path at top center', () {
+      const cutout = TeardropCutout(
+        width: 44,
+        height: 30,
+        bottomRadius: 22,
+        sideRadius: 13,
       );
-      final landscape = profile.cutoutForOrientation(
-        DeviceOrientation.landscape,
-      );
-      expect(landscape, isNot(isA<DynamicIslandCutout>()));
-      expect(landscape, isA<ScreenCutout>());
+      final path = cutout.buildPath(screenRect);
+      final bounds = path.getBounds();
+      // Wider than the notch width due to concave ears extending outward.
+      expect(bounds.width, greaterThan(44));
+      expect(bounds.height, closeTo(30, 0.1));
+      expect(bounds.center.dx, closeTo(portraitSize.width / 2, 0.1));
+    });
+
+    test('PunchHoleCutout with explicit centerX positions correctly', () {
+      const cutout = PunchHoleCutout(diameter: 11, topOffset: 13, centerX: 100);
+      final path = cutout.buildPath(screenRect);
+      final bounds = path.getBounds();
+      expect(bounds.center.dx, closeTo(100, 0.1));
     });
   });
 }

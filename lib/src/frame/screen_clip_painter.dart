@@ -1,3 +1,5 @@
+import 'dart:math' show pi;
+
 import 'package:flutter/rendering.dart';
 
 import '../devices/device_profile.dart';
@@ -49,10 +51,15 @@ class ScreenClipPainter extends CustomPainter {
     DeviceOrientation orientation,
   ) {
     final screenPath = _buildScreenPath(size, profile.screenBorder);
-    final cutout = profile.cutoutForOrientation(orientation);
+    final cutout = profile.cutout;
     if (cutout is NoCutout) return screenPath;
 
-    final cutoutPath = _buildCutoutPath(cutout, Offset.zero & size);
+    final cutoutPath = _buildOrientedCutoutPath(
+      cutout,
+      size,
+      profile.logicalSize,
+      orientation,
+    );
     return Path.combine(PathOperation.difference, screenPath, cutoutPath);
   }
 
@@ -72,6 +79,43 @@ class ScreenClipPainter extends CustomPainter {
       oldDelegate.profile != profile || oldDelegate.orientation != orientation;
 }
 
+// ── Cutout path (portrait + landscape transform) ─────────────────────────────
+
+/// Builds the cutout clip path for the given [orientation].
+///
+/// In portrait, delegates directly to [ScreenCutout.buildPath]. In landscape,
+/// builds the portrait path and applies a clockwise 90-degree rotation
+/// transform: `(x, y) -> (y, portraitWidth - x)`. This maps the portrait top
+/// edge onto the landscape left edge, preserving the full cutout geometry
+/// (Bezier curves, teardrop ears, etc.) without any lossy conversion.
+Path _buildOrientedCutoutPath(
+  ScreenCutout cutout,
+  Size screenSize,
+  Size portraitLogicalSize,
+  DeviceOrientation orientation,
+) {
+  if (orientation == DeviceOrientation.portrait) {
+    return cutout.buildPath(Offset.zero & screenSize);
+  }
+
+  // Build the path in portrait coordinates, then rotate to landscape.
+  final portraitPath = cutout.buildPath(Offset.zero & portraitLogicalSize);
+  final w = portraitLogicalSize.width;
+
+  // Clockwise 90-degree rotation: (x, y) -> (y, w - x).
+  //
+  // Matrix4 operations compose right-to-left: first rotateZ (CW 90), then
+  // translate by (0, w) to shift coordinates back into positive space.
+  //
+  // rotateZ(-pi/2): (x, y) -> (y, -x)
+  // translate(0, w): (y, -x) -> (y, w - x)
+  final matrix = Matrix4.identity()
+    ..translateByDouble(0.0, w, 0.0, 1.0)
+    ..rotateZ(-pi / 2);
+
+  return portraitPath.transform(matrix.storage);
+}
+
 // ── Screen shape path ─────────────────────────────────────────────────────────
 
 /// Builds the screen outline path for [border] at [size].
@@ -85,7 +129,7 @@ Path _buildScreenPath(Size size, ScreenBorder border) {
   };
 }
 
-/// Builds a full squircle screen outline path from the corner Bézier data in
+/// Builds a full squircle screen outline path from the corner Bezier data in
 /// [border].
 ///
 /// [SquircleBorder.segments] describe the top-right corner going from the
@@ -93,21 +137,21 @@ Path _buildScreenPath(Size size, ScreenBorder border) {
 /// relative to the top-right corner position (logW, 0). The painter reuses
 /// this corner for all four corners via sign-flip transforms.
 ///
-/// Reflecting across **both** axes (sx=−1, sy=−1: bottom-left) or **neither**
+/// Reflecting across **both** axes (sx=-1, sy=-1: bottom-left) or **neither**
 /// (sx=1, sy=1: top-right) preserves path orientation, so the segments can be
 /// applied in forward order. Reflecting across **one** axis (bottom-right:
-/// sy=−1; top-left: sx=−1) reverses orientation, so those two corners must
+/// sy=-1; top-left: sx=-1) reverses orientation, so those two corners must
 /// apply the segments in reverse order (see [_addCornerSegmentsReversed]).
 ///
 /// Corner construction:
-///   - Top edge: top-left tangent → top-right tangent.
+///   - Top edge: top-left tangent -> top-right tangent.
 ///   - Top-right: forward segments, ox=(w,0), sx=1,  sy=1.
 ///   - Right edge: down to bottom-right tangent.
-///   - Bottom-right: reversed segments, ox=(w,h), sx=1,  sy=−1.
-///   - Bottom edge: right tangent → left tangent.
-///   - Bottom-left: forward segments, ox=(0,h), sx=−1, sy=−1.
+///   - Bottom-right: reversed segments, ox=(w,h), sx=1,  sy=-1.
+///   - Bottom edge: right tangent -> left tangent.
+///   - Bottom-left: forward segments, ox=(0,h), sx=-1, sy=-1.
 ///   - Left edge: up to top-left tangent.
-///   - Top-left: reversed segments, ox=(0,0), sx=−1, sy=1.
+///   - Top-left: reversed segments, ox=(0,0), sx=-1, sy=1.
 Path _buildSquirclePath(Size size, SquircleBorder border) {
   final w = size.width;
   final h = size.height;
@@ -128,7 +172,7 @@ Path _buildSquirclePath(Size size, SquircleBorder border) {
   path.lineTo(w, h - sideT);
 
   // ── Bottom-right corner ─────────────────────────────────────────────────
-  // Single-axis reflection (sy=−1) reverses orientation → use reversed order.
+  // Single-axis reflection (sy=-1) reverses orientation -> use reversed order.
   _addCornerSegmentsReversed(
     path,
     segs,
@@ -143,14 +187,14 @@ Path _buildSquirclePath(Size size, SquircleBorder border) {
   path.lineTo(topT, h);
 
   // ── Bottom-left corner ───────────────────────────────────────────────────
-  // Double-axis reflection preserves orientation → forward order is correct.
+  // Double-axis reflection preserves orientation -> forward order is correct.
   _addCornerSegments(path, segs, ox: 0, oy: h, sx: -1, sy: -1);
 
   // ── Left edge ───────────────────────────────────────────────────────────
   path.lineTo(0, sideT);
 
   // ── Top-left corner ──────────────────────────────────────────────────────
-  // Single-axis reflection (sx=−1) reverses orientation → use reversed order.
+  // Single-axis reflection (sx=-1) reverses orientation -> use reversed order.
   _addCornerSegmentsReversed(
     path,
     segs,
@@ -168,7 +212,7 @@ Path _buildSquirclePath(Size size, SquircleBorder border) {
 /// Appends the squircle corner [segs] to [path] in forward order, transforming
 /// each point by `x_out = ox + sx * seg_x`, `y_out = oy + sy * seg_y`.
 ///
-/// Used for top-right (sx=1, sy=1) and bottom-left (sx=−1, sy=−1), where the
+/// Used for top-right (sx=1, sy=1) and bottom-left (sx=-1, sy=-1), where the
 /// double-axis reflection preserves path orientation.
 void _addCornerSegments(
   Path path,
@@ -192,11 +236,11 @@ void _addCornerSegments(
 
 /// Appends the squircle corner [segs] to [path] in **reverse** order.
 ///
-/// Used for bottom-right (sx=1, sy=−1) and top-left (sx=−1, sy=1), where a
+/// Used for bottom-right (sx=1, sy=-1) and top-left (sx=-1, sy=1), where a
 /// single-axis reflection reverses the winding direction. Reversing each cubic
 /// means swapping its two control points and using the previous segment's
 /// endpoint as the new destination. The last reversed segment lands at the
-/// corner's natural start point `(ox + sx * (−topT), oy)`.
+/// corner's natural start point `(ox + sx * (-topT), oy)`.
 void _addCornerSegmentsReversed(
   Path path,
   List<List<double>> segs, {
@@ -209,7 +253,7 @@ void _addCornerSegmentsReversed(
   for (var i = segs.length - 1; i >= 0; i--) {
     final seg = segs[i];
 
-    // Reversed cubic: cp1 ↔ cp2 swapped; endpoint is the previous seg's endpoint
+    // Reversed cubic: cp1 <-> cp2 swapped; endpoint is the previous seg's endpoint
     // (or the corner's natural start for the very last reversed segment).
     final double rendx;
     final double rendy;
@@ -229,180 +273,4 @@ void _addCornerSegmentsReversed(
       rendy,
     );
   }
-}
-
-// ── Cutout paths ──────────────────────────────────────────────────────────────
-
-Path _buildCutoutPath(ScreenCutout cutout, Rect screenRect) {
-  return switch (cutout) {
-    NoCutout() => Path(),
-    TeardropCutout(
-      :final width,
-      :final height,
-      :final bottomRadius,
-      :final sideRadius,
-    ) =>
-      _buildTeardropPath(
-        screenRect,
-        width: width,
-        height: height,
-        bottomRadius: bottomRadius,
-        sideRadius: sideRadius,
-      ),
-    NotchCutout(:final size, :final topOffset) =>
-      Path()..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            screenRect.left + (screenRect.width - size.width) / 2,
-            screenRect.top + topOffset,
-            size.width,
-            size.height,
-          ),
-          const Radius.circular(4),
-        ),
-      ),
-    DynamicIslandCutout(:final size, :final topOffset) =>
-      Path()..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            screenRect.left + (screenRect.width - size.width) / 2,
-            screenRect.top + topOffset,
-            size.width,
-            size.height,
-          ),
-          // Pill shape — fully rounded on the short axis.
-          Radius.circular(size.height / 2),
-        ),
-      ),
-    PunchHoleCutout(:final diameter, :final topOffset, :final centerX) =>
-      Path()..addOval(
-        Rect.fromCenter(
-          center: Offset(
-            centerX != null ? screenRect.left + centerX : screenRect.center.dx,
-            screenRect.top + topOffset,
-          ),
-          width: diameter,
-          height: diameter,
-        ),
-      ),
-    SideCutout(
-      :final size,
-      :final centerOffset,
-      :final edgeOffset,
-      :final cornerRadius,
-    ) =>
-      Path()..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            screenRect.left + edgeOffset,
-            screenRect.top + centerOffset - size.height / 2,
-            size.width,
-            size.height,
-          ),
-          Radius.circular(cornerRadius),
-        ),
-      ),
-    PathCutout(:final mediaBoxWidth, :final mediaBoxHeight, :final ops) =>
-      _buildPathCutoutPath(
-        screenRect,
-        mediaBoxWidth: mediaBoxWidth,
-        mediaBoxHeight: mediaBoxHeight,
-        ops: ops,
-      ),
-  };
-}
-
-/// Replays the [PathCutout.ops] list as a Flutter [Path], converting from PDF
-/// coordinates (y=0 at the bottom of the MediaBox) to Flutter screen
-/// coordinates (y=0 at the top of [screenRect]).
-///
-/// The path is horizontally centered on [screenRect].
-Path _buildPathCutoutPath(
-  Rect screenRect, {
-  required double mediaBoxWidth,
-  required double mediaBoxHeight,
-  required List<PathOp> ops,
-}) {
-  // Horizontal offset to centre the MediaBox on the screen.
-  final offsetX = screenRect.left + (screenRect.width - mediaBoxWidth) / 2;
-  final offsetY = screenRect.top;
-
-  // Convert a PDF x coordinate to Flutter screen x.
-  double fx(double pdfX) => offsetX + pdfX;
-  // Convert a PDF y coordinate to Flutter screen y (flip axis).
-  double fy(double pdfY) => offsetY + mediaBoxHeight - pdfY;
-
-  final path = Path();
-
-  for (final op in ops) {
-    switch (op) {
-      case PathOpMoveTo():
-        path.moveTo(fx(op.x), fy(op.y));
-      case PathOpLineTo():
-        path.lineTo(fx(op.x), fy(op.y));
-      case PathOpCurveTo():
-        path.cubicTo(
-          fx(op.cp1x),
-          fy(op.cp1y),
-          fx(op.cp2x),
-          fy(op.cp2y),
-          fx(op.x),
-          fy(op.y),
-        );
-      case PathOpClose():
-        path.close();
-    }
-  }
-  return path;
-}
-
-// Builds the clip path for a TeardropCutout centred at the top of
-// [screenRect]. The shape is a narrow U with:
-//   - concave "ear" arcs (radius [sideRadius]) at the top corners, curving
-//     outward into the screen area
-//   - straight sides running down from the ears
-//   - a semicircular bottom arc (radius [bottomRadius]) surrounding the camera
-Path _buildTeardropPath(
-  Rect screenRect, {
-  required double width,
-  required double height,
-  required double bottomRadius,
-  required double sideRadius,
-}) {
-  final cx = screenRect.left + screenRect.width / 2;
-  final top = screenRect.top;
-  return Path()
-    // Left ear: concave arc from the outer top edge into the left wall.
-    ..moveTo(cx - width / 2 - sideRadius, top)
-    ..arcToPoint(
-      Offset(cx - width / 2, top + sideRadius),
-      radius: Radius.circular(sideRadius),
-      clockwise: true,
-    )
-    // Left straight side, down to where the bottom arc begins.
-    ..lineTo(cx - width / 2, top + height - bottomRadius)
-    // Bottom left corner.
-    ..arcToPoint(
-      Offset(cx - width / 2 + bottomRadius, top + height),
-      radius: Radius.circular(bottomRadius),
-      clockwise: false,
-    )
-    // Line across the bottom.
-    ..lineTo(cx + width / 2 - bottomRadius, top + height)
-    // Bottom right corner.
-    ..arcToPoint(
-      Offset(cx + width / 2, top + height - bottomRadius),
-      radius: Radius.circular(bottomRadius),
-      clockwise: false,
-    )
-    // Right straight side, back up to the ear.
-    ..lineTo(cx + width / 2, top + sideRadius)
-    // Right ear: symmetric concave arc back to the top edge.
-    ..arcToPoint(
-      Offset(cx + width / 2 + sideRadius, top),
-      radius: Radius.circular(sideRadius),
-      clockwise: true,
-    )
-    // Close across the top edge back to the start.
-    ..close();
 }

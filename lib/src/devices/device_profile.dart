@@ -28,8 +28,8 @@ enum DeviceOrientation {
 /// Describes the screen geometry and visual characteristics of a mobile device.
 ///
 /// All size and inset values are in **logical pixels** for portrait orientation.
-/// Use [logicalSizeForOrientation], [safeAreaForOrientation], and
-/// [cutoutForOrientation] to retrieve values for a specific orientation.
+/// Use [logicalSizeForOrientation] and [safeAreaForOrientation] to retrieve
+/// values for a specific orientation.
 class DeviceProfile {
   /// Unique stable identifier, e.g. `'iphone_15'`.
   final String id;
@@ -108,17 +108,6 @@ class DeviceProfile {
     return switch (orientation) {
       DeviceOrientation.portrait => safeAreaPortrait,
       DeviceOrientation.landscape => safeAreaLandscape,
-    };
-  }
-
-  /// Returns the cutout geometry for [orientation].
-  ///
-  /// Portrait returns [cutout] unchanged; landscape calls
-  /// [ScreenCutout.rotatedForLandscape] with [logicalSize].
-  ScreenCutout cutoutForOrientation(DeviceOrientation orientation) {
-    return switch (orientation) {
-      DeviceOrientation.portrait => cutout,
-      DeviceOrientation.landscape => cutout.rotatedForLandscape(logicalSize),
     };
   }
 }
