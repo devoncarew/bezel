@@ -43,12 +43,12 @@ final List<DeviceProfile> kDeviceProfiles = [
   iphone_17_pro_max,
 
   // Android
-  samsung_galaxy_a15,
-  samsung_galaxy_a55,
-  samsung_galaxy_s24,
   pixel_7a,
   pixel_10,
   pixel_10_pro,
+  samsung_galaxy_a15,
+  samsung_galaxy_a55,
+  samsung_galaxy_s24,
 
   // Tablets
   ipad_mini_a17,
@@ -325,67 +325,6 @@ final iphone_17_pro_max = DeviceProfile(
 
 // ── Android ──────────────────────────────────────────────────────────────
 
-// Samsung Galaxy A15 (4G, SM-A155F, released Dec 2023).
-// Physical: 1080×2340px. Runtime density: 2.625 DPR.
-//   Logical size: 1080/2.625 × 2340/2.625 ≈ 411×892dp.
-// Display type: Infinity-U (teardrop/waterdrop notch).
-// Corner radius: ~38dp (measured from skin PNG).
-// Notch: width 44dp, height 30dp, bottomRadius 22dp, sideRadius 13dp
-//   (measured from skin PNG via tool/measure_device.py).
-// Safe area portrait: status bar 32dp covers the full notch height.
-// Safe area landscape: teardrop rotates to left edge; left ≈ 32dp.
-final samsung_galaxy_a15 = DeviceProfile(
-  id: 'samsung_galaxy_a15',
-  name: 'Samsung Galaxy A15',
-  platform: DevicePlatform.android,
-  logicalSize: const Size(411, 892),
-  safeAreaPortrait: const EdgeInsets.only(top: 32, bottom: 24),
-  safeAreaLandscape: const EdgeInsets.only(left: 32, bottom: 24),
-  screenBorder: const CircularBorder(38),
-  cutout: const TeardropCutout(
-    width: 44,
-    height: 30,
-    bottomRadius: 22,
-    sideRadius: 13,
-  ),
-  description: 'Budget Samsung Infinity-U notch, 411 × 892 — covers A15, A25',
-);
-
-// Samsung Galaxy A55 (SM-A556B, released Mar 2024).
-// Corner radius: 94px / 2.625 DPR = 35.8 ≈ 36dp.
-// Punch hole: centered, horizontally.
-//   Camera radius 27px → diameter 54px / 2.625 = 20.6 ≈ 21dp.
-//   Camera center Y 65px / 2.625 = 24.8 ≈ 25dp from screen top.
-// Logical size and safe areas: community approximation — not yet verified.
-final samsung_galaxy_a55 = DeviceProfile(
-  id: 'samsung_galaxy_a55',
-  name: 'Samsung Galaxy A55',
-  platform: DevicePlatform.android,
-  logicalSize: const Size(384, 854),
-  safeAreaPortrait: const EdgeInsets.only(top: 24, bottom: 24),
-  safeAreaLandscape: const EdgeInsets.only(bottom: 24),
-  screenBorder: const CircularBorder(36),
-  cutout: const PunchHoleCutout(diameter: 21, topOffset: 25),
-  description: 'Mid-range Samsung A-series, ~384 × 854 — covers A54, A55',
-);
-
-// Samsung Galaxy S24: Samsung does not publish device-tree cutout geometry.
-// Corner radius: 94px / 3.0 DPR = 31.3 ≈ 31dp.
-// Punch hole: centered, horizontally.
-//   Camera radius 27px → diameter 54px / 3.0 = 18dp.
-//   Camera center Y 54px / 3.0 = 18dp from screen top.
-final samsung_galaxy_s24 = DeviceProfile(
-  id: 'samsung_galaxy_s24',
-  name: 'Samsung Galaxy S24',
-  platform: DevicePlatform.android,
-  logicalSize: const Size(360, 780),
-  safeAreaPortrait: const EdgeInsets.only(top: 24, bottom: 24),
-  safeAreaLandscape: const EdgeInsets.only(bottom: 24),
-  screenBorder: const CircularBorder(31),
-  cutout: const PunchHoleCutout(diameter: 18, topOffset: 18),
-  description: 'Flagship Samsung, 360 × 780 — covers S23, S24',
-);
-
 // Pixel 7a (codename: lynx).
 // Cutout: verified against Android Emulator via `adb shell dumpsys display`.
 //   Cutout spec: M 507,66 a 33,33 0 1 0 66,0 33,33 0 1 0 -66,0 Z @left
@@ -457,6 +396,67 @@ final pixel_10_pro = DeviceProfile(
   screenBorder: const CircularBorder(73),
   cutout: const PunchHoleCutout(diameter: 31, topOffset: 33),
   description: 'High-DPR Pixel (3.125), 410 × 914',
+);
+
+// Samsung Galaxy A15 (4G, SM-A155F, released Dec 2023).
+// Physical: 1080×2340px. Runtime density: 2.625 DPR.
+//   Logical size: 1080/2.625 × 2340/2.625 ≈ 411×892dp.
+// Display type: Infinity-U (teardrop/waterdrop notch).
+// Corner radius: ~38dp (measured from skin PNG).
+// Notch: width 44dp, height 30dp, bottomRadius 22dp, sideRadius 13dp
+//   (measured from skin PNG via tool/measure_device.py).
+// Safe area portrait: status bar 32dp covers the full notch height.
+// Safe area landscape: teardrop rotates to left edge; left ≈ 32dp.
+final samsung_galaxy_a15 = DeviceProfile(
+  id: 'samsung_galaxy_a15',
+  name: 'Samsung Galaxy A15',
+  platform: DevicePlatform.android,
+  logicalSize: const Size(411, 892),
+  safeAreaPortrait: const EdgeInsets.only(top: 32, bottom: 24),
+  safeAreaLandscape: const EdgeInsets.only(left: 32, bottom: 24),
+  screenBorder: const CircularBorder(38),
+  cutout: const TeardropCutout(
+    width: 44,
+    height: 30,
+    bottomRadius: 22,
+    sideRadius: 13,
+  ),
+  description: 'Budget Samsung Infinity-U notch, 411 × 892 — covers A15, A25',
+);
+
+// Samsung Galaxy A55 (SM-A556B, released Mar 2024).
+// Corner radius: 94px / 2.625 DPR = 35.8 ≈ 36dp.
+// Punch hole: centered, horizontally.
+//   Camera radius 27px → diameter 54px / 2.625 = 20.6 ≈ 21dp.
+//   Camera center Y 65px / 2.625 = 24.8 ≈ 25dp from screen top.
+// Logical size and safe areas: community approximation — not yet verified.
+final samsung_galaxy_a55 = DeviceProfile(
+  id: 'samsung_galaxy_a55',
+  name: 'Samsung Galaxy A55',
+  platform: DevicePlatform.android,
+  logicalSize: const Size(384, 854),
+  safeAreaPortrait: const EdgeInsets.only(top: 24, bottom: 24),
+  safeAreaLandscape: const EdgeInsets.only(bottom: 24),
+  screenBorder: const CircularBorder(36),
+  cutout: const PunchHoleCutout(diameter: 21, topOffset: 25),
+  description: 'Mid-range Samsung A-series, ~384 × 854 — covers A54, A55',
+);
+
+// Samsung Galaxy S24: Samsung does not publish device-tree cutout geometry.
+// Corner radius: 94px / 3.0 DPR = 31.3 ≈ 31dp.
+// Punch hole: centered, horizontally.
+//   Camera radius 27px → diameter 54px / 3.0 = 18dp.
+//   Camera center Y 54px / 3.0 = 18dp from screen top.
+final samsung_galaxy_s24 = DeviceProfile(
+  id: 'samsung_galaxy_s24',
+  name: 'Samsung Galaxy S24',
+  platform: DevicePlatform.android,
+  logicalSize: const Size(360, 780),
+  safeAreaPortrait: const EdgeInsets.only(top: 24, bottom: 24),
+  safeAreaLandscape: const EdgeInsets.only(bottom: 24),
+  screenBorder: const CircularBorder(31),
+  cutout: const PunchHoleCutout(diameter: 18, topOffset: 18),
+  description: 'Flagship Samsung, 360 × 780 — covers S23, S24',
 );
 
 // ── Tablets ──────────────────────────────────────────────────────────────

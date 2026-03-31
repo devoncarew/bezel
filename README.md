@@ -56,12 +56,12 @@ builds.
 
 | Device | Size | Device category |
 | --- | --- | --- |
-| Samsung Galaxy A15 | 411 × 892 | Budget Samsung Infinity-U notch, 411 × 892 — covers A15, A25 |
-| Samsung Galaxy A55 | 384 × 854 | Mid-range Samsung A-series, ~384 × 854 — covers A54, A55 |
-| Samsung Galaxy S24 | 360 × 780 | Flagship Samsung, 360 × 780 — covers S23, S24 |
 | Google Pixel 7a | 411 × 914 | Mid-range Pixel, small punch hole — covers Pixel 7a, 8, 8a |
 | Google Pixel 10 | 411 × 923 | Large punch hole, 411 × 923 — covers Pixel 9 and 10 |
 | Google Pixel 10 Pro | 410 × 914 | High-DPR Pixel (3.125), 410 × 914 |
+| Samsung Galaxy A15 | 411 × 892 | Budget Samsung Infinity-U notch, 411 × 892 — covers A15, A25 |
+| Samsung Galaxy A55 | 384 × 854 | Mid-range Samsung A-series, ~384 × 854 — covers A54, A55 |
+| Samsung Galaxy S24 | 360 × 780 | Flagship Samsung, 360 × 780 — covers S23, S24 |
 
 | Device | Size | Device category |
 | --- | --- | --- |

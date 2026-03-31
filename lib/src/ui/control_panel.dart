@@ -17,6 +17,12 @@ const double _kPanelHeight = 565;
 /// Corner radius used for all non-flush panel corners.
 const double _kPanelRadius = 10;
 
+/// Corner radius used for items and buttons inside the panel.
+const _kItemRadius = BorderRadius.all(Radius.circular(6));
+
+/// Keyboard modifier symbol for the current host platform.
+String get _modifier => Platform.isMacOS ? '⌘' : '^';
+
 /// Shape for the panel: top-right corner is flush with the window edge (same
 /// as the badge), all other corners are rounded.
 const _kPanelBorderRadius = BorderRadius.only(
@@ -177,22 +183,14 @@ class _ControlPanelState extends State<ControlPanel>
             child: Column(
               children: [
                 _ActionRow(controller: widget.controller),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Color(0x33FFFFFF),
-                ),
+                const Divider(height: 1, thickness: 1, color: kPreviewDivider),
                 const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: _createSegmentedButton(),
                 ),
                 const SizedBox(height: 4),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Color(0x33FFFFFF),
-                ),
+                const Divider(height: 1, thickness: 1, color: kPreviewDivider),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -219,11 +217,7 @@ class _ControlPanelState extends State<ControlPanel>
                     ),
                   ),
                 ),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Color(0x33FFFFFF),
-                ),
+                const Divider(height: 1, thickness: 1, color: kPreviewDivider),
                 // Footer area.
                 Padding(
                   padding: const EdgeInsets.only(
@@ -236,21 +230,21 @@ class _ControlPanelState extends State<ControlPanel>
                     children: [
                       _ShortcutButton(
                         icon: Icons.devices,
-                        binding: '${Platform.isMacOS ? '⌘' : '^'}D',
+                        binding: '${_modifier}D',
                         tooltip: 'Toggle device picker',
                         onTap: widget.controller.toggleDevicePicker,
                       ),
                       const Expanded(child: SizedBox(width: 16)),
                       _ShortcutButton(
                         icon: Icons.skip_previous,
-                        binding: '${Platform.isMacOS ? '⌘' : '^'}[',
+                        binding: '$_modifier[',
                         tooltip: 'Previous device',
                         onTap: () => widget.controller.cycleDevice(-1),
                       ),
                       const SizedBox(width: 8),
                       _ShortcutButton(
                         icon: Icons.skip_next,
-                        binding: '${Platform.isMacOS ? '⌘' : '^'}]',
+                        binding: '$_modifier]',
                         tooltip: 'Next device',
                         onTap: () => widget.controller.cycleDevice(1),
                       ),
@@ -335,7 +329,7 @@ class _ActionRow extends StatelessWidget {
           ),
           _ShortcutButton(
             icon: Icons.screen_rotation,
-            binding: '${Platform.isMacOS ? '⌘' : '^'}L',
+            binding: '${_modifier}L',
             tooltip: 'Toggle orientation',
             onTap: controller.toggleOrientation,
           ),
@@ -343,14 +337,6 @@ class _ActionRow extends StatelessWidget {
       ),
     );
   }
-}
-
-TextStyle _monospace() {
-  return const TextStyle(
-    color: kPreviewForeground,
-    fontSize: 12,
-    fontFamilyFallback: ['Menlo', 'Consolas', 'Courier New'],
-  );
 }
 
 // ── Device list (one per tab) ─────────────────────────────────────────────────
@@ -412,7 +398,7 @@ class _DeviceItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: isActive ? activeBg : null,
           border: Border.all(color: borderColor),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: _kItemRadius,
         ),
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -432,7 +418,7 @@ class _DeviceItem extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(width: 6),
                 Text(
                   '$w×$h',
                   style: const TextStyle(
@@ -479,19 +465,19 @@ class _ShortcutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget button = InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
+      borderRadius: _kItemRadius,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           border: Border.all(color: kPreviewForeground.withValues(alpha: 0.25)),
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: _kItemRadius,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, color: kPreviewForeground, size: 16),
             const SizedBox(width: 6),
-            Text(binding, style: _monospace()),
+            Text(binding, style: kPreviewMonospaceStyle),
           ],
         ),
       ),
