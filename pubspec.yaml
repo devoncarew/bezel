@@ -4,6 +4,8 @@ description: >-
   device profiles while running on desktop.
 version: 1.0.0
 
+repository: https://github.com/devoncarew/flight_check
+
 environment:
   sdk: ^3.10.0
   flutter: '>=3.38.0'

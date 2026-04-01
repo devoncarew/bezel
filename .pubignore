@@ -1,0 +1,11 @@
+# files
+CLAUDE.md
+
+# directories
+build/
+docs/
+example/android/
+example/build/
+example/ios/
+example/macos/
+tool/
