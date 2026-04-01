@@ -30,7 +30,7 @@ void main() {
       // Run with `flutter test test/devices/device_database_test.dart`.
 
       String size(DeviceProfile d) =>
-          '${d.logicalSize.width.toInt()} × ${d.logicalSize.height.toInt()}';
+          '${d.logicalSize.width.toInt()}x${d.logicalSize.height.toInt()}';
 
       final iOS = DeviceDatabase.all.where(
         (d) => d.platform == DevicePlatform.iOS && !d.tablet,
@@ -41,11 +41,18 @@ void main() {
       final tablets = DeviceDatabase.all.where((d) => d.tablet);
 
       print('## Supported devices');
+      print('');
+      print('| Device | Size | Device category |');
+
+      var first = true;
 
       for (final devices in [iOS, android, tablets]) {
-        print('');
-        print('| Device | Size | Device category |');
-        print('| --- | --- | --- |');
+        if (first) {
+          print('| --- | --- | --- |');
+        } else {
+          print('| &nbsp; | | |');
+        }
+        first = false;
 
         for (final device in devices) {
           print(
