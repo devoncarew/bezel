@@ -1,3 +1,9 @@
+## 1.1.0-wip
+
+* Added `shortName` field to `DeviceProfile` for compact display in the control
+  badge (e.g. `'Pixel 10'` instead of `'Google Pixel 10'`). The badge shows the
+  short name when the panel is closed, and the full name when it is open.
+
 ## 1.0.0
 
 Initial release of Flight Check — a Flutter debug-mode tool for previewing your

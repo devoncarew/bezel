@@ -37,6 +37,12 @@ class DeviceProfile {
   /// Human-readable display name, e.g. `'iPhone 15'`.
   final String name;
 
+  /// Short display name for compact UI surfaces such as the control badge,
+  /// e.g. `'Pixel 10'` instead of `'Google Pixel 10'`.
+  ///
+  /// Falls back to [name] when not provided.
+  final String? shortName;
+
   /// Host platform.
   final DevicePlatform platform;
 
@@ -72,6 +78,7 @@ class DeviceProfile {
   DeviceProfile({
     required this.id,
     required this.name,
+    this.shortName,
     required this.platform,
     required this.logicalSize,
     required this.safeAreaPortrait,

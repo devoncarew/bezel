@@ -67,6 +67,7 @@ final List<DeviceProfile> kDeviceProfiles = [
 final iphone_se_3 = DeviceProfile(
   id: 'iphone_se_3',
   name: 'iPhone SE (3rd gen)',
+  shortName: 'iPhone SE',
   platform: DevicePlatform.iOS,
   logicalSize: const Size(375, 667),
   safeAreaPortrait: const EdgeInsets.only(top: 20),
@@ -133,7 +134,7 @@ final iphone_14 = DeviceProfile(
       PathOp.close(),
     ],
   ),
-  description: 'Notch, 390 × 844 — covers iPhone 12, 13, 14',
+  description: 'Notch, 390×844 — covers iPhone 12, 13, 14',
 );
 
 // iPhone 15: 6.1" Super Retina XDR, Dynamic Island.
@@ -166,7 +167,7 @@ final iphone_15 = DeviceProfile(
   ),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
   description:
-      'Dynamic Island, 393 × 852 — proxy for iPhone 14 Pro, 15 Pro, 16, 16e',
+      'Dynamic Island, 393×852 — proxy for iPhone 14 Pro, 15 Pro, 16, 16e',
 );
 
 // iPhone 15 Pro Max: 6.7" variant; same DI cutout geometry.
@@ -196,7 +197,7 @@ final iphone_15_pro_max = DeviceProfile(
     ],
   ),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
-  description: 'Dynamic Island, 430 × 932 — covers iPhone 15 Plus, 16 Plus',
+  description: 'Dynamic Island, 430×932 — covers iPhone 15 Plus, 16 Plus',
 );
 
 // iPhone 17: 6.1" display, 402×874 logical pixels.
@@ -227,7 +228,7 @@ final iphone_17 = DeviceProfile(
   ),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
   description:
-      'Current standard iPhone, 402 × 874 — same geometry as iPhone 17 Pro',
+      'Current standard iPhone, 402×874 — same geometry as iPhone 17 Pro',
 );
 
 // iPhone 17 Air: 6.6" display, 420×912 logical pixels.
@@ -260,7 +261,7 @@ final iphone_17_air = DeviceProfile(
     ],
   ),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
-  description: 'Dynamic Island, 420 × 912 — iPhone 17 Air',
+  description: 'Dynamic Island, 420×912 — iPhone 17 Air',
 );
 
 // iPhone 17 Pro: 6.3" display, 402×874 logical pixels.
@@ -292,7 +293,7 @@ final iphone_17_pro = DeviceProfile(
     ],
   ),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
-  description: 'Dynamic Island, 402 × 874 — covers iPhone 16 Pro, 17 Pro',
+  description: 'Dynamic Island, 402×874 — covers iPhone 16 Pro, 17 Pro',
 );
 
 // iPhone 17 Pro Max: 6.9" display, largest screen Apple has shipped.
@@ -323,7 +324,7 @@ final iphone_17_pro_max = DeviceProfile(
     ],
   ),
   cutout: const DynamicIslandCutout(size: Size(126, 37), topOffset: 11),
-  description: 'Largest iPhone screen, 440 × 956',
+  description: 'Largest iPhone screen, 440×956',
 );
 
 // ── Android ──────────────────────────────────────────────────────────────
@@ -338,6 +339,7 @@ final iphone_17_pro_max = DeviceProfile(
 final pixel_7a = DeviceProfile(
   id: 'pixel_7a',
   name: 'Google Pixel 7a',
+  shortName: 'Pixel 7a',
   platform: DevicePlatform.android,
   logicalSize: const Size(411, 914),
   safeAreaPortrait: const EdgeInsets.only(top: 45, bottom: 24),
@@ -365,13 +367,14 @@ final pixel_7a = DeviceProfile(
 final pixel_10 = DeviceProfile(
   id: 'pixel_10',
   name: 'Google Pixel 10',
+  shortName: 'Pixel 10',
   platform: DevicePlatform.android,
   logicalSize: const Size(411, 923),
   safeAreaPortrait: const EdgeInsets.only(top: 54, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(left: 54, top: 52, bottom: 24),
   screenBorder: const CircularBorder(74),
   cutout: const PunchHoleCutout(diameter: 32, topOffset: 33),
-  description: 'Large punch hole, 411 × 923 — covers Pixel 9 and 10',
+  description: 'Large punch hole, 411×923 — covers Pixel 9 and 10',
 );
 
 // Pixel 10 Pro (codename: blazer, in muzel repo).
@@ -392,18 +395,19 @@ final pixel_10 = DeviceProfile(
 final pixel_10_pro = DeviceProfile(
   id: 'pixel_10_pro',
   name: 'Google Pixel 10 Pro',
+  shortName: 'Pixel 10 Pro',
   platform: DevicePlatform.android,
   logicalSize: const Size(410, 914),
   safeAreaPortrait: const EdgeInsets.only(top: 65, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(left: 64, bottom: 24),
   screenBorder: const CircularBorder(73),
   cutout: const PunchHoleCutout(diameter: 31, topOffset: 33),
-  description: 'High-DPR Pixel (3.125), 410 × 914',
+  description: 'High-DPR Pixel (3.125), 410×914',
 );
 
 // Samsung Galaxy A15 (4G, SM-A155F, released Dec 2023).
 // Physical: 1080×2340px. Runtime density: 2.625 DPR.
-//   Logical size: 1080/2.625 × 2340/2.625 ≈ 411×892dp.
+//   Logical size: 1080/2.625×2340/2.625 ≈ 411×892dp.
 // Display type: Infinity-U (teardrop/waterdrop notch).
 // Corner radius: ~38dp (measured from skin PNG).
 // Notch: width 44dp, height 30dp, bottomRadius 22dp, sideRadius 13dp
@@ -413,6 +417,7 @@ final pixel_10_pro = DeviceProfile(
 final samsung_galaxy_a15 = DeviceProfile(
   id: 'samsung_galaxy_a15',
   name: 'Samsung Galaxy A15',
+  shortName: 'Galaxy A15',
   platform: DevicePlatform.android,
   logicalSize: const Size(411, 892),
   safeAreaPortrait: const EdgeInsets.only(top: 32, bottom: 24),
@@ -424,7 +429,7 @@ final samsung_galaxy_a15 = DeviceProfile(
     bottomRadius: 22,
     sideRadius: 13,
   ),
-  description: 'Budget Samsung Infinity-U notch, 411 × 892 — covers A15, A25',
+  description: 'Budget Samsung Infinity-U notch, 411×892 — covers A15, A25',
 );
 
 // Samsung Galaxy A16 (SM-A165F/SM-A166B, released late 2024).
@@ -439,6 +444,7 @@ final samsung_galaxy_a15 = DeviceProfile(
 final samsung_galaxy_a16 = DeviceProfile(
   id: 'samsung_galaxy_a16',
   name: 'Samsung Galaxy A16',
+  shortName: 'Galaxy A16',
   platform: DevicePlatform.android,
   logicalSize: const Size(411, 892),
   safeAreaPortrait: const EdgeInsets.only(top: 30, bottom: 24),
@@ -451,11 +457,11 @@ final samsung_galaxy_a16 = DeviceProfile(
     sideRadius: 13,
   ),
   description:
-      'Budget Samsung Infinity-U notch, 411 × 892 — covers A06, A16, M16',
+      'Budget Samsung Infinity-U notch, 411×892 — covers A06, A16, M16',
 );
 
 // Samsung Galaxy A55 (SM-A556B, released Mar 2024).
-// Physical: 1080 × 2400 px. DPR: ~2.8125. Logical size: ~384 × 854 dp.
+// Physical: 1080×2400 px. DPR: ~2.8125. Logical size: ~384×854 dp.
 // Corner radius: ~101px / 2.8125 ≈ 36dp — verified against hardware range.
 // Punch hole: centered horizontally.
 //   Camera diameter ~57px / 2.8125 ≈ 21dp — verified against hardware range.
@@ -464,17 +470,18 @@ final samsung_galaxy_a16 = DeviceProfile(
 final samsung_galaxy_a55 = DeviceProfile(
   id: 'samsung_galaxy_a55',
   name: 'Samsung Galaxy A55',
+  shortName: 'Galaxy A55',
   platform: DevicePlatform.android,
   logicalSize: const Size(384, 854),
   safeAreaPortrait: const EdgeInsets.only(top: 24, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(bottom: 24),
   screenBorder: const CircularBorder(36),
   cutout: const PunchHoleCutout(diameter: 21, topOffset: 25),
-  description: 'Mid-range Samsung A-series, 384 × 854 — covers A54, A55',
+  description: 'Mid-range Samsung A-series, 384×854 — covers A54, A55',
 );
 
 // Samsung Galaxy A56 (SM-A566B, released early 2025).
-// Physical: ~1080 × 2400 px. DPR: ~2.625–2.8x. Logical size: ~412 × 915 dp.
+// Physical: ~1080×2400 px. DPR: ~2.625–2.8x. Logical size: ~412×915 dp.
 // Slightly taller 20:9 aspect ratio and tighter corners than A55.
 //   Corner radius: 34dp (community approximation).
 //   Punch hole: centered horizontally.
@@ -483,17 +490,18 @@ final samsung_galaxy_a55 = DeviceProfile(
 final samsung_galaxy_a56 = DeviceProfile(
   id: 'samsung_galaxy_a56',
   name: 'Samsung Galaxy A56',
+  shortName: 'Galaxy A56',
   platform: DevicePlatform.android,
   logicalSize: const Size(412, 915),
   safeAreaPortrait: const EdgeInsets.only(top: 24, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(bottom: 24),
   screenBorder: const CircularBorder(34),
   cutout: const PunchHoleCutout(diameter: 20, topOffset: 20),
-  description: 'Mid-range Samsung A-series, 412 × 915 — covers A36, A56',
+  description: 'Mid-range Samsung A-series, 412×915 — covers A36, A56',
 );
 
 // Samsung Galaxy S26: Samsung does not publish device-tree cutout geometry.
-// Physical: 1080 × 2340 px. DPR: 3.0. Logical size: 360 × 780 dp.
+// Physical: 1080×2340 px. DPR: 3.0. Logical size: 360×780 dp.
 // Geometry sourced from Galaxy S26 emulator skin; S24 shares the same values
 // (S25 was a one-generation departure with a slightly larger corner radius):
 //   Corner radius: 94px / 3.0 = 31.3 ≈ 31dp.
@@ -504,17 +512,18 @@ final samsung_galaxy_a56 = DeviceProfile(
 final samsung_galaxy_s26 = DeviceProfile(
   id: 'samsung_galaxy_s26',
   name: 'Samsung Galaxy S26',
+  shortName: 'Galaxy S26',
   platform: DevicePlatform.android,
   logicalSize: const Size(360, 780),
   safeAreaPortrait: const EdgeInsets.only(top: 24, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(bottom: 24),
   screenBorder: const CircularBorder(31),
   cutout: const PunchHoleCutout(diameter: 16, topOffset: 18),
-  description: 'Flagship Samsung, 360 × 780 — covers S24, S26',
+  description: 'Flagship Samsung, 360×780 — covers S24, S26',
 );
 
 // Samsung Galaxy S25: one-generation departure from the S24/S26 geometry.
-// Physical: 1080 × 2340 px. DPR: 3.0. Logical size: 360 × 780 dp.
+// Physical: 1080×2340 px. DPR: 3.0. Logical size: 360×780 dp.
 // Geometry sourced from Galaxy S25 emulator skin:
 //   Corner radius: 101px / 3.0 = 33.7 ≈ 34dp.
 //   Punch hole: centered horizontally, center at (540, 57)px.
@@ -524,6 +533,7 @@ final samsung_galaxy_s26 = DeviceProfile(
 final samsung_galaxy_s25 = DeviceProfile(
   id: 'samsung_galaxy_s25',
   name: 'Samsung Galaxy S25',
+  shortName: 'Galaxy S25',
   platform: DevicePlatform.android,
   logicalSize: const Size(360, 780),
   safeAreaPortrait: const EdgeInsets.only(top: 24, bottom: 24),
@@ -531,7 +541,7 @@ final samsung_galaxy_s25 = DeviceProfile(
   screenBorder: const CircularBorder(34),
   cutout: const PunchHoleCutout(diameter: 16, topOffset: 19),
   description:
-      'Flagship Samsung S25, 360 × 780 — slightly rounder corners than S24/S26',
+      'Flagship Samsung S25, 360×780 — slightly rounder corners than S24/S26',
 );
 
 // ── Tablets ──────────────────────────────────────────────────────────────
@@ -544,6 +554,7 @@ final samsung_galaxy_s25 = DeviceProfile(
 final ipad_mini_a17 = DeviceProfile(
   id: 'ipad_mini_a17',
   name: 'iPad mini (A17 Pro)',
+  shortName: 'iPad mini',
   platform: DevicePlatform.iOS,
   logicalSize: const Size(744, 1133),
   safeAreaPortrait: const EdgeInsets.only(top: 32, bottom: 20),
@@ -551,7 +562,7 @@ final ipad_mini_a17 = DeviceProfile(
   screenBorder: const CircularBorder(18),
   cutout: const NoCutout(),
   tablet: true,
-  description: 'Compact iPad, 744 × 1133',
+  description: 'Compact iPad, 744×1133',
 );
 
 // iPad (A16): thin-bezel design; rounded display corners visible.
@@ -561,6 +572,7 @@ final ipad_mini_a17 = DeviceProfile(
 final ipad_a16 = DeviceProfile(
   id: 'ipad_a16',
   name: 'iPad (A16)',
+  shortName: 'iPad',
   platform: DevicePlatform.iOS,
   logicalSize: const Size(820, 1180),
   safeAreaPortrait: const EdgeInsets.only(top: 32, bottom: 20),
@@ -568,7 +580,7 @@ final ipad_a16 = DeviceProfile(
   screenBorder: const CircularBorder(18),
   cutout: const NoCutout(),
   tablet: true,
-  description: 'Standard iPad, 820 × 1180',
+  description: 'Standard iPad, 820×1180',
 );
 
 /// Provides access to the built-in device profile catalog.

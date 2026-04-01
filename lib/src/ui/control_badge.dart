@@ -115,7 +115,10 @@ class _ControlBadgeState extends State<ControlBadge>
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      widget.controller.activeProfile.name,
+                      widget.controller.devicePickerVisible
+                          ? widget.controller.activeProfile.name
+                          : (widget.controller.activeProfile.shortName ??
+                                widget.controller.activeProfile.name),
                       style: TextStyle(
                         color: kPreviewForeground.withValues(
                           alpha: foregroundAlpha,

@@ -2,7 +2,7 @@ name: flight_check
 description: >-
   A Flutter debug-mode tool for previewing your app against popular mobile
   device profiles while running on desktop.
-version: 1.0.0
+version: 1.1.0-wip
 
 repository: https://github.com/devoncarew/flight_check
 
