@@ -1,6 +1,5 @@
 name: flight_check_example
 description: Example Flutter desktop app demonstrating the flight_check package.
-version: 1.0.0
 publish_to: none
 
 environment:

@@ -1,14 +1,12 @@
-# Changelog
-
 ## 1.0.0
 
-Initial release of Flight Check — a Flutter debug-mode tool for previewing your app
-against popular mobile device profiles while running on desktop.
+Initial release of Flight Check — a Flutter debug-mode tool for previewing your
+app against popular mobile device profiles while running on desktop.
 
-Spoofs device metrics at the binding layer (logical size, safe area insets, device pixel
-ratio) without injecting wrapper widgets. Auto-resizes the desktop window to fit the
-emulated device and provides a floating badge + slide-out panel for device selection and
-orientation toggle.
+Spoofs device metrics at the binding layer (logical size, safe area insets,
+device pixel ratio) without injecting wrapper widgets. Auto-resizes the desktop
+window to fit the emulated device and provides a floating badge + slide-out
+panel for device selection and orientation toggle.
 
 **Initial device profiles:**
 
