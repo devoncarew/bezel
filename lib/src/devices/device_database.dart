@@ -347,7 +347,8 @@ final pixel_8a = DeviceProfile(
   safeAreaLandscape: const EdgeInsets.only(left: 45, top: 28, bottom: 24),
   screenBorder: const CircularBorder(18),
   cutout: const PunchHoleCutout(diameter: 25, topOffset: 25),
-  description: 'Mid-range A-series Pixel, small punch hole — covers Pixel 7a, 8, 8a',
+  description:
+      'Mid-range A-series Pixel, small punch hole — covers Pixel 7a, 8, 8a',
 );
 
 // Google Pixel 10a (codename: stallion) / Pixel 9a (codename: tegu).
