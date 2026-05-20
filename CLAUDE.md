@@ -89,24 +89,25 @@ thing that needs to change — no registration, no factory, no codegen. Include 
 noting the data source for cutout geometry and corner radius.
 
 ```dart
-// Pixel 7a (codename: lynx).
+// Pixel 8a (codename: akita) / covers 7a (lynx), 8 (husky/shiba), 8a (akita).
 // Cutout: verified against Android Emulator via `adb shell dumpsys display`.
 //   Cutout spec: M 507,66 a 33,33 0 1 0 66,0 33,33 0 1 0 -66,0 Z @left
 //   Circle: center (540, 66)px physical, radius 33px physical.
 //   Diameter: 66px / 2.625 DPR ≈ 25dp; center Y: 66px / 2.625 ≈ 25dp.
 // Corner radius: 47px / 2.625 ≈ 18dp (from roundedCorners in dumpsys output).
 // Safe areas: verified against Android Emulator.
-DeviceProfile(
-  id: 'pixel_7a',
-  name: 'Google Pixel 7a',
+final pixel_8a = DeviceProfile(
+  id: 'pixel_8a',
+  name: 'Google Pixel 8a',
+  shortName: 'Pixel 8a',
   platform: DevicePlatform.android,
   logicalSize: const Size(411, 914),
   safeAreaPortrait: const EdgeInsets.only(top: 45, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(left: 45, top: 28, bottom: 24),
-  screenCornerRadius: 18,
+  screenBorder: const CircularBorder(18),
   cutout: const PunchHoleCutout(diameter: 25, topOffset: 25),
-  description: 'Mid-range Pixel, small punch hole — covers Pixel 7a, 8, 8a',
-),
+  description: 'Mid-range A-series Pixel, small punch hole — covers Pixel 7a, 8, 8a',
+);
 ```
 
 ### Changing what the binding spoofs
