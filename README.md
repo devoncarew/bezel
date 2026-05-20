@@ -95,8 +95,8 @@ If your app calls `WidgetsFlutterBinding.ensureInitialized()`, place the call to
   giving correct scroll physics, page transitions, and haptic feedback patterns;
   however, text-field keyboard shortcuts may not match the host keyboard when
   the host OS and emulated platform differ (e.g. Android on macOS)
-- back-navigation assumptions (system back button on Android, swipe-back on iOS)
-  cannot be satisfied on desktop
+- Back-navigation assumptions (system back button on Android, swipe-back on iOS)
+  cannot be satisfied on desktop.
 - Flutter Web is not supported.
 
 ## License
