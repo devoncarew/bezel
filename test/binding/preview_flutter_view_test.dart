@@ -95,16 +95,19 @@ void main() {
     expect(view.displayCornerRadii, isNull);
   });
 
-  test('displayCornerRadii returns physical-pixel radii for Android profiles', () {
-    final pixel = DeviceDatabase.findById('pixel_10')!;
-    controller.setProfile(pixel);
-    final radii = view.displayCornerRadii;
-    expect(radii, isNotNull);
-    final border = pixel.screenBorder as CircularBorder;
-    final expected = border.radius * view.devicePixelRatio;
-    expect(radii!.topLeft, closeTo(expected, 0.001));
-    expect(radii.topRight, closeTo(expected, 0.001));
-    expect(radii.bottomRight, closeTo(expected, 0.001));
-    expect(radii.bottomLeft, closeTo(expected, 0.001));
-  });
+  test(
+    'displayCornerRadii returns physical-pixel radii for Android profiles',
+    () {
+      final pixel = DeviceDatabase.findById('pixel_10')!;
+      controller.setProfile(pixel);
+      final radii = view.displayCornerRadii;
+      expect(radii, isNotNull);
+      final border = pixel.screenBorder as CircularBorder;
+      final expected = border.radius * view.devicePixelRatio;
+      expect(radii!.topLeft, closeTo(expected, 0.001));
+      expect(radii.topRight, closeTo(expected, 0.001));
+      expect(radii.bottomRight, closeTo(expected, 0.001));
+      expect(radii.bottomLeft, closeTo(expected, 0.001));
+    },
+  );
 }
