@@ -1,11 +1,10 @@
-# Device Cutout Geometry Research Summary
+# Device Cutout Geometry Research
 
-## Context
-
-This document summarizes research into data sources for physical screen cutout
-geometry (notches, punch-holes, Dynamic Islands, rounded corners) for use in a
-Flutter desktop device preview tool. The tool needs to render accurate cutout
-shapes so developers can spot layout issues before testing on real devices.
+Data sources for physical screen cutout geometry (notches, punch-holes, Dynamic
+Islands, rounded corners) used by flight_check's device database. Covers Android
+AOSP device trees (authoritative, machine-readable) and iOS Simulator
+`.simdevicetype` bundles (best available for iOS). Includes a quick-reference
+guide for converting Android SVG paths to Flutter `ScreenCutout` values.
 
 ---
 
@@ -66,21 +65,25 @@ Converting to logical pixels (dp) by dividing by DPR 2.625:
 
 ### Where to Find Android Device Trees
 
-- **Google Pixels**: `android.googlesource.com/device/google/<codename>` --
+- **Google Pixels**: `android.googlesource.com/device/google/<codename>` —
   authoritative source, publicly accessible
 - **GitHub mirrors**: Many custom ROM projects (LineageOS, GrapheneOS, etc.)
-  maintain mirrors under `android_device_google_<codename>` -- easier to browse
+  maintain mirrors under `android_device_google_<codename>` — easier to browse
   on GitHub
 - **Codename lookup**: gsmarena.com or the LineageOS device wiki list codenames
 
-Key Pixel codenames: | Device | Codename | |---|---| | Pixel 7a | `lynx` | |
-Pixel 8 | `shiba` | | Pixel 8 Pro | `husky` (in `shusky` repo) | | Pixel 9 |
-`tokay` |
+Key Pixel codenames:
+
+| Device      | Codename                   |
+| ----------- | -------------------------- |
+| Pixel 7a    | `lynx`                     |
+| Pixel 8     | `shiba`                    |
+| Pixel 8 Pro | `husky` (in `shusky` repo) |
+| Pixel 9     | `tokay`                    |
 
 For non-Google Android devices (Samsung, OnePlus, etc.), device trees may be in
-manufacturer GitHub repos or community ROM trees. Samsung in particular keeps
-most of its device-specific config proprietary, so community measurements may be
-needed.
+manufacturer GitHub repos or community ROM trees. Samsung keeps most device-
+specific config proprietary, so community measurements may be needed.
 
 ### Coordinate System Notes
 
@@ -91,7 +94,7 @@ needed.
 - To convert to Flutter logical pixels: divide each coordinate by the device's
   `devicePixelRatio`
 - The `@left` suffix is an Android convention meaning the path is specified
-  relative to the left edge -- this is the default and just indicates coordinate
+  relative to the left edge — this is the default and just indicates coordinate
   origin
 
 ---
@@ -104,7 +107,7 @@ resource.
 
 ### What Is Available
 
-**Safe area insets** -- reliably documented by the community via device
+**Safe area insets** — reliably documented by the community via device
 measurement. The useyourloaf.com blog is the most thorough and regularly updated
 source:
 
@@ -112,8 +115,8 @@ source:
 - iPhone 15 Pro Max portrait: top 59pt, bottom 34pt
 - iPhone 15 Pro landscape: top 0pt, bottom 21pt, left 59pt, right 59pt
 
-**Dynamic Island dimensions** -- designer approximations based on measurement
-and reverse engineering. Widely cited values for the compact/default pill shape:
+**Dynamic Island dimensions** — designer approximations based on measurement and
+reverse engineering. Widely cited values for the compact/default pill shape:
 
 - iPhone 14 Pro / 15 / 15 Pro: approximately 126x37pt, with ~19pt corner radius
 - The pill sits approximately 11-14pt from the top edge of the screen area
@@ -123,20 +126,20 @@ Note: The Dynamic Island is actually two separate hardware cutouts (a pill for
 Face ID sensors and a circle for the camera) that are visually merged by
 software. The outer pill shape is what matters for layout purposes.
 
-**Corner radii** -- not officially published. Community measurements suggest
+**Corner radii** — not officially published. Community measurements suggest
 approximately 47-55pt on modern iPhones (iPhone 12 and later). The SwiftUI
 `ContainerRelativeShape` API adapts to device corners at runtime but does not
 expose the underlying radius.
 
 ### Reliable iOS Reference Sources
 
-- **useyourloaf.com/blog** -- "iPhone XX Screen Sizes" posts, updated each year.
+- **useyourloaf.com/blog** — "iPhone XX Screen Sizes" posts, updated each year.
   Covers logical screen size, DPR, status bar height, and safe area insets for
   every model.
-- **iOS Resolution** (iosresolution.com) -- tabular reference for physical
+- **iOS Resolution** (iosresolution.com) — tabular reference for physical
   resolution, logical resolution, and DPR across all models.
-- **Apple HIG** -- documents safe area insets conceptually but not numerically.
-- **Apple Tech Specs** -- physical resolution only; no logical pixel data or
+- **Apple HIG** — documents safe area insets conceptually but not numerically.
+- **Apple Tech Specs** — physical resolution only; no logical pixel data or
   cutout geometry.
 
 ---
@@ -231,15 +234,15 @@ data shows ~53–69pt depending on generation (see table above).
 
 ---
 
-## Recommended Approach for Bezel's Device Database
+## Recommended Approach for flight_check's Device Database
 
 **For Android (Pixel) profiles**: Extract cutout geometry directly from AOSP
 device tree XML. Convert physical pixel coordinates to dp by dividing by the
 device's DPR. This gives authoritative, exact values.
 
 **For iOS profiles**: Use community-measured safe area insets (reliable) and
-community-approximated Dynamic Island dimensions (good enough for "few
-surprises" goal).
+community-approximated Dynamic Island dimensions (good enough for the "few
+surprises" fidelity goal).
 
 ---
 
@@ -255,18 +258,18 @@ Z
 @left
 ```
 
-1. Identify the shape: two arc commands completing a circle -> `PunchHoleCutout`
+1. Identify the shape: two arc commands completing a circle → `PunchHoleCutout`
 2. Extract center: `M x,y` where x = 626.5 + 45 = 671.5, y = 75.5 (center of
-   arc) -- the `M` command moves to the _leftmost point_ of the circle, so add
+   arc) — the `M` command moves to the _leftmost point_ of the circle, so add
    the radius to get the horizontal center
 3. Extract radius: 45px
-4. Divide by device DPR (2.625) -> center (256dp, 29dp), radius ~17dp
-5. `centerX` = 256dp (not centered -- use explicit value)
+4. Divide by device DPR (2.625) → center (256dp, 29dp), radius ~17dp
+5. `centerX` = 256dp (not centered — use explicit value)
 6. `topOffset` = 29dp - 17dp = 12dp (top of circle from screen top)
 
 ```dart
 PunchHoleCutout(
-  diameter: 34,      // 2 x 17dp
+  diameter: 34,      // 2 × 17dp
   topOffset: 12,
   centerX: 256,      // not centered; specify explicitly
 )
@@ -274,6 +277,6 @@ PunchHoleCutout(
 
 For a notch path (the wide trapezoid/curve shape used on older Pixels and
 iPhones X-14), the path will be more complex. Parse the bounding box from
-`config_mainBuiltInDisplayCutoutRectApproximation` instead -- it gives a clean
+`config_mainBuiltInDisplayCutoutRectApproximation` instead — it gives a clean
 Rect that maps directly to
 `NotchCutout(size: Size(width, height), topOffset: ...)`.

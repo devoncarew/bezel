@@ -1,5 +1,12 @@
 # Device Coverage
 
+Tracks the mobile device landscape, which profiles are in the database, proxy
+groups (devices that share screen geometry), coverage gaps, and verification
+status. For how to add a new device, see `docs/patterns.md`. For cutout geometry
+data sources, see `docs/cutout-research.md`.
+
+---
+
 This document tracks the mobile device landscape, which devices flight_check
 supports, and how well the current set covers common real-world usage.
 

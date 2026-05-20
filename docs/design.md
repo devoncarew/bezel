@@ -1,5 +1,11 @@
 # flight_check — Design Document
 
+Covers the full architecture: binding-layer spoofing mechanism, DPR derivation,
+window sizing, device profile database, screen cutout geometry, UI components,
+and accepted limitations. For common how-to tasks, see `docs/patterns.md`.
+
+---
+
 ## Goal
 
 A Flutter desktop development tool that gives you a **"pretty good" sense** of
