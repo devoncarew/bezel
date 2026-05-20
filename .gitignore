@@ -20,6 +20,8 @@ coverage/
 # claude
 .claude/settings.local.json
 .claude/worktrees/
+.antigravitycli/
 
 # binary files
 tool/images/
+

@@ -1,19 +1,20 @@
 # CLAUDE.md — flight_check
 
-This file is guidance for AI coding agents working on this project. Read it fully before
-making changes.
+This file is guidance for AI coding agents working on this project. Read it
+fully before making changes.
 
 ---
 
 ## What This Project Is
 
-`flight_check` is a Flutter debug-mode tool that lets developers preview their app
-against popular mobile device profiles while running on desktop. It spoofs device metrics
-at the binding layer (not via widget injection), provides a minimal floating UI for device
-selection and orientation toggle, and auto-resizes the desktop window to fit the emulated
-device.
+`flight_check` is a Flutter debug-mode tool that lets developers preview their
+app against popular mobile device profiles while running on desktop. It spoofs
+device metrics at the binding layer (not via widget injection), provides a
+minimal floating UI for device selection and orientation toggle, and
+auto-resizes the desktop window to fit the emulated device.
 
-Read `docs/DESIGN.md` for the full architecture. Read `docs/PLAN.md` for the current task list.
+Read `docs/DESIGN.md` for the full architecture. Read `docs/PLAN.md` for the
+current task list.
 
 ---
 
@@ -21,26 +22,29 @@ Read `docs/DESIGN.md` for the full architecture. Read `docs/PLAN.md` for the cur
 
 - **Dart only.** No generated code, no build_runner, no macros.
 - Follow the [official Dart style guide](https://dart.dev/effective-dart/style).
-- Keep files focused. If a file is growing past ~200 lines, consider whether it should split.
+- Keep files focused. If a file is growing past ~200 lines, consider whether it
+  should split.
 
 ---
 
 ## Architecture Rules
 
-**Never inject MediaQuery wrapper widgets to spoof device metrics.** The spoofing happens
-exclusively in `PreviewBinding` / `PreviewPlatformDispatcher` / `PreviewFlutterView`.
-If you find yourself adding a `MediaQuery(data: ..., child: ...)` anywhere in the preview
-mechanism, stop and reconsider.
+**Never inject MediaQuery wrapper widgets to spoof device metrics.** The
+spoofing happens exclusively in `PreviewBinding` / `PreviewPlatformDispatcher` /
+`PreviewFlutterView`. If you find yourself adding a
+`MediaQuery(data: ..., child: ...)` anywhere in the preview mechanism, stop and
+reconsider.
 
-**The `src/` directory is private.** Only `flight_check.dart` (the barrel file) is
-public API. Do not add exports from `src/` directly in consumer code.
+**The `src/` directory is private.** Only `flight_check.dart` (the barrel file)
+is public API. Do not add exports from `src/` directly in consumer code.
 
 **`PreviewController` is the single source of truth** for active device profile,
-orientation, and toolbar visibility. UI widgets read from it via `ListenableBuilder` or
-`AnimatedBuilder`. The binding layer holds a reference to it and reacts to changes.
+orientation, and toolbar visibility. UI widgets read from it via
+`ListenableBuilder` or `AnimatedBuilder`. The binding layer holds a reference to
+it and reacts to changes.
 
-**Debug-only enforcement.** All preview code must be unreachable in profile/release builds.
-The pattern is:
+**Debug-only enforcement.** All preview code must be unreachable in
+profile/release builds. The pattern is:
 
 ```dart
 // In flight_check.dart:
@@ -65,15 +69,17 @@ export 'src/preview_real.dart'
 ## Testing
 
 - Unit-test `DeviceProfile` logic and `DeviceDatabase` lookups directly.
-- Unit-test `PreviewPlatformDispatcher` and `PreviewFlutterView` metric calculations
-  (physicalSize, padding derivation) with simple dart tests — no Flutter widget test
-  harness needed.
-- Widget tests for `DeviceFramePainter` can use `goldens` sparingly; prefer assertion-based
-  tests over golden files where possible to reduce maintenance overhead.
-- Do not write widget tests that depend on `window_manager` — mock `WindowManagerService`
-  at the interface boundary.
+- Unit-test `PreviewPlatformDispatcher` and `PreviewFlutterView` metric
+  calculations (physicalSize, padding derivation) with simple dart tests — no
+  Flutter widget test harness needed.
+- Widget tests for `DeviceFramePainter` can use `goldens` sparingly; prefer
+  assertion-based tests over golden files where possible to reduce maintenance
+  overhead.
+- Do not write widget tests that depend on `window_manager` — mock
+  `WindowManagerService` at the interface boundary.
 
 Run tests with:
+
 ```
 flutter test
 ```
@@ -84,9 +90,9 @@ flutter test
 
 ### Adding a new device profile
 
-Add an entry to `device_database.dart`. The `DeviceProfile` constructor is the only
-thing that needs to change — no registration, no factory, no codegen. Include a comment
-noting the data source for cutout geometry and corner radius.
+Add an entry to `device_database.dart`. The `DeviceProfile` constructor is the
+only thing that needs to change — no registration, no factory, no codegen.
+Include a comment noting the data source for cutout geometry and corner radius.
 
 ```dart
 // Pixel 8a (codename: akita) / covers 7a (lynx), 8 (husky/shiba), 8a (akita).
@@ -112,8 +118,8 @@ final pixel_8a = DeviceProfile(
 
 ### Changing what the binding spoofs
 
-All spoofing lives in `PreviewFlutterView`. Add or modify overrides there. Always
-delegate to `_real` for anything not being spoofed:
+All spoofing lives in `PreviewFlutterView`. Add or modify overrides there.
+Always delegate to `_real` for anything not being spoofed:
 
 ```dart
 @override
@@ -125,11 +131,14 @@ ui.Size get physicalSize =>
 
 ## What Not to Do
 
-- Do not add dependencies without a clear reason. The dep list is intentionally minimal.
+- Do not add dependencies without a clear reason. The dep list is intentionally
+  minimal.
 - Do not support Flutter Web. The whole premise doesn't apply.
 - Do not add a plugin/extension system. Keep the surface area small.
-- Do not use `BuildContext` in the binding layer. The binding exists below the widget tree.
-- Do not persist state across sessions (e.g. to shared_preferences). Session memory only.
+- Do not use `BuildContext` in the binding layer. The binding exists below the
+  widget tree.
+- Do not persist state across sessions (e.g. to shared_preferences). Session
+  memory only.
 
 ---
 
@@ -137,11 +146,12 @@ ui.Size get physicalSize =>
 
 Current allowed dependencies:
 
-| Package | Reason |
-|---|---|
+| Package          | Reason                                         |
+| ---------------- | ---------------------------------------------- |
 | `window_manager` | Window resize/position — no viable alternative |
 
-Before adding any new dependency, check if the stdlib or Flutter SDK can cover it.
+Before adding any new dependency, check if the stdlib or Flutter SDK can cover
+it.
 
 ---
 
