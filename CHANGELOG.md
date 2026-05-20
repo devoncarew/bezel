@@ -1,9 +1,17 @@
+## 1.2.0
+
+- Require Flutter 3.44.0.
+- Implement `FlutterView.displayCornerRadii` to spoof Android corner radii.
+  Returns physical-pixel radii derived from the active profile's
+  `CircularBorder` radius; returns `null` for iOS profiles, matching Android API
+  31+ semantics.
+
 ## 1.1.0
 
-* Added `shortName` field to `DeviceProfile` for compact display in the control
+- Added `shortName` field to `DeviceProfile` for compact display in the control
   badge (e.g. `'Pixel 10'` instead of `'Google Pixel 10'`). The badge shows the
   short name when the panel is closed, and the full name when it is open.
-* Added brightness (dark/light) toggle to the control panel (`⌘B` / `Ctrl+B`).
+- Added brightness (dark/light) toggle to the control panel (`⌘B` / `Ctrl+B`).
   The emulated device always reports an explicit brightness — dark by default —
   independent of the host system setting. The choice persists between sessions.
 

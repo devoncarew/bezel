@@ -2,6 +2,8 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/painting.dart' show EdgeInsets;
 
+import '../devices/device_profile.dart' show DevicePlatform;
+import '../devices/screen_border.dart' show CircularBorder;
 import '../preview_controller.dart';
 
 /// A [ui.FlutterView] that reports spoofed metrics for the active device
@@ -96,6 +98,28 @@ class PreviewFlutterView implements ui.FlutterView {
   @override
   void updateSemantics(ui.SemanticsUpdate update) =>
       _real.updateSemantics(update);
+
+  @override
+  ui.DisplayCornerRadii? get displayCornerRadii {
+    // Only Android API 31+ populates this; iOS and other platforms return null.
+    final profile = _controller.activeProfile;
+    if (profile.platform != DevicePlatform.android) {
+      return null;
+    }
+
+    final border = profile.screenBorder;
+    if (border is! CircularBorder) {
+      return null;
+    }
+
+    final physical = border.radius * devicePixelRatio;
+    return ui.DisplayCornerRadii(
+      topLeft: physical,
+      topRight: physical,
+      bottomRight: physical,
+      bottomLeft: physical,
+    );
+  }
 }
 
 /// Adapts a Flutter [EdgeInsets] to the [ui.ViewPadding] interface.

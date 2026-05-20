@@ -1,5 +1,6 @@
 import 'package:flight_check/src/binding/preview_flutter_view.dart';
 import 'package:flight_check/src/devices/device_database.dart';
+import 'package:flight_check/src/devices/screen_border.dart';
 import 'package:flight_check/src/preview_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -88,4 +89,25 @@ void main() {
     expect(view.viewInsets.left, 0.0);
     expect(view.viewInsets.right, 0.0);
   });
+
+  test('displayCornerRadii is null for iOS profiles', () {
+    controller.setProfile(DeviceDatabase.findById('iphone_15')!);
+    expect(view.displayCornerRadii, isNull);
+  });
+
+  test(
+    'displayCornerRadii returns physical-pixel radii for Android profiles',
+    () {
+      final pixel = DeviceDatabase.findById('pixel_10')!;
+      controller.setProfile(pixel);
+      final radii = view.displayCornerRadii;
+      expect(radii, isNotNull);
+      final border = pixel.screenBorder as CircularBorder;
+      final expected = border.radius * view.devicePixelRatio;
+      expect(radii!.topLeft, closeTo(expected, 0.001));
+      expect(radii.topRight, closeTo(expected, 0.001));
+      expect(radii.bottomRight, closeTo(expected, 0.001));
+      expect(radii.bottomLeft, closeTo(expected, 0.001));
+    },
+  );
 }
