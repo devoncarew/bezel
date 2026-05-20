@@ -1,3 +1,10 @@
+## 1.2.1
+
+- Add Google Pixel 10a profile (covers Pixel 9a and 10a; 44dp corner radius,
+  411×923dp).
+- Rename the `pixel_7a` profile to `pixel_8a` (id, name, and display name now
+  reflect the latest in that series; geometry is unchanged).
+
 ## 1.2.0
 
 - Require Flutter 3.44.0.

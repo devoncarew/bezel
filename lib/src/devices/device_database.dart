@@ -43,7 +43,8 @@ final List<DeviceProfile> kDeviceProfiles = [
   iphone_17_pro_max,
 
   // Android
-  pixel_7a,
+  pixel_8a,
+  pixel_10a,
   pixel_10,
   pixel_10_pro,
   samsung_galaxy_a15,
@@ -329,24 +330,49 @@ final iphone_17_pro_max = DeviceProfile(
 
 // ── Android ──────────────────────────────────────────────────────────────
 
-// Pixel 7a (codename: lynx).
+// Pixel 8a (codename: akita) / covers 7a (lynx), 8 (husky/shiba), 8a (akita).
 // Cutout: verified against Android Emulator via `adb shell dumpsys display`.
 //   Cutout spec: M 507,66 a 33,33 0 1 0 66,0 33,33 0 1 0 -66,0 Z @left
 //   Circle: center (540, 66)px physical, radius 33px physical.
 //   Diameter: 66px / 2.625 DPR ≈ 25dp; center Y: 66px / 2.625 ≈ 25dp.
 // Corner radius: 47px / 2.625 ≈ 18dp (from roundedCorners in dumpsys output).
 // Safe areas: verified against Android Emulator.
-final pixel_7a = DeviceProfile(
-  id: 'pixel_7a',
-  name: 'Google Pixel 7a',
-  shortName: 'Pixel 7a',
+final pixel_8a = DeviceProfile(
+  id: 'pixel_8a',
+  name: 'Google Pixel 8a',
+  shortName: 'Pixel 8a',
   platform: DevicePlatform.android,
   logicalSize: const Size(411, 914),
   safeAreaPortrait: const EdgeInsets.only(top: 45, bottom: 24),
   safeAreaLandscape: const EdgeInsets.only(left: 45, top: 28, bottom: 24),
   screenBorder: const CircularBorder(18),
   cutout: const PunchHoleCutout(diameter: 25, topOffset: 25),
-  description: 'Mid-range Pixel, small punch hole — covers Pixel 7a, 8, 8a',
+  description:
+      'Mid-range A-series Pixel, small punch hole — covers Pixel 7a, 8, 8a',
+);
+
+// Google Pixel 10a (codename: stallion) / Pixel 9a (codename: tegu).
+// Both devices share the same 1080×2424px Actua display at 422.2ppi (2.625 DPR).
+// Cutout: AOSP tegu device tree config.xml (android15-d4-release).
+//   cutoutSpec: m 581.5,86 a 41.5,41.5 0 0 0 -83,0 41.5,41.5 0 0 0 83,0 z @left
+//   Circle: center (540, 86)px physical, radius 41.5px.
+//   Diameter: 83px / 2.625 ≈ 32dp. Center Y: 86px / 2.625 ≈ 33dp.
+// Corner radius: 115px / 2.625 ≈ 44dp (from rounded_corner_radius in tegu config.xml).
+//   Notably smaller than the Pixel 9/10 flagship (74dp) — visually distinct.
+// Safe areas: status_bar_height_portrait = 52dp from tegu config.xml.
+//   stallion (Pixel 10a) device tree not yet in AOSP (as of May 2026);
+//   display specs confirmed identical to tegu via Google official spec pages.
+final pixel_10a = DeviceProfile(
+  id: 'pixel_10a',
+  name: 'Google Pixel 10a',
+  shortName: 'Pixel 10a',
+  platform: DevicePlatform.android,
+  logicalSize: const Size(411, 923),
+  safeAreaPortrait: const EdgeInsets.only(top: 52, bottom: 24),
+  safeAreaLandscape: const EdgeInsets.only(left: 52, top: 24, bottom: 24),
+  screenBorder: const CircularBorder(44),
+  cutout: const PunchHoleCutout(diameter: 32, topOffset: 33),
+  description: 'Mid-range A-series Pixel, 411×923 — covers Pixel 9a, 10a',
 );
 
 // Pixel 10 (codename: frankel, in muzel repo).
